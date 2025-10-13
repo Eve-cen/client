@@ -1,0 +1,16 @@
+{
+  "title": "Cozy Beachfront Cottage",
+  "description": "A charming cottage with stunning ocean views.",
+  "price": 120,
+  "location": "Miami, FL",
+  "category": "<category_id>",
+  "image": "https://source.unsplash.com/random/400x300/?cottage",
+  "rating": 4.8,
+  "reviews": [
+    {
+      "user": "<user_id>",
+      "rating": 5,
+      "comment": "Amazing stay with beautiful views!"
+    }
+  ]
+}
