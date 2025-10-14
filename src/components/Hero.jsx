@@ -83,7 +83,7 @@ const Hero = ({ onExplore }) => {
     >
       <div className="relative z-10 flex flex-col items-center justify-between pb-8 h-full text-white px-4">
         <Navbar />
-        <div className="w-full max-w-6xl bg-white bg-opacity-90 p-6 rounded-lg shadow-lg">
+        <div className="w-full max-w-6xl bg-white bg-opacity-90 p-6 rounded-[24px] shadow-lg">
           <form
             onSubmit={handleSearchSubmit}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"

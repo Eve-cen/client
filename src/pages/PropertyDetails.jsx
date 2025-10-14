@@ -4,7 +4,9 @@ import { apiFetch } from "../utils/api";
 import ImageGallery from "../components/ImageGallery";
 import BookingForm from "../components/BookingForm";
 import ReviewsSection from "../components/ReviewsSection";
-import Navbar from "../components/Navbar";
+import PropertyDescription from "../components/PropertyDescription";
+import PropertyOffers from "../components/PropertyOffers";
+import PropertyLocation from "../components/Location";
 
 const PropertyDetails = () => {
   const { id } = useParams();
@@ -78,39 +80,38 @@ const PropertyDetails = () => {
 
           {/* Details and Booking */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="">
-              <h1 className="text-2xl font-bold mb-2">{property.title}</h1>
-              <p className="text-gray-600 mb-2">{property.location}</p>
-              <div className="flex items-center mb-2">
-                <span className="text-yellow-500">
-                  ★ {property.rating.toFixed(1)}
-                </span>
-                <span className="text-gray-600 ml-2">
-                  ({property.reviews.length} reviews)
-                </span>
+            <div className="sticky top-8 space-y-6">
+              <div>
+                <h1 className="text-4xl mb-2">{property.title}</h1>
+                <p className="text-gray-600 mb-2">{property.location}</p>
+                <div className="flex items-center mb-2">
+                  <span className="text-yellow-500">
+                    ★ {property.rating.toFixed(1)}
+                  </span>
+                  <span className="text-gray-600 ml-2">
+                    ({property.reviews.length} reviews)
+                  </span>
+                </div>
+                <p className="text-2xl">${property.price_per_hour} / night</p>
               </div>
-              {/* <p className="text-gray-600 mb-2">{property.category.ti}</p> */}
-              <p className="text-lg font-semibold">
-                ${property.price_per_hour} / night
-              </p>
-              {/* <p className="text-gray-600 mt-2">{property.description}</p> */}
+
+              <BookingForm
+                propertyId={property._id}
+                pricePerNight={property.price_per_hour}
+              />
             </div>
-            <BookingForm
-              propertyId={property._id}
-              pricePerNight={property.price}
-            />
           </div>
         </div>
-
+        <PropertyDescription data={property.description} />
+        <PropertyOffers data={property.amenities} />
+        <PropertyLocation data={property.location} />
+        <ReviewsSection reviews={property.reviews} />
         {/* Host and Reviews */}
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-xl font-semibold mb-4">Hosted by</h3>
-            {/* <p>{property.host.name || property.host.email}</p> */}
           </div>
-          <div className="lg:col-span-2">
-            <ReviewsSection reviews={property.reviews} />
-          </div>
+          <div className="lg:col-span-2"></div>
         </div>
       </div>
     </div>
