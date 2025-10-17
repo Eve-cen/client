@@ -13,6 +13,7 @@ import PrivateRoute from "./PrivateRoute";
 import Homepage from "./pages/Homepage";
 import Navbar from "./components/Navbar";
 import PropertyDetails from "./pages/PropertyDetails";
+import Settings from "./pages/Settings";
 
 function AppContent() {
   const location = useLocation();
@@ -35,6 +36,8 @@ function AppContent() {
               </PrivateRoute>
             }
           />
+          <Route path="/settings/*" element={<Settings />} />
+
           <Route path="/property/:id" element={<PropertyDetails />} />
           <Route path="/" element={<Homepage />} />
           <Route path="*" element={<h1>404 - Page Not Found</h1>} />

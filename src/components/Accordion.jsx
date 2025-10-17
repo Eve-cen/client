@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-export default function Accordion({ title, children }) {
-  const [open, setOpen] = useState(false);
+export default function Accordion({ title, children, openState }) {
+  const [open, setOpen] = useState(openState ?? false);
 
   return (
     <div className="border-b border-gray-300">

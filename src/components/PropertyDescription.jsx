@@ -5,7 +5,7 @@ export default function PropertyDescription({ data }) {
   const [description] = useState(data);
 
   return (
-    <Accordion title="Description">
+    <Accordion title="Description" openState={true}>
       {description && <p className="leading-relaxed">{description}</p>}
     </Accordion>
   );

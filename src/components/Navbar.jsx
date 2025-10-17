@@ -31,13 +31,17 @@ const Navbar = () => {
         {/* Auth Buttons */}
         <div className="space-x-4">
           <Link to="/space-listing">List your Event Center</Link>
-          {!token && (
+          {!token ? (
             <button
               onClick={() => setIsModalOpen(true)}
               className="text-blue-500 hover:underline"
             >
               Login / Sign Up
             </button>
+          ) : (
+            <Link to="/settings/personal" className="">
+              Settings
+            </Link>
           )}
         </div>
 

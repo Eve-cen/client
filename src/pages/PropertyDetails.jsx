@@ -72,7 +72,7 @@ const PropertyDetails = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
           {/* Gallery */}
           <div className="lg:col-span-2">
             <ImageGallery images={images} />
@@ -107,9 +107,59 @@ const PropertyDetails = () => {
         <PropertyLocation data={property.location} />
         <ReviewsSection reviews={property.reviews} />
         {/* Host and Reviews */}
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-xl font-semibold mb-4">Hosted by</h3>
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-5 gap-6">
+          <div className="col-span-2">
+            <h3 className="text-xl font-semibold mb-4">Meet your host</h3>
+
+            <div className="flex flex-col gap-3 bg-white p-6 rounded-lg shadow-md">
+              <div className="flex gap-3">
+                <img
+                  src="../src/assets/hero-bg.jpg"
+                  alt=""
+                  className="h-32 w-32 rounded-full"
+                />
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold mb-4">Luca Daniel</h3>
+                  <div className="flex justify-between">
+                    <p className="text-xs border-r pr-2">
+                      <span className="block font-semibold text-sm">334</span>
+                      Reviews
+                    </p>
+                    <p className="text-xs border-r pr-2">
+                      <span className="block font-semibold text-sm">334</span>
+                      Reviews
+                    </p>
+                    <p className="text-xs">
+                      <span className="block font-semibold text-sm">334</span>
+                      Reviews
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <p>
+                I have lived in central London all my life, and work with the
+                local community. I enjoy socialising, travelling, theatre, good
+                restaurants and meeting new people. We would love to have you in
+                our family home during your stay in London.
+              </p>
+            </div>
+          </div>
+          <div className="col-span-3 flex flex-col gap-6">
+            <div>
+              <h3 className="text-xl font-semibold mb-4">
+                Luca is a Superhost
+              </h3>
+              <p>
+                Superhosts are experienced, highly rated hosts who are committed
+                to providing great stays for guests.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold mb-4">Host details</h3>
+              <p>
+                Response rate: 70% <br /> Responds within a few hours
+              </p>
+            </div>
           </div>
           <div className="lg:col-span-2"></div>
         </div>
