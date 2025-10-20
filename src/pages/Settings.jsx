@@ -6,12 +6,14 @@ import Input from "../components/Input";
 import InputToggle from "../components/InputToggle";
 import CardInput from "../components/CardInput";
 import Button from "../components/Button";
+import Modal from "../components/Modal";
 
 const Settings = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState("");
   const { pathname } = useLocation();
 
@@ -142,6 +144,10 @@ const Settings = () => {
     setUser({ ...user, [name]: value });
   };
 
+  const showPopup = () => {
+    setShowModal(true);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -194,23 +200,49 @@ const Settings = () => {
                 onChange={handleChange}
               />
               <Input
-                label="Residential Address"
-                name="address"
-                value={user.address || ""}
-                onChange={handleChange}
-              />
-              <Input
                 label="Identity Verified"
                 name="isVerified"
                 value={user.isVerified ? "Yes" : "No"}
                 disabled
               />
-              <Button
-                type="submit"
-                className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-              >
-                Save Changes
-              </Button>
+              <h4>Residential Address</h4>
+              <Input
+                placeholder="Country / region"
+                name="country"
+                value={user.country || ""}
+                onChange={handleChange}
+              />
+              <Input
+                placeholder="Street Address"
+                name="address"
+                value={user.address || ""}
+                onChange={handleChange}
+              />
+              <Input
+                placeholder="Apt, floor, bldg (if applicable)"
+                name="floor"
+                value={user.floor || ""}
+                onChange={handleChange}
+              />
+              <Input
+                placeholder="City / town / village"
+                name="city"
+                value={user.city || ""}
+                onChange={handleChange}
+              />
+              <Input
+                placeholder="Province / state / territory (if applicable)"
+                name="state"
+                value={user.state || ""}
+                onChange={handleChange}
+              />
+              <Input
+                placeholder="Postal code (if applicable)"
+                name="postalCode"
+                value={user.postalCode || ""}
+                onChange={handleChange}
+              />
+              <Button type="submit" children="Save Changes" />
             </form>
           </div>
         )}
@@ -237,12 +269,7 @@ const Settings = () => {
                 checked={user.privacySettings.showReviewInfo}
                 onChange={handleToggleChange}
               />
-              <Button
-                type="submit"
-                className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-              >
-                Save Changes
-              </Button>
+              <Button type="submit" children="Save Changes" />
             </form>
           </div>
         )}
@@ -250,93 +277,141 @@ const Settings = () => {
           <div>
             <h2 className="text-2xl font-bold mb-6">Payments</h2>
             {error && <p className="text-red-500 mb-4">{error}</p>}
-            <h3 className="text-lg font-semibold mb-4">Add Payment Method</h3>
-            <form onSubmit={handleAddPayment} className="space-y-4">
-              <CardInput
-                label="Card Number"
-                name="newCardNumber"
-                value={user.newCardNumber || ""}
-                onChange={handleCardChange}
-                placeholder="**** **** **** 1234"
-              />
-              <CardInput
-                label="Expiry Date"
-                name="newExpiryDate"
-                value={user.newExpiryDate || ""}
-                onChange={handleCardChange}
-                placeholder="MM/YY"
-              />
-              <CardInput
-                label="CVV"
-                name="newCvv"
-                value={user.newCvv || ""}
-                onChange={handleCardChange}
-                placeholder="***"
-              />
-              <Button
-                type="submit"
-                className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-              >
-                Add Card
-              </Button>
-            </form>
-            <h3 className="text-lg font-semibold mt-6 mb-4">Payment Methods</h3>
-            {user.paymentMethods.length > 0 ? (
-              <ul className="space-y-2">
-                {user.paymentMethods.map((method, index) => (
-                  <li key={index} className="p-2 bg-gray-100 rounded-lg">
-                    {method.type}: **** **** **** {method.cardNumber.slice(-4)}
-                  </li>
-                ))}
-              </ul>
+
+            <h3 className="text-lg font-semibold mb-4">Your payment</h3>
+            <p>Keep track of all your payments and refunds</p>
+            <Button children="Manage payment" />
+
+            <hr className="my-8" />
+
+            <h3 className="text-lg font-semibold mb-4">Payment Method</h3>
+            <p>
+              Add a payment method using our secure payment system, then start
+              planning your next trip
+            </p>
+
+            {!user.paymentMethods.length > 0 ? (
+              <>
+                {/* Add Payment Button */}
+                <Button children="Add payment method" onClick={showPopup} />
+
+                {/* Modal */}
+                {showModal && (
+                  <Modal onClose={() => setShowModal(false)} isOpen={true}>
+                    <h3 className="text-3xl text-center mb-6">
+                      Add card details
+                    </h3>
+                    <form onSubmit={handleAddPayment} className="space-y-4">
+                      <CardInput
+                        label="Card Number"
+                        name="newCardNumber"
+                        value={user.newCardNumber}
+                        onChange={handleCardChange}
+                        placeholder="**** **** **** 1234"
+                      />
+                      <CardInput
+                        label="Expiry Date"
+                        name="newExpiryDate"
+                        value={user.newExpiryDate}
+                        onChange={handleCardChange}
+                        placeholder="MM/YY"
+                      />
+                      <CardInput
+                        label="CVV"
+                        name="newCvv"
+                        value={user.newCvv}
+                        onChange={handleCardChange}
+                        placeholder="***"
+                      />
+                      <Button
+                        type="submit"
+                        children="Add Card"
+                        className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                      />
+                    </form>
+                  </Modal>
+                )}
+
+                {/* Existing payment methods */}
+                <ul className="space-y-2 mt-4">
+                  {user.paymentMethods.map((method, index) => (
+                    <li key={index} className="p-2 bg-gray-100 rounded-lg">
+                      {method.type}: **** **** ****{" "}
+                      {method.cardNumber.slice(-4)}
+                    </li>
+                  ))}
+                </ul>
+              </>
             ) : (
-              <p className="text-gray-500">No payment methods added.</p>
+              <Button children="Add payment method" onClick={showPopup} />
             )}
           </div>
         )}
+
         {pathname === "/settings/payout" && (
           <div>
-            <h2 className="text-2xl font-bold mb-6">Payout</h2>
             {error && <p className="text-red-500 mb-4">{error}</p>}
-            <h3 className="text-lg font-semibold mb-4">Add Payout Method</h3>
-            <form onSubmit={handleAddPayout} className="space-y-4">
-              <select
-                name="newPayoutType"
-                value={user.newPayoutType || ""}
-                onChange={handleCardChange}
-                className="w-full p-2 border rounded-lg"
-              >
-                <option value="">Select Method</option>
-                <option value="paypal">PayPal</option>
-                <option value="payoneer">Payoneer</option>
-                <option value="bank_transfer">Bank Transfer</option>
-                <option value="card">Card</option>
-              </select>
-              <Input
-                label="Details"
-                name="newPayoutDetails"
-                value={user.newPayoutDetails || ""}
-                onChange={handleCardChange}
-                placeholder="e.g., email or account number"
-              />
-              <Button
-                type="submit"
-                className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-              >
-                Add Payout Method
-              </Button>
-            </form>
-            <h3 className="text-lg font-semibold mt-6 mb-4">Payout Methods</h3>
-            {user.payoutMethods.length > 0 ? (
-              <ul className="space-y-2">
-                {user.payoutMethods.map((method, index) => (
-                  <li key={index} className="p-2 bg-gray-100 rounded-lg">
-                    {method.type}: {method.details}
-                  </li>
-                ))}
-              </ul>
+
+            <h3 className="text-lg font-semibold mb-4">How you'll get paid</h3>
+            <p>
+              Add at least one payout method so we know where to send your
+              money.
+            </p>
+
+            {!user.payoutMethods.length > 0 ? (
+              <>
+                {/* Add Payment Button */}
+                <Button children="Manage payouts" onClick={showPopup} />
+
+                {/* Modal */}
+                {showModal && (
+                  <Modal onClose={() => setShowModal(false)} isOpen={true}>
+                    <h3 className="text-3xl text-center mb-6">
+                      Add card details
+                    </h3>
+                    <form onSubmit={handleAddPayment} className="space-y-4">
+                      <CardInput
+                        label="Card Number"
+                        name="newCardNumber"
+                        value={user.newCardNumber}
+                        onChange={handleCardChange}
+                        placeholder="**** **** **** 1234"
+                      />
+                      <CardInput
+                        label="Expiry Date"
+                        name="newExpiryDate"
+                        value={user.newExpiryDate}
+                        onChange={handleCardChange}
+                        placeholder="MM/YY"
+                      />
+                      <CardInput
+                        label="CVV"
+                        name="newCvv"
+                        value={user.newCvv}
+                        onChange={handleCardChange}
+                        placeholder="***"
+                      />
+                      <Button
+                        type="submit"
+                        children="Add Card"
+                        className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                      />
+                    </form>
+                  </Modal>
+                )}
+
+                {/* Existing payment methods */}
+                <ul className="space-y-2 mt-4">
+                  {user.payoutMethods.map((method, index) => (
+                    <li key={index} className="p-2 bg-gray-100 rounded-lg">
+                      {method.type}: **** **** ****{" "}
+                      {method.cardNumber.slice(-4)}
+                    </li>
+                  ))}
+                </ul>
+              </>
             ) : (
-              <p className="text-gray-500">No payout methods added.</p>
+              <Button children="Add payment method" onClick={showPopup} />
             )}
           </div>
         )}

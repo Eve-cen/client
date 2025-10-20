@@ -1,36 +1,3 @@
-// import React from "react";
-// import { Link } from "react-router-dom";
-
-// const Sidebar = ({ activeSection, setActiveSection }) => {
-//   const sections = [
-//     { name: "Personal Information", path: "/settings/personal" },
-//     { name: "Privacy", path: "/settings/privacy" },
-//     { name: "Payments", path: "/settings/payments" },
-//     { name: "Payout", path: "/settings/payout" },
-//   ];
-
-//   return (
-//     <div className="w-64 h-screen border-r fixed top-16 left-0 p-4 hidden sm:block">
-//       {sections.map((section) => (
-//         <Link
-//           key={section.path}
-//           to={section.path}
-//           className={`block py-2 px-4 rounded-lg mb-2 ${
-//             activeSection === section.path
-//               ? "bg-blue-600 text-white"
-//               : "text-gray-600 hover:bg-gray-100"
-//           }`}
-//         >
-//           {section.name}
-//         </Link>
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default Sidebar;
-// 0;
-
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 

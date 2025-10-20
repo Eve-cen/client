@@ -39,8 +39,8 @@ const Navbar = () => {
               Login / Sign Up
             </button>
           ) : (
-            <Link to="/settings/personal" className="">
-              Settings
+            <Link to="/profile/about" className="">
+              Profile
             </Link>
           )}
         </div>

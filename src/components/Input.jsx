@@ -1,7 +1,7 @@
 import React from "react";
 
-const Input = ({ label, type = "text", error, ...props }) => (
-  <div className="mb-4">
+const Input = ({ label, type = "text", error, classes, ...props }) => (
+  <div className={`${classes} mb-4`}>
     <label className="block text-sm font-medium text-gray-700">{label}</label>
     <input
       type={type}
