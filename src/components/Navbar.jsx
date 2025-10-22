@@ -21,20 +21,20 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="shadow-md w-full z-50">
+    <nav className="border-b border-b-gray-100 w-full z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         {/* Logo */}
-        <Link to="/" className="text-2xl font-bold text-blue-500">
+        <Link to="/" className="text-2xl font-bold text-[#305CDE]">
           EvenCen
         </Link>
 
         {/* Auth Buttons */}
         <div className="space-x-4">
-          <Link to="/space-listing">List your Event Center</Link>
+          <Link to="/create-space">List your Event Center</Link>
           {!token ? (
             <button
               onClick={() => setIsModalOpen(true)}
-              className="text-blue-500 hover:underline"
+              className="text-[#305CDE] hover:underline"
             >
               Login / Sign Up
             </button>

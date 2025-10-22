@@ -140,7 +140,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen flex">
       <ProfileSidebar />
       <div className="flex-1 ml-64 p-8">
         {pathname === "/profile/about" && (
@@ -163,6 +163,7 @@ const Profile = () => {
                   value={user.displayName || ""}
                   onChange={handleChange}
                 />
+                <label>Bio</label>
                 <textarea
                   label="Bio"
                   name="bio"

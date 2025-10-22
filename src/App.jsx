@@ -15,6 +15,7 @@ import Navbar from "./components/Navbar";
 import PropertyDetails from "./pages/PropertyDetails";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
+import CreateSpace from "./pages/CreateSpace";
 
 function AppContent() {
   const location = useLocation();
@@ -37,6 +38,7 @@ function AppContent() {
               </PrivateRoute>
             }
           />
+          <Route path="/create-space" element={<CreateSpace />} />
           <Route path="/settings/*" element={<Settings />} />
           <Route path="/profile/*" element={<Profile />} />
           <Route path="/property/:id" element={<PropertyDetails />} />

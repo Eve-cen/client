@@ -3,6 +3,7 @@ import { useAuth } from "./context/AuthContext";
 
 export default function PrivateRoute({ children }) {
   const { user } = useAuth();
+  console.log(user);
 
   if (!user) {
     // Not logged in → redirect to login
