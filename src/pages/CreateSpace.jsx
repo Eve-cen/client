@@ -13,11 +13,12 @@ import Counter from "../components/Counter";
 const CreateSpace = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const totalSteps = 1;
+  const totalSteps = 10;
   const [errors, setErrors] = useState({});
   const [apiKey, setApiKey] = useState("");
   const [categories, setCategories] = useState([]);
-  const [showApiInput, setShowApiInput] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [countdown, setCountdown] = useState(5);
   const [mapLoaded, setMapLoaded] = useState(false);
   const mapRef = useRef(null);
   const markerRef = useRef(null);
@@ -323,7 +324,6 @@ const CreateSpace = () => {
 
   const handleSubmit = async () => {
     const token = localStorage.getItem("token");
-    console.log(token);
 
     try {
       const formData = new FormData();
@@ -358,7 +358,20 @@ const CreateSpace = () => {
         const error = await res.json();
         throw new Error(error.message || "Failed to create space");
       }
-      navigate("/");
+      setShowModal(true);
+
+      // Start countdown
+      const interval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            setShowModal(false);
+            navigate("/", { replace: true });
+            window.location.reload(); // Reload homepage
+          }
+          return prev - 1;
+        });
+      }, 1000);
 
       return await res.json();
     } catch (err) {
@@ -380,7 +393,7 @@ const CreateSpace = () => {
 
   return (
     <div className="min-h-[calc(100vh-65px)] flex flex-col justify-between bg-gray-50 p-4 sm:p-8">
-      <div className="min-w-4xl mx-auto">
+      <div className="container mx-auto">
         {step === 1 && (
           <div>
             <h2 className="text-4xl my-4">Basic Info</h2>
@@ -1095,6 +1108,37 @@ const CreateSpace = () => {
           </div>
         )} */}
       </div>
+      {showModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              padding: "2rem",
+              borderRadius: "8px",
+              textAlign: "center",
+              minWidth: "300px",
+            }}
+          >
+            <h2>Your property is successfully created!</h2>
+            <p>
+              Redirecting in {countdown} second{countdown > 1 ? "s" : ""}...
+            </p>
+          </div>
+        </div>
+      )}
       <div>
         <ProgressBar step={step} totalSteps={totalSteps} />
         <div className="mt-6 flex justify-between items-center">

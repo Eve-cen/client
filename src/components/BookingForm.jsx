@@ -5,7 +5,7 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import Button from "./Button"; // adjust if needed
 
-export default function BookingForm() {
+export default function BookingForm({ pricing }) {
   const [loading, setLoading] = useState(false);
   const [range, setRange] = useState([
     {
@@ -21,7 +21,7 @@ export default function BookingForm() {
   });
 
   const nights = differenceInDays(range[0].endDate, range[0].startDate);
-  const pricePerNight = 120; // example
+  const pricePerNight = pricing; // example
   const totalPrice = nights * pricePerNight;
 
   const generateTimes = () => {

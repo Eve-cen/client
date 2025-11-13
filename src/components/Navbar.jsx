@@ -39,9 +39,14 @@ const Navbar = () => {
               Login / Sign Up
             </button>
           ) : (
-            <Link to="/profile/about" className="">
-              Profile
-            </Link>
+            <>
+              <Link to="/my-listings" className="">
+                My Listings
+              </Link>
+              <Link to="/profile/about" className="">
+                Profile
+              </Link>
+            </>
           )}
         </div>
 

@@ -8,6 +8,7 @@ import FacebookLogin from "@greatsumini/react-facebook-login";
 import { apiFetch } from "../utils/api";
 
 const AuthForm = ({ onForgotPassword, onSuccess }) => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -26,6 +27,8 @@ const AuthForm = ({ onForgotPassword, onSuccess }) => {
         body: { email, password },
       });
       localStorage.setItem("token", data.token);
+      // localStorage.setItem("userId", data.user._id);
+      console.log(data);
       onSuccess();
       navigate("/");
     } catch (err) {
@@ -98,12 +101,19 @@ const AuthForm = ({ onForgotPassword, onSuccess }) => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full text-black">
       <h2 className="text-2xl font-bold mb-6 text-center">
         Welcome to EvenCen
       </h2>
       {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
       <form onSubmit={handleEmailSubmit}>
+        {/* <Input
+          label="Name"
+          type="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        /> */}
         <Input
           label="Email"
           type="email"

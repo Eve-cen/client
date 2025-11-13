@@ -7,12 +7,15 @@ import ReviewsSection from "../components/ReviewsSection";
 import PropertyDescription from "../components/PropertyDescription";
 import PropertyOffers from "../components/PropertyOffers";
 import PropertyLocation from "../components/Location";
+import Button from "../components/Button";
+import ChatBox from "../components/Chatbox";
 
 const PropertyDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showChat, setShowChat] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -61,14 +64,17 @@ const PropertyDetails = () => {
     );
   }
 
-  const images = [property.image].concat(
+  const images = [property.images].concat(
     Array(4)
       .fill()
       .map(
         () =>
-          property.image || "https://source.unsplash.com/random/200x200/?house"
+          property.image ||
+          "https://images.squarespace-cdn.com/content/v1/5b850dd4da02bc525570db40/1570534941146-CSQDPR3G9L8RGMG47OZ5/002.jpg?format=2500w"
       )
   );
+
+  console.log(images);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -103,8 +109,23 @@ const PropertyDetails = () => {
 
               <BookingForm
                 propertyId={property._id}
-                pricePerNight={property.price_per_hour}
+                pricing={property.pricing.weekdayPrice}
               />
+              {/* {user && user._id !== property.host._id && ( */}
+              <Button
+                onClick={() => setShowChat(true)}
+                className="mt-4 w-full bg-pink-600 text-white"
+              >
+                Message Host
+              </Button>
+              {/* )} */}
+
+              {showChat && (
+                <ChatBox
+                  propertyId={property._id}
+                  onClose={() => setShowChat(false)}
+                />
+              )}
             </div>
           </div>
         </div>
