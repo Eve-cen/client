@@ -28,7 +28,9 @@ const EvenCard = ({ id, image, title, price, rating, location }) => {
         <h3 className="text-lg font-semibold text-gray-900 truncate">
           {title}
         </h3>
-        <p className="text-sm text-gray-600 mt-1">{location}</p>
+        <p className="text-sm text-gray-600 mt-1">
+          {location.address}, {location.city}, {location.country}
+        </p>
         <div className="flex items-center">
           <p className="text-lg font-bold text-gray-900">
             ${price} <span className="text-sm font-normal">per day</span>

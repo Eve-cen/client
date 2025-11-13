@@ -36,7 +36,7 @@ const Home = () => {
             method: "GET",
             cacheable: true,
           }));
-        setProperties(propertiesData);
+        setProperties(propertiesData.properties);
         setError("");
       } catch (err) {
         setError(err.message || "Failed to load data. Please try again.");

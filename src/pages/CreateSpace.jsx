@@ -13,24 +13,53 @@ import Counter from "../components/Counter";
 const CreateSpace = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const totalSteps = 8;
+  const totalSteps = 1;
   const [errors, setErrors] = useState({});
   const [apiKey, setApiKey] = useState("");
+  const [categories, setCategories] = useState([]);
   const [showApiInput, setShowApiInput] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
   const mapRef = useRef(null);
   const markerRef = useRef(null);
   const [spaceData, setSpaceData] = useState({
-    title: "",
-    description: "",
-    location: "",
-    coordinates: { latitude: null, longitude: null },
-    features: { wifi: false, restrooms: 0, sizeSQM: 0, seatCapacity: 0 },
-    extras: [],
-    images: [],
-    pricing: { weekdayPrice: 0, preTaxPrice: 0, discounts: {} },
-    bookingSettings: { approveFirstFive: false, instantBook: true },
+    title: "Elegant Space",
+    description:
+      "A stylish and modern event space perfect for meetings, parties, or corporate events.",
+    location: {
+      address: "15 Palm Avenue",
+      city: "Lagos",
+      country: "NG",
+    },
+    coordinates: { latitude: 6.5244, longitude: 3.3792 },
+    features: {
+      wifi: true,
+      restrooms: 4,
+      sizeSQM: 120,
+      seatCapacity: 50,
+    },
+    extras: [
+      { name: "Projector", price: 50 },
+      { name: "Sound System", price: 50 },
+      { name: "Catering Available", price: 50 },
+    ],
+    images: [], // will hold File objects when user uploads
+    coverImage: null,
+    category: "68e580e8aab6d97fb626b85e",
+    price: 750,
+    pricing: {
+      weekdayPrice: 560,
+      preTaxPrice: 500,
+      discounts: {
+        newListing: true,
+        lastMinute: false,
+      },
+    },
+    bookingSettings: {
+      approveFirstFive: false,
+      instantBook: true,
+    },
   });
+
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
@@ -38,6 +67,21 @@ const CreateSpace = () => {
       handleSubmit();
     }
   }, [step]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await apiFetch({
+          endpoint: "/categories",
+          method: "GET",
+        });
+        setCategories(response);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   // Load Google Maps Script
   useEffect(() => {
@@ -138,25 +182,19 @@ const CreateSpace = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    // Clear error for this field when user starts typing
     setErrors((prev) => ({ ...prev, [name]: "" }));
 
-    if (type === "checkbox") {
-      setSpaceData((prev) => ({
-        ...prev,
-        [name.split(".")[0]]: {
-          ...prev[name.split(".")[0]],
-          [name.split(".")[1]]: checked,
-        },
-      }));
-    } else if (name.includes(".")) {
+    const val =
+      type === "checkbox" ? checked : type === "number" ? Number(value) : value;
+
+    if (name.includes(".")) {
       const [parent, child] = name.split(".");
       setSpaceData((prev) => ({
         ...prev,
-        [parent]: { ...prev[parent], [child]: value },
+        [parent]: { ...prev[parent], [child]: val },
       }));
     } else {
-      setSpaceData((prev) => ({ ...prev, [name]: value }));
+      setSpaceData((prev) => ({ ...prev, [name]: val }));
     }
   };
 
@@ -202,6 +240,7 @@ const CreateSpace = () => {
     setSpaceData((prev) => ({
       ...prev,
       images: [...prev.images, ...newImages],
+      coverImage: newImages[0] || null, // first image as cover
     }));
   };
 
@@ -236,9 +275,16 @@ const CreateSpace = () => {
           newErrors.description = "Description is required";
         }
         break;
+
       case 2:
-        if (!spaceData.location.trim()) {
-          newErrors.location = "Address is required";
+        if (!spaceData.location.address.trim()) {
+          newErrors["location.address"] = "Address is required";
+        }
+        if (!spaceData.location.city.trim()) {
+          newErrors["location.city"] = "City is required";
+        }
+        if (!spaceData.location.country.trim()) {
+          newErrors["location.country"] = "Country is required";
         }
         break;
       case 3:
@@ -262,6 +308,11 @@ const CreateSpace = () => {
           newErrors.weekdayPrice = "Please enter a valid price";
         }
         break;
+      // case 8:
+      //   if (!spaceData.category) {
+      //     newErrors.category = "Please select a category";
+      //   }
+      // break;
       default:
         break;
     }
@@ -271,16 +322,48 @@ const CreateSpace = () => {
   };
 
   const handleSubmit = async () => {
+    const token = localStorage.getItem("token");
+    console.log(token);
+
     try {
-      await apiFetch({
-        endpoint: "/properties",
+      const formData = new FormData();
+      formData.append("title", spaceData.title);
+      formData.append("description", spaceData.description);
+      formData.append("category", spaceData.category);
+      formData.append("pricing", JSON.stringify(spaceData.pricing));
+      formData.append("features", JSON.stringify(spaceData.features));
+      formData.append(
+        "bookingSettings",
+        JSON.stringify(spaceData.bookingSettings)
+      );
+      formData.append("location", JSON.stringify(spaceData.location));
+      formData.append("coordinates", JSON.stringify(spaceData.coordinates));
+      formData.append("extras", JSON.stringify(spaceData.extras));
+
+      // Append images (assuming spaceData.images contains File objects)
+      // (spaceData.images || []).forEach((file) =>
+      formData.append("images", spaceData.images);
+      // );
+
+      const res = await fetch("http://localhost:5000/api/properties", {
         method: "POST",
-        body: spaceData,
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ Must be in headers object
+        },
+        body: formData,
         credentials: "include",
       });
-      navigate("/dashboard");
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Failed to create space");
+      }
+      navigate("/");
+
+      return await res.json();
     } catch (err) {
       console.error("Error creating space:", err);
+      throw err;
     }
   };
 
@@ -331,18 +414,48 @@ const CreateSpace = () => {
         {step === 2 && (
           <div>
             <h2 className="text-4xl my-4">Step 2: Location</h2>
+
             <Input
-              label="Address"
-              name="location"
-              value={spaceData.location}
+              placeholder="Address"
+              name="location.address"
+              value={spaceData.location.address}
               onChange={handleChange}
               required
             />
-            {errors.location && (
-              <p className="text-red-500 text-sm mt-1">{errors.location}</p>
+            {errors["location.address"] && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors["location.address"]}
+              </p>
+            )}
+
+            <Input
+              placeholder="City"
+              name="location.city"
+              value={spaceData.location.city}
+              onChange={handleChange}
+              required
+            />
+            {errors["location.city"] && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors["location.city"]}
+              </p>
+            )}
+
+            <Input
+              placeholder="Country"
+              name="location.country"
+              value={spaceData.location.country}
+              onChange={handleChange}
+              required
+            />
+            {errors["location.country"] && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors["location.country"]}
+              </p>
             )}
           </div>
         )}
+
         {step === 3 && (
           <div>
             <h2 className="text-4xl my-4">Step 3: Confirm Location</h2>
@@ -442,20 +555,44 @@ const CreateSpace = () => {
         {step === 5 && (
           <div>
             <h2 className="text-4xl my-4">Step 5: Add Photos</h2>
+
             <Button
               onClick={() => setShowPopup(true)}
               className="mb-4 bg-pink-600 text-white px-4 py-2 rounded-lg"
             >
               Add Photos
             </Button>
+
             {errors.images && (
               <p className="text-red-500 text-sm mt-2">{errors.images}</p>
             )}
+
             {spaceData.images.length > 0 && (
-              <p className="text-green-600 text-sm mt-2">
-                {spaceData.images.length} photo(s) added
-              </p>
+              <div className="mt-4">
+                {/* Image preview grid */}
+                <div className="grid grid-cols-2 gap-3 pb-10 h-[510px] overflow-scroll">
+                  {spaceData.images.map((img, index) => (
+                    <div
+                      key={index}
+                      className={`relative w-full overflow-hidden rounded-lg border border-gray-200 ${
+                        index === 0 ? "col-span-2 h-80" : "h-64"
+                      }`}
+                    >
+                      <img
+                        src={
+                          typeof img === "string"
+                            ? img
+                            : URL.createObjectURL(img)
+                        }
+                        alt={`Uploaded ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
+
             {showPopup && (
               <ImageUploadPopup
                 onClose={() => setShowPopup(false)}
@@ -475,114 +612,488 @@ const CreateSpace = () => {
           </div>
         )}
         {step === 7 && (
-          <div>
-            <h2 className="text-4xl my-4">Step 7: Pricing</h2>
-            <Input
-              label="Weekday Price"
-              name="pricing.weekdayPrice"
-              type="number"
-              value={spaceData.pricing.weekdayPrice}
-              onChange={handleChange}
-              required
-            />
+          <div className="text-center flex flex-col items-center p-6">
+            <h3 className="text-3xl font-semibold mb-2">
+              Set a Weekday Price per Hour
+            </h3>
+            <p className="text-gray-600 mb-6">You can change it anytime.</p>
+
+            <div className="flex items-center justify-center px-6 pt-4 mb-3">
+              <span className="text-4xl font-bold text-blue-600 mr-1 mb-4">
+                £
+              </span>
+              <Input
+                name="pricing.weekdayPrice"
+                type="number"
+                min="0"
+                value={spaceData.pricing.weekdayPrice}
+                onChange={handleChange}
+                required
+                className="border-none bg-transparent text-center text-4xl font-semibold text-blue-600 focus:ring-0 focus:outline-none no-spinner dynamic-width"
+              />
+            </div>
+
             {errors.weekdayPrice && (
               <p className="text-red-500 text-sm mt-1">{errors.weekdayPrice}</p>
             )}
-            <p className="text-gray-600 mt-2">
-              Price before tax: ${spaceData.pricing.weekdayPrice}
+
+            <p className="text-gray-500 mt-2">
+              Price before tax:{" "}
+              <span className="font-medium text-gray-700">
+                £{spaceData.pricing.weekdayPrice || 0}
+              </span>
             </p>
           </div>
         )}
+
         {step === 8 && (
-          <div>
-            <h2 className="text-4xl my-4">Step 8: Booking Settings</h2>
-            <label className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                name="bookingSettings.approveFirstFive"
-                checked={spaceData.bookingSettings.approveFirstFive}
-                onChange={handleChange}
-              />
-              <span className="ml-2">Approve first 5 bookings</span>
-            </label>
-            <label className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                name="bookingSettings.instantBook"
-                checked={spaceData.bookingSettings.instantBook}
-                onChange={handleChange}
-              />
-              <span className="ml-2">Instant Book</span>
-            </label>
-          </div>
-        )}
-        {step === 9 && (
-          <div>
-            <h2 className="text-4xl my-4">Step 9: Discounts</h2>
-            <label className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                name="newListing"
-                checked={spaceData.pricing.discounts.newListing}
-                onChange={handleDiscountChange}
-              />
-              <span className="ml-2">New Listing Promotion (20%)</span>
-            </label>
-            <label className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                name="lastMinute"
-                checked={spaceData.pricing.discounts.lastMinute}
-                onChange={handleDiscountChange}
-              />
-              <span className="ml-2">Last Minute Discount (1%)</span>
-            </label>
-            <label className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                name="weekly"
-                checked={spaceData.pricing.discounts.weekly}
-                onChange={handleDiscountChange}
-              />
-              <span className="ml-2">Weekly Discount (10%)</span>
-            </label>
-            <label className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                name="monthly"
-                checked={spaceData.pricing.discounts.monthly}
-                onChange={handleDiscountChange}
-              />
-              <span className="ml-2">Monthly Discount (20%)</span>
-            </label>
-          </div>
-        )}
-        {step === 10 && (
-          <div>
-            <h2 className="text-4xl my-4">Step 10: Overview</h2>
-            <p>Title: {spaceData.title}</p>
-            <p>Description: {spaceData.description}</p>
-            <p>Location: {spaceData.location}</p>
-            <p>Coordinates: {JSON.stringify(spaceData.coordinates)}</p>
-            <p>Features: {JSON.stringify(spaceData.features)}</p>
-            <p>Extras: {JSON.stringify(spaceData.extras)}</p>
-            <p>Images: {spaceData.images.length} uploaded</p>
-            <p>
-              Pricing: ${spaceData.pricing.weekdayPrice} (pre-tax: $
-              {spaceData.pricing.preTaxPrice})
-            </p>
-            <p>Booking Settings: {JSON.stringify(spaceData.bookingSettings)}</p>
-            <p>Discounts: {JSON.stringify(spaceData.pricing.discounts)}</p>
-            <div className="mt-4 space-x-2">
-              <Button
-                onClick={() => setStep(1)}
-                className="bg-gray-300 px-4 py-2 rounded-lg"
+          <div className="p-6">
+            <h2 className="text-4xl font-semibold mb-2">
+              Price your booking settings
+            </h2>
+            <p className="text-gray-600 mb-6">You can change it anytime.</p>
+
+            <div className="space-y-4">
+              {/* Option 1 - Approve first 5 bookings */}
+              <label
+                className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+                  spaceData.bookingSettings.approveFirstFive
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
+                onClick={() =>
+                  setSpaceData((prev) => ({
+                    ...prev,
+                    bookingSettings: {
+                      approveFirstFive: true,
+                      instantBook: false,
+                    },
+                  }))
+                }
               >
-                Edit
-              </Button>
+                <div className="flex flex-col items-start gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-800">
+                      Approve first 5 bookings
+                    </span>
+                    <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                      Recommended
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-500 mt-1 text-left">
+                    You’ll manually approve your first 5 bookings. After that,
+                    bookings can be automatic.
+                  </p>
+                </div>
+
+                {/* Custom radio */}
+                <div
+                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                    spaceData.bookingSettings.approveFirstFive
+                      ? "border-blue-500"
+                      : "border-gray-300"
+                  }`}
+                >
+                  {spaceData.bookingSettings.approveFirstFive && (
+                    <div className="w-3 h-3 bg-blue-500 rounded-full" />
+                  )}
+                </div>
+              </label>
+
+              {/* Option 2 - Instant Book */}
+              <label
+                className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+                  spaceData.bookingSettings.instantBook
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
+                onClick={() =>
+                  setSpaceData((prev) => ({
+                    ...prev,
+                    bookingSettings: {
+                      approveFirstFive: false,
+                      instantBook: true,
+                    },
+                  }))
+                }
+              >
+                <div className="flex flex-col items-start">
+                  <span className="font-medium text-gray-800">
+                    Instant Book
+                  </span>
+                  <p className="text-sm text-gray-500 mt-1 text-left">
+                    Guests can book instantly without needing your approval.
+                  </p>
+                </div>
+
+                {/* Custom radio */}
+                <div
+                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                    spaceData.bookingSettings.instantBook
+                      ? "border-blue-500"
+                      : "border-gray-300"
+                  }`}
+                >
+                  {spaceData.bookingSettings.instantBook && (
+                    <div className="w-3 h-3 bg-blue-500 rounded-full" />
+                  )}
+                </div>
+              </label>
             </div>
           </div>
         )}
+
+        {step === 9 && (
+          <div className="p-6">
+            <h2 className="text-4xl font-semibold mb-2">
+              Set up your discounts
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Encourage more bookings with discounts.
+            </p>
+
+            <div className="space-y-4">
+              {/* New Listing Promotion */}
+              <label
+                className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+                  spaceData.pricing.discounts.newListing
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
+                onClick={() =>
+                  handleDiscountChange({
+                    target: {
+                      name: "newListing",
+                      checked: !spaceData.pricing.discounts.newListing,
+                    },
+                  })
+                }
+              >
+                <div className="flex flex-col items-start">
+                  <span className="font-medium text-gray-800">
+                    New Listing Promotion (20%)
+                  </span>
+                  <p className="text-sm text-gray-500 mt-1 text-left">
+                    Get noticed faster with an automatic 20% discount on your
+                    first few bookings.
+                  </p>
+                </div>
+
+                {/* Custom checkbox */}
+                <div
+                  className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+                    spaceData.pricing.discounts.newListing
+                      ? "border-blue-500 bg-blue-500"
+                      : "border-gray-300"
+                  }`}
+                >
+                  {spaceData.pricing.discounts.newListing && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-3 h-3 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={3}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  )}
+                </div>
+              </label>
+
+              {/* Last Minute Discount */}
+              <label
+                className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+                  spaceData.pricing.discounts.lastMinute
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
+                onClick={() =>
+                  handleDiscountChange({
+                    target: {
+                      name: "lastMinute",
+                      checked: !spaceData.pricing.discounts.lastMinute,
+                    },
+                  })
+                }
+              >
+                <div className="flex flex-col items-start">
+                  <span className="font-medium text-gray-800">
+                    Last Minute Discount (1%)
+                  </span>
+                  <p className="text-sm text-gray-500 mt-1 text-left">
+                    Offer small savings for guests booking within a few days of
+                    arrival.
+                  </p>
+                </div>
+
+                <div
+                  className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+                    spaceData.pricing.discounts.lastMinute
+                      ? "border-blue-500 bg-blue-500"
+                      : "border-gray-300"
+                  }`}
+                >
+                  {spaceData.pricing.discounts.lastMinute && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-3 h-3 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={3}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  )}
+                </div>
+              </label>
+
+              {/* Weekly Discount */}
+              <label
+                className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+                  spaceData.pricing.discounts.weekly
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
+                onClick={() =>
+                  handleDiscountChange({
+                    target: {
+                      name: "weekly",
+                      checked: !spaceData.pricing.discounts.weekly,
+                    },
+                  })
+                }
+              >
+                <div className="flex flex-col items-start">
+                  <span className="font-medium text-gray-800">
+                    Weekly Discount (10%)
+                  </span>
+                  <p className="text-sm text-gray-500 mt-1 text-left">
+                    Reward guests who stay for 7 nights or more.
+                  </p>
+                </div>
+
+                <div
+                  className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+                    spaceData.pricing.discounts.weekly
+                      ? "border-blue-500 bg-blue-500"
+                      : "border-gray-300"
+                  }`}
+                >
+                  {spaceData.pricing.discounts.weekly && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-3 h-3 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={3}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  )}
+                </div>
+              </label>
+
+              {/* Monthly Discount */}
+              <label
+                className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+                  spaceData.pricing.discounts.monthly
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
+                onClick={() =>
+                  handleDiscountChange({
+                    target: {
+                      name: "monthly",
+                      checked: !spaceData.pricing.discounts.monthly,
+                    },
+                  })
+                }
+              >
+                <div className="flex flex-col items-start">
+                  <span className="font-medium text-gray-800">
+                    Monthly Discount (20%)
+                  </span>
+                  <p className="text-sm text-gray-500 mt-1 text-left">
+                    Attract long-term stays with generous monthly savings.
+                  </p>
+                </div>
+
+                <div
+                  className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+                    spaceData.pricing.discounts.monthly
+                      ? "border-blue-500 bg-blue-500"
+                      : "border-gray-300"
+                  }`}
+                >
+                  {spaceData.pricing.discounts.monthly && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-3 h-3 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={3}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  )}
+                </div>
+              </label>
+            </div>
+          </div>
+        )}
+
+        {step === 10 && (
+          <div>
+            <h2 className="text-4xl my-4">Category</h2>
+            <p className="text-gray-600 mb-4">What type of space is this?</p>
+            <div className="grid grid-cols-2 gap-4">
+              {categories.map((cat) => (
+                <label
+                  key={cat._id}
+                  className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+                    spaceData.category === cat._id
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                  onClick={() => {
+                    setSpaceData((prev) => ({ ...prev, category: cat._id }));
+                    setErrors((prev) => ({ ...prev, category: "" }));
+                  }}
+                >
+                  <span className="font-medium text-gray-800">{cat.name}</span>
+                  <div
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                      spaceData.category === cat._id
+                        ? "border-blue-500"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    {spaceData.category === cat._id && (
+                      <div className="w-3 h-3 bg-blue-500 rounded-full" />
+                    )}
+                  </div>
+                </label>
+              ))}
+            </div>
+            {errors.category && (
+              <p className="text-red-500 text-sm mt-2">{errors.category}</p>
+            )}
+          </div>
+        )}
+
+        {/* {step === 10 && (
+          <div className="p-6">
+            <h2 className="text-4xl font-semibold mb-2">Overview</h2>
+            <p className="text-gray-600 mb-6">
+              Review your property details before publishing.
+            </p>
+
+            <div className="space-y-4">
+              <div className="p-4 border rounded-xl">
+                <h3 className="font-semibold text-lg mb-2 text-gray-800">
+                  Basic Information
+                </h3>
+                <p className="text-gray-700">
+                  <strong>Title:</strong> {spaceData.title}
+                </p>
+                <p className="text-gray-700">
+                  <strong>Description:</strong> {spaceData.description}
+                </p>
+                <p className="text-gray-700">
+                  <strong>Location:</strong> {spaceData.location}
+                </p>
+                <p className="text-gray-700">
+                  <strong>Coordinates:</strong>{" "}
+                  {JSON.stringify(spaceData.coordinates)}
+                </p>
+              </div>
+
+              <div className="p-4 border rounded-xl">
+                <h3 className="font-semibold text-lg mb-2 text-gray-800">
+                  Amenities & Extras
+                </h3>
+                <p className="text-gray-700">
+                  <strong>Features:</strong>{" "}
+                  {JSON.stringify(spaceData.features)}
+                </p>
+                <p className="text-gray-700">
+                  <strong>Extras:</strong> {JSON.stringify(spaceData.extras)}
+                </p>
+                <p className="text-gray-700">
+                  <strong>Images:</strong> {spaceData.images.length} uploaded
+                </p>
+              </div>
+
+              <div className="p-4 border rounded-xl">
+                <h3 className="font-semibold text-lg mb-2 text-gray-800">
+                  Pricing
+                </h3>
+                <p className="text-gray-700">
+                  <strong>Weekday Price:</strong> $
+                  {spaceData.pricing.weekdayPrice}
+                </p>
+                <p className="text-gray-700">
+                  <strong>Pre-tax Price:</strong> $
+                  {spaceData.pricing.preTaxPrice}
+                </p>
+              </div>
+
+              <div className="p-4 border rounded-xl">
+                <h3 className="font-semibold text-lg mb-2 text-gray-800">
+                  Booking Settings
+                </h3>
+                <pre className="bg-gray-50 text-gray-700 text-sm rounded-lg p-2 overflow-x-auto">
+                  {JSON.stringify(spaceData.bookingSettings, null, 2)}
+                </pre>
+              </div>
+
+              <div className="p-4 border rounded-xl">
+                <h3 className="font-semibold text-lg mb-2 text-gray-800">
+                  Discounts
+                </h3>
+                <pre className="bg-gray-50 text-gray-700 text-sm rounded-lg p-2 overflow-x-auto">
+                  {JSON.stringify(spaceData.pricing.discounts, null, 2)}
+                </pre>
+              </div>
+            </div>
+
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => setStep(1)}
+                className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-5 py-2 rounded-lg border border-gray-300 transition-all"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => alert("Submitting property...")}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-lg transition-all"
+              >
+                Submit Property
+              </button>
+            </div>
+          </div>
+        )} */}
       </div>
       <div>
         <ProgressBar step={step} totalSteps={totalSteps} />

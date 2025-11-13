@@ -11,7 +11,7 @@ const ImageReorder = ({ images, onReorder, onAddMore }) => {
   };
 
   return (
-    <div className="grid grid-cols-3 gap-2 mb-4">
+    <div className="grid grid-cols-2 gap-2 mb-4 pb-10 h-[600px] overflow-scroll">
       {images.map((img, index) => (
         <div
           key={index}
@@ -19,7 +19,11 @@ const ImageReorder = ({ images, onReorder, onAddMore }) => {
           onDragStart={(e) => handleDragStart(e, index)}
           onDragOver={(e) => e.preventDefault()}
           onDrop={(e) => handleDrop(e, index)}
-          className="relative w-full h-40 bg-gray-200 rounded-lg overflow-hidden"
+          className={`relative w-full rounded-lg overflow-hidden border border-gray-300 ${
+            index === 0
+              ? "col-span-2 h-80" // First image spans all columns
+              : "h-64"
+          }`}
         >
           <img
             src={img}
@@ -33,11 +37,12 @@ const ImageReorder = ({ images, onReorder, onAddMore }) => {
           )}
         </div>
       ))}
+
       <button
         onClick={onAddMore}
-        className="w-full h-40 bg-gray-200 rounded-lg flex items-center justify-center text-pink-600 hover:bg-gray-300"
+        className="w-full h-40 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center text-pink-600 hover:bg-gray-200"
       >
-        Add More
+        + Add More
       </button>
     </div>
   );

@@ -24,7 +24,8 @@ const PropertyDetails = () => {
           method: "GET",
           cacheable: true,
         });
-        setProperty(data);
+        setProperty(data.property);
+        console.log(data.property);
         setError("");
       } catch (err) {
         setError(err.message || "Failed to load property details.");
@@ -83,16 +84,21 @@ const PropertyDetails = () => {
             <div className="sticky top-8 space-y-6">
               <div>
                 <h1 className="text-4xl mb-2">{property.title}</h1>
-                <p className="text-gray-600 mb-2">{property.location}</p>
+                <p className="text-gray-600 mb-2">
+                  {property.location.address}, {property.location.city},{" "}
+                  {property.location.country}
+                </p>
                 <div className="flex items-center mb-2">
                   <span className="text-yellow-500">
                     ★ {property.rating.toFixed(1)}
                   </span>
                   <span className="text-gray-600 ml-2">
-                    ({property.reviews.length} reviews)
+                    {/* ({property.reviews.length} reviews) */}
                   </span>
                 </div>
-                <p className="text-2xl">${property.price_per_hour} / night</p>
+                <p className="text-2xl">
+                  ${property.pricing?.weekdayPrice} / night
+                </p>
               </div>
 
               <BookingForm
@@ -103,8 +109,8 @@ const PropertyDetails = () => {
           </div>
         </div>
         <PropertyDescription data={property.description} />
-        <PropertyOffers data={property.amenities} />
-        <PropertyLocation data={property.location} />
+        <PropertyOffers data={property.features} />
+        <PropertyLocation data={property.coordinates} />
         <ReviewsSection reviews={property.reviews} />
         {/* Host and Reviews */}
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -119,7 +125,9 @@ const PropertyDetails = () => {
                   className="h-32 w-32 rounded-full"
                 />
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold mb-4">Luca Daniel</h3>
+                  <h3 className="text-xl font-semibold mb-4">
+                    {property.host.name}
+                  </h3>
                   <div className="flex justify-between">
                     <p className="text-xs border-r pr-2">
                       <span className="block font-semibold text-sm">334</span>

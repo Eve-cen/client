@@ -8,36 +8,44 @@ import "swiper/css/pagination";
 import CategoryCard from "./CategoryCard";
 
 const CategoryList = ({ categories = [], onSelect }) => {
+  const hasCategories = Array.isArray(categories) && categories.length > 0;
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <h2 className="text-3xl text-gray-900 mb-8">Popular Categories</h2>
 
-      <Swiper
-        modules={[Navigation, Pagination, Autoplay]}
-        spaceBetween={20}
-        slidesPerView={1}
-        navigation
-        autoplay={{ delay: 3000 }}
-        loop={true}
-        breakpoints={{
-          640: { slidesPerView: 2 },
-          1024: { slidesPerView: 3 },
-          1280: { slidesPerView: 4 },
-        }}
-      >
-        {categories.map((card) => (
-          <SwiperSlide key={card.id}>
-            <CategoryCard
-              id={card.id}
-              imageUrl={card.image}
-              title={card.name}
-              buttonText={card.buttonText}
-              description={card.description}
-              onClick={() => onSelect?.(card)} // ✅ optional chaining
-            />
-          </SwiperSlide>
-        ))}
-      </Swiper>
+      {hasCategories ? (
+        <Swiper
+          modules={[Navigation, Pagination, Autoplay]}
+          spaceBetween={20}
+          slidesPerView={1}
+          navigation
+          autoplay={{ delay: 3000 }}
+          loop={true}
+          breakpoints={{
+            640: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
+            1280: { slidesPerView: 4 },
+          }}
+        >
+          {categories.map((card) => (
+            <SwiperSlide key={card.id}>
+              <CategoryCard
+                id={card.id}
+                imageUrl={card.image}
+                title={card.name}
+                buttonText={card.buttonText}
+                description={card.description}
+                onClick={() => onSelect?.(card)} // ✅ optional chaining
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      ) : (
+        <p className="text-gray-600 text-lg text-center mt-10">
+          No categories available at the moment.
+        </p>
+      )}
     </div>
   );
 };

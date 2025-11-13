@@ -9,7 +9,7 @@ export default function PropertyLocation({ data }) {
       {coords ? (
         <iframe
           src={`https://www.google.com/maps?q=${coords.lat},${coords.lng}&z=13&output=embed`}
-          className="w-full h-64 rounded-lg border"
+          className="w-full h-80 rounded-lg"
           allowFullScreen=""
           loading="lazy"
         ></iframe>

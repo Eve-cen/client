@@ -44,7 +44,7 @@ const ImageUploadPopup = ({ onClose, onUpload }) => {
             type="file"
             multiple
             onChange={handleBrowse}
-            className="hidden"
+            // className="hidden"
           />
         </div>
         <div className="grid grid-cols-3 gap-2 mb-4">
