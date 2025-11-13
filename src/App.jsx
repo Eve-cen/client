@@ -17,6 +17,8 @@ import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import CreateSpace from "./pages/CreateSpace";
 import MyListings from "./pages/MyListings";
+import HostProfile from "./pages/HostProfile";
+import CategoryPage from "./pages/CategoryPage";
 
 function AppContent() {
   const location = useLocation();
@@ -43,7 +45,9 @@ function AppContent() {
           <Route path="/settings/*" element={<Settings />} />
           <Route path="/profile/*" element={<Profile />} />
           <Route path="/property/:id" element={<PropertyDetails />} />
+          <Route path="/category/:id" element={<CategoryPage />} />
           <Route path="/my-listings" element={<MyListings />} />
+          <Route path="/host/:id" element={<HostProfile />} />
           <Route path="/" element={<Homepage />} />
           <Route path="*" element={<h1>404 - Page Not Found</h1>} />
         </Routes>

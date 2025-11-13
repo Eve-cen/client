@@ -5,7 +5,7 @@ const CategoryCard = ({ id, imageUrl, title, description, buttonText }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/property/${id}`);
+    navigate(`/category/${id}`);
   };
   return (
     <div className="min-h-[500px] relative w-full rounded-[16px] overflow-hidden shadow-lg bg-white">

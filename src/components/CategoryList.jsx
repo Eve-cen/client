@@ -29,9 +29,9 @@ const CategoryList = ({ categories = [], onSelect }) => {
           }}
         >
           {categories.map((card) => (
-            <SwiperSlide key={card.id}>
+            <SwiperSlide key={card._id}>
               <CategoryCard
-                id={card.id}
+                id={card._id}
                 imageUrl={card.image}
                 title={card.name}
                 buttonText={card.buttonText}

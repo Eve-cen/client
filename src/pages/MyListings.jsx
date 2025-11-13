@@ -60,12 +60,7 @@ const MyListings = () => {
     }
   };
 
-  console.log(properties);
-  console.log(currentUser);
-
   const userProperties = properties.filter((p) => p.host._id === currentUser);
-
-  console.log("user", userProperties);
 
   const handleEdit = (property) => {
     setEditingProperty(property);

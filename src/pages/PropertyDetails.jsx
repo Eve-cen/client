@@ -9,11 +9,13 @@ import PropertyOffers from "../components/PropertyOffers";
 import PropertyLocation from "../components/Location";
 import Button from "../components/Button";
 import ChatBox from "../components/Chatbox";
+import HostCard from "../components/HostCard";
 
 const PropertyDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [property, setProperty] = useState(null);
+  const [host, setHost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showChat, setShowChat] = useState(false);
   const [error, setError] = useState("");
@@ -28,7 +30,12 @@ const PropertyDetails = () => {
           cacheable: true,
         });
         setProperty(data.property);
-        console.log(data.property);
+        console.log(data.property.host._id);
+        const hostData = await apiFetch({
+          endpoint: `/hosts/${data.property.host._id}`,
+        });
+        setHost(hostData);
+        console.log(hostData);
         setError("");
       } catch (err) {
         setError(err.message || "Failed to load property details.");
@@ -133,65 +140,7 @@ const PropertyDetails = () => {
         <PropertyOffers data={property.features} />
         <PropertyLocation data={property.coordinates} />
         <ReviewsSection reviews={property.reviews} />
-        {/* Host and Reviews */}
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-5 gap-6">
-          <div className="col-span-2">
-            <h3 className="text-xl font-semibold mb-4">Meet your host</h3>
-
-            <div className="flex flex-col gap-3 bg-white p-6 rounded-lg shadow-md">
-              <div className="flex gap-3">
-                <img
-                  src="../src/assets/hero-bg.jpg"
-                  alt=""
-                  className="h-32 w-32 rounded-full"
-                />
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold mb-4">
-                    {property.host.name}
-                  </h3>
-                  <div className="flex justify-between">
-                    <p className="text-xs border-r pr-2">
-                      <span className="block font-semibold text-sm">334</span>
-                      Reviews
-                    </p>
-                    <p className="text-xs border-r pr-2">
-                      <span className="block font-semibold text-sm">334</span>
-                      Reviews
-                    </p>
-                    <p className="text-xs">
-                      <span className="block font-semibold text-sm">334</span>
-                      Reviews
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <p>
-                I have lived in central London all my life, and work with the
-                local community. I enjoy socialising, travelling, theatre, good
-                restaurants and meeting new people. We would love to have you in
-                our family home during your stay in London.
-              </p>
-            </div>
-          </div>
-          <div className="col-span-3 flex flex-col gap-6">
-            <div>
-              <h3 className="text-xl font-semibold mb-4">
-                Luca is a Superhost
-              </h3>
-              <p>
-                Superhosts are experienced, highly rated hosts who are committed
-                to providing great stays for guests.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Host details</h3>
-              <p>
-                Response rate: 70% <br /> Responds within a few hours
-              </p>
-            </div>
-          </div>
-          <div className="lg:col-span-2"></div>
-        </div>
+        <div className="mt-10">{host && <HostCard host={host} />}</div>
       </div>
     </div>
   );
