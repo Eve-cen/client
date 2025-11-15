@@ -30,12 +30,10 @@ const PropertyDetails = () => {
           cacheable: true,
         });
         setProperty(data.property);
-        console.log(data.property.host._id);
         const hostData = await apiFetch({
           endpoint: `/hosts/${data.property.host._id}`,
         });
         setHost(hostData);
-        console.log(hostData);
         setError("");
       } catch (err) {
         setError(err.message || "Failed to load property details.");
@@ -71,15 +69,15 @@ const PropertyDetails = () => {
     );
   }
 
-  const images = [property.images].concat(
-    Array(4)
-      .fill()
-      .map(
-        () =>
-          property.image ||
-          "https://images.squarespace-cdn.com/content/v1/5b850dd4da02bc525570db40/1570534941146-CSQDPR3G9L8RGMG47OZ5/002.jpg?format=2500w"
-      )
-  );
+  // const images = [property.images].concat(
+  //   Array(4)
+  //     .fill()
+  //     .map(
+  //       () =>
+  //         property.image ||
+  //         "https://images.squarespace-cdn.com/content/v1/5b850dd4da02bc525570db40/1570534941146-CSQDPR3G9L8RGMG47OZ5/002.jpg?format=2500w"
+  //     )
+  // );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -87,7 +85,10 @@ const PropertyDetails = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
           {/* Gallery */}
           <div className="lg:col-span-2">
-            <ImageGallery images={images} />
+            <ImageGallery
+              coverImage={property.coverImage}
+              images={property.images}
+            />
           </div>
 
           {/* Details and Booking */}

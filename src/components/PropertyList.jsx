@@ -14,7 +14,9 @@ const Featured = ({ properties }) => {
             <Card
               key={property._id}
               id={property._id}
-              image={property.image}
+              image={
+                property.coverImage || (property.images && property.images[0])
+              } // main image
               title={property.title}
               price={property.pricing?.weekdayPrice}
               rating={property.rating}

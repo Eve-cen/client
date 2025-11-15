@@ -30,14 +30,14 @@ const Profile = () => {
             cacheable: true,
             credentials: "include",
           }),
-          apiFetch({
-            endpoint: "/bookings/past",
-            method: "GET",
-            credentials: "include",
-          }),
+          // apiFetch({
+          //   endpoint: "/bookings/past",
+          //   method: "GET",
+          //   credentials: "include",
+          // }),
         ]);
         setUser(userData);
-        setPastTrips(tripsData);
+        // setPastTrips(tripsData);
 
         const userReviews = await apiFetch({
           endpoint: "/auth/me",
@@ -84,9 +84,9 @@ const Profile = () => {
       method: "PUT",
       credentials: "include",
     });
-    setPastTrips(
-      pastTrips.map((t) => (t._id === tripId ? { ...t, reviewed: true } : t))
-    );
+    // setPastTrips(
+    //   pastTrips.map((t) => (t._id === tripId ? { ...t, reviewed: true } : t))
+    // );
   };
 
   const handleBookAgain = (propertyId) => {
