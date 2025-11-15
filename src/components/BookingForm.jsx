@@ -4,9 +4,15 @@ import { addDays, differenceInDays } from "date-fns";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import Button from "./Button"; // adjust if needed
+import { apiFetch } from "../utils/api";
+import { useNavigate } from "react-router-dom";
 
-export default function BookingForm({ pricing }) {
+export default function BookingForm({ property }) {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [guests, setGuests] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [countdown, setCountdown] = useState(5);
   const [range, setRange] = useState([
     {
       startDate: new Date(),
@@ -21,7 +27,7 @@ export default function BookingForm({ pricing }) {
   });
 
   const nights = differenceInDays(range[0].endDate, range[0].startDate);
-  const pricePerNight = pricing; // example
+  const pricePerNight = property.pricing.weekdayPrice; // example
   const totalPrice = nights * pricePerNight;
 
   const generateTimes = () => {
@@ -43,13 +49,46 @@ export default function BookingForm({ pricing }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      alert("Booking successful!");
+    try {
+      const booking = await apiFetch({
+        endpoint: "/bookings",
+        method: "POST",
+        body: {
+          propertyId: property._id,
+          checkIn: range[0].startDate,
+          checkOut: range[0].endDate,
+          guests,
+          extras: [
+            { name: "Projector", price: 50 },
+            { name: "Sound System", price: 50 },
+            { name: "Catering Available", price: 50 },
+          ],
+        },
+        credentials: "include",
+      });
+      setShowModal(true);
+
+      // Start countdown
+      const interval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            setShowModal(false);
+            navigate("/my-bookings", { replace: true });
+            window.location.reload(); // Reload homepage
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } catch (err) {
+      console.error("Booking error:", err);
+      alert("Booking failed: " + (err.message || "Unknown error"));
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -126,12 +165,54 @@ export default function BookingForm({ pricing }) {
           Total: ${totalPrice} ({nights} nights)
         </p>
 
+        <div className="my-4">
+          <label className="block mb-1 font-medium">Guests:</label>
+          <input
+            type="number"
+            min="1"
+            value={guests}
+            onChange={(e) => setGuests(Number(e.target.value))}
+            className="border px-3 py-2 rounded w-full"
+          />
+        </div>
+
         <Button
           type="submit"
           disabled={loading || nights <= 0}
           children={loading ? "Booking..." : "Book Now"}
         />
       </form>
+      {showModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              padding: "2rem",
+              borderRadius: "8px",
+              textAlign: "center",
+              minWidth: "300px",
+            }}
+          >
+            <h2>Your booking is successfully created!</h2>
+            <p>
+              Redirecting in {countdown} second{countdown > 1 ? "s" : ""}...
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

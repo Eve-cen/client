@@ -19,6 +19,8 @@ import CreateSpace from "./pages/CreateSpace";
 import MyListings from "./pages/MyListings";
 import HostProfile from "./pages/HostProfile";
 import CategoryPage from "./pages/CategoryPage";
+import HostBookings from "./pages/HostBookings";
+import MyBookings from "./pages/MyBookings";
 
 function AppContent() {
   const location = useLocation();
@@ -48,6 +50,8 @@ function AppContent() {
           <Route path="/category/:id" element={<CategoryPage />} />
           <Route path="/my-listings" element={<MyListings />} />
           <Route path="/host/:id" element={<HostProfile />} />
+          <Route path="/host/bookings" element={<HostBookings />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/" element={<Homepage />} />
           <Route path="*" element={<h1>404 - Page Not Found</h1>} />
         </Routes>

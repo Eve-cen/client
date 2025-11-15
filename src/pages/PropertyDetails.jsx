@@ -81,8 +81,6 @@ const PropertyDetails = () => {
       )
   );
 
-  console.log(images);
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -114,10 +112,7 @@ const PropertyDetails = () => {
                 </p>
               </div>
 
-              <BookingForm
-                propertyId={property._id}
-                pricing={property.pricing.weekdayPrice}
-              />
+              <BookingForm propertyId={property._id} property={property} />
               {/* {user && user._id !== property.host._id && ( */}
               <Button
                 onClick={() => setShowChat(true)}

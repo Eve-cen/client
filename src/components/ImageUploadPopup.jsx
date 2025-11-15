@@ -1,8 +1,16 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function UploadModal({ onClose, onUpload }) {
-  const [images, setImages] = useState([]);
+  const [imageFiles, setImageFiles] = useState([]); // ✅ Store File objects
+  const [imagePreviews, setImagePreviews] = useState([]); // ✅ Store blob URLs for preview
   const fileInputRef = useRef(null);
+
+  // Clean up blob URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      imagePreviews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [imagePreviews]);
 
   // Handle drag and drop
   const handleDrop = (e) => {
@@ -10,26 +18,54 @@ export default function UploadModal({ onClose, onUpload }) {
     const files = Array.from(e.dataTransfer.files).filter((file) =>
       file.type.startsWith("image/")
     );
-    setImages((prev) => [
-      ...prev,
-      ...files.map((file) => URL.createObjectURL(file)),
-    ]);
+
+    if (files.length === 0) return;
+
+    // Create preview URLs
+    const newPreviews = files.map((file) => URL.createObjectURL(file));
+
+    setImageFiles((prev) => [...prev, ...files]);
+    setImagePreviews((prev) => [...prev, ...newPreviews]);
   };
 
   const handleBrowse = (e) => {
     const files = Array.from(e.target.files).filter((file) =>
       file.type.startsWith("image/")
     );
-    setImages((prev) => [
-      ...prev,
-      ...files.map((file) => URL.createObjectURL(file)),
-    ]);
+
+    if (files.length === 0) return;
+
+    // Create preview URLs
+    const newPreviews = files.map((file) => URL.createObjectURL(file));
+
+    setImageFiles((prev) => [...prev, ...files]);
+    setImagePreviews((prev) => [...prev, ...newPreviews]);
+
+    // Reset input
+    e.target.value = "";
+  };
+
+  const handleRemoveImage = (index) => {
+    // Revoke blob URL to free memory
+    URL.revokeObjectURL(imagePreviews[index]);
+
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleUpload = () => {
-    if (onUpload) {
-      onUpload(images);
+    if (imageFiles.length === 0) {
+      alert("Please select at least one image");
+      return;
     }
+
+    if (onUpload) {
+      onUpload(imageFiles); // ✅ Pass File objects, not blob URLs
+    }
+
+    // Clean up blob URLs
+    imagePreviews.forEach((url) => URL.revokeObjectURL(url));
+
     onClose();
   };
 
@@ -40,11 +76,13 @@ export default function UploadModal({ onClose, onUpload }) {
         <div
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
-          className="border-2 border-dashed border-gray-300 p-4 mb-4 text-center cursor-pointer"
+          className="border-2 border-dashed border-gray-300 p-4 mb-4 text-center cursor-pointer hover:border-pink-600 transition-colors"
           onClick={() => fileInputRef.current.click()}
         >
-          Drag and drop images here, or{" "}
-          <span className="text-pink-600 cursor-pointer">browse</span>
+          <p className="text-gray-600">
+            Drag and drop images here, or{" "}
+            <span className="text-pink-600 font-semibold">browse</span>
+          </p>
           <input
             type="file"
             multiple
@@ -55,29 +93,50 @@ export default function UploadModal({ onClose, onUpload }) {
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          {images.map((img, index) => (
-            <img
-              key={index}
-              src={img}
-              alt="Upload preview"
-              className="w-full h-20 object-cover rounded"
-            />
-          ))}
-        </div>
+        {imagePreviews.length > 0 && (
+          <div className="grid grid-cols-3 gap-2 mb-4 max-h-60 overflow-y-auto">
+            {imagePreviews.map((preview, index) => (
+              <div key={index} className="relative group">
+                <img
+                  src={preview}
+                  alt={`Upload preview ${index + 1}`}
+                  className="w-full h-20 object-cover rounded"
+                />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveImage(index);
+                  }}
+                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  title="Remove image"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {imagePreviews.length > 0 && (
+          <p className="text-sm text-gray-600 mb-4">
+            {imagePreviews.length} image{imagePreviews.length !== 1 ? "s" : ""}{" "}
+            selected
+          </p>
+        )}
 
         <div className="flex justify-end space-x-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-300 rounded-lg"
+            className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleUpload}
-            className="px-4 py-2 bg-pink-600 text-white rounded-lg"
+            disabled={imageFiles.length === 0}
+            className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
           >
-            Upload
+            Upload ({imageFiles.length})
           </button>
         </div>
       </div>

@@ -43,9 +43,10 @@ const CreateSpace = () => {
       { name: "Sound System", price: 50 },
       { name: "Catering Available", price: 50 },
     ],
-    images: [], // will hold File objects when user uploads
-    coverImage: null,
-    category: "68e580e8aab6d97fb626b85e",
+    imageFiles: [], // ✅ Actual File objects
+    imagePreviews: [], // ✅ Blob URLs for preview
+    coverImage: null, // ✅ Preview URL of cover image
+    category: "6915bd724f4f95223e555e57",
     price: 750,
     pricing: {
       weekdayPrice: 560,
@@ -238,18 +239,33 @@ const CreateSpace = () => {
 
   const handleImageUpload = (newImages) => {
     setErrors((prev) => ({ ...prev, images: "" }));
+    console.log(newImages);
+
+    // Create preview URLs for the new images
+    const newPreviews = newImages.map((file) => URL.createObjectURL(file));
+
     setSpaceData((prev) => ({
       ...prev,
-      images: [...prev.images, ...newImages],
-      coverImage: newImages[0] || null, // first image as cover
+      imageFiles: [...(prev.imageFiles || []), ...newImages], // Store File objects
+      imagePreviews: [...(prev.imagePreviews || []), ...newPreviews], // Store preview URLs
+      coverImage: prev.coverImage || newPreviews[0] || null, // Keep existing cover or use first new image
     }));
   };
 
-  const handleImageReorder = (newImages) => {
+  const handleImageReorder = (reorderedPreviews) => {
+    // Find the new order of indices
+    const newOrder = reorderedPreviews.map((preview) =>
+      spaceData.imagePreviews.indexOf(preview)
+    );
+
+    // Reorder both imageFiles and imagePreviews based on new order
+    const reorderedFiles = newOrder.map((index) => spaceData.imageFiles[index]);
+
     setSpaceData((prev) => ({
       ...prev,
-      images: newImages,
-      coverImage: newImages[0],
+      imageFiles: reorderedFiles,
+      imagePreviews: reorderedPreviews,
+      coverImage: reorderedPreviews[0] || null, // First image becomes cover
     }));
   };
 
@@ -297,7 +313,7 @@ const CreateSpace = () => {
         }
         break;
       case 5:
-        if (spaceData.images.length === 0) {
+        if (spaceData.imagePreviews.length === 0) {
           newErrors.images = "Please add at least one photo";
         }
         break;
@@ -323,8 +339,6 @@ const CreateSpace = () => {
   };
 
   const handleSubmit = async () => {
-    const token = localStorage.getItem("token");
-
     try {
       const formData = new FormData();
       formData.append("title", spaceData.title);
@@ -340,15 +354,16 @@ const CreateSpace = () => {
       formData.append("coordinates", JSON.stringify(spaceData.coordinates));
       formData.append("extras", JSON.stringify(spaceData.extras));
 
-      // Append images (assuming spaceData.images contains File objects)
-      // (spaceData.images || []).forEach((file) =>
-      formData.append("images", spaceData.images);
-      // );
+      // ✅ FIXED: Added missing closing parenthesis
+      (spaceData.imageFiles || []).forEach((file) =>
+        formData.append("images", file)
+      );
 
+      const token = localStorage.getItem("token");
       const res = await fetch("http://localhost:5000/api/properties", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`, // ✅ Must be in headers object
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
         credentials: "include",
@@ -358,6 +373,7 @@ const CreateSpace = () => {
         const error = await res.json();
         throw new Error(error.message || "Failed to create space");
       }
+
       setShowModal(true);
 
       // Start countdown
@@ -367,7 +383,6 @@ const CreateSpace = () => {
             clearInterval(interval);
             setShowModal(false);
             navigate("/", { replace: true });
-            window.location.reload(); // Reload homepage
           }
           return prev - 1;
         });
@@ -580,11 +595,11 @@ const CreateSpace = () => {
               <p className="text-red-500 text-sm mt-2">{errors.images}</p>
             )}
 
-            {spaceData.images.length > 0 && (
+            {spaceData.imagePreviews.length > 0 && (
               <div className="mt-4">
                 {/* Image preview grid */}
                 <div className="grid grid-cols-2 gap-3 pb-10 h-[510px] overflow-scroll">
-                  {spaceData.images.map((img, index) => (
+                  {spaceData.imagePreviews.map((img, index) => (
                     <div
                       key={index}
                       className={`relative w-full overflow-hidden rounded-lg border border-gray-200 ${
@@ -618,7 +633,7 @@ const CreateSpace = () => {
           <div>
             <h2 className="text-4xl my-4">Step 6: Rearrange Images</h2>
             <ImageReorder
-              images={spaceData.images}
+              images={spaceData.imagePreviews} // ✅ Use imagePreviews for display
               onReorder={handleImageReorder}
               onAddMore={() => setShowPopup(true)}
             />
