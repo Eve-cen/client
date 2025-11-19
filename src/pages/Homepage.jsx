@@ -4,6 +4,9 @@ import CategoryList from "../components/CategoryList";
 import Hero from "../components/Hero"; // Updated
 import { useNavigate, useLocation } from "react-router-dom";
 import { apiFetch } from "../utils/api";
+import Testimonials from "../components/Testimonials";
+import Newsletter from "../components/Newsletter";
+import Footer from "../components/Footer";
 
 const Home = () => {
   const [properties, setProperties] = useState([]);
@@ -106,6 +109,9 @@ const Home = () => {
           </div>
         </>
       )}
+      <Testimonials />
+      <Newsletter />
+      <Footer />
     </div>
   );
 };
