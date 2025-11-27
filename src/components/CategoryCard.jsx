@@ -19,7 +19,7 @@ const CategoryCard = ({ id, imageUrl, title, description, buttonText }) => {
 
       {/* Text Content */}
       <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-        <h2 className="text-4xl font-semibold mb-2">{title}</h2>
+        <h2 className="text-2xl font-semibold mb-2">{title}</h2>
         <p className="text-sm mb-6">{description}</p>
 
         {/* Button */}

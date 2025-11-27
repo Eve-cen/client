@@ -37,7 +37,7 @@ export default function Footer() {
                 <a href="#">Press</a>
               </li>
               <li>
-                <a href="#">Blog</a>
+                <a href="/blogs">Blog</a>
               </li>
               <li>
                 <a href="#">Partners</a>

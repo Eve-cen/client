@@ -31,7 +31,7 @@ const PropertyCard = ({ property, onEdit, onDelete }) => {
         <div className="mt-4 flex space-x-2">
           <Button
             onClick={() => navigate(`/property/${property._id}`)}
-            className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200"
+            className="flex-1 bg-gray-400 text-gray-700 hover:bg-gray-200"
           >
             View
           </Button>

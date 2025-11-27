@@ -21,6 +21,9 @@ import HostProfile from "./pages/HostProfile";
 import CategoryPage from "./pages/CategoryPage";
 import HostBookings from "./pages/HostBookings";
 import MyBookings from "./pages/MyBookings";
+import BlogList from "./components/BlogList";
+import BlogDetails from "./pages/BlogDetails";
+import SearchPage from "./pages/SearchPage";
 
 function AppContent() {
   const location = useLocation();
@@ -52,6 +55,9 @@ function AppContent() {
           <Route path="/host/:id" element={<HostProfile />} />
           <Route path="/host/bookings" element={<HostBookings />} />
           <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/blogs" element={<BlogList />} />
+          <Route path="/blog/:slug" element={<BlogDetails />} />
+          <Route path="/search" element={<SearchPage />} />
           <Route path="/" element={<Homepage />} />
           <Route path="*" element={<h1>404 - Page Not Found</h1>} />
         </Routes>

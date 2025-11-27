@@ -49,22 +49,27 @@ const Hero = ({ onExplore }) => {
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
     try {
       const queryParams = new URLSearchParams();
+
       if (formData.location) queryParams.append("location", formData.location);
       if (formData.category) queryParams.append("category", formData.category);
       if (formData.minPrice) queryParams.append("minPrice", formData.minPrice);
       if (formData.maxPrice) queryParams.append("maxPrice", formData.maxPrice);
+
+      // Backend accepts checkIn & checkOut as optional logs
       if (formData.checkIn) queryParams.append("checkIn", formData.checkIn);
       if (formData.checkOut) queryParams.append("checkOut", formData.checkOut);
 
       const data = await apiFetch({
         endpoint: `/properties/search?${queryParams.toString()}`,
         method: "GET",
-        cacheable: false, // Disable caching for dynamic searches
+        cacheable: false,
       });
-      onExplore(""); // Reset category filter
-      navigate("/", { state: { properties: data } }); // Pass search results to Home
+
+      // Backend returns: { success, count, properties }
+      navigate("/search", { state: { properties: data.properties } });
     } catch (err) {
       setError(err.message || "Search failed. Please try again.");
     }
@@ -118,11 +123,9 @@ const Hero = ({ onExplore }) => {
             />
             <div className="flex justify-center">
               <Button children="Search" />
-              {error && (
-                <p className="text-red-500 mt-2 text-center">{error}</p>
-              )}
             </div>
           </form>
+          {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
         </div>
         <div className="container mx-auto flex items-center justify-between">
           <h2 className="text-4xl">

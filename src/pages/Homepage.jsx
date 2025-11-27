@@ -7,6 +7,8 @@ import { apiFetch } from "../utils/api";
 import Testimonials from "../components/Testimonials";
 import Newsletter from "../components/Newsletter";
 import Footer from "../components/Footer";
+import BlogList from "../components/BlogList";
+import BlogSection from "../components/BlogsSection";
 
 const Home = () => {
   const [properties, setProperties] = useState([]);
@@ -109,6 +111,7 @@ const Home = () => {
           </div>
         </>
       )}
+      <BlogSection />
       <Testimonials />
       <Newsletter />
       <Footer />
