@@ -8,7 +8,7 @@ import PropertyDescription from "../components/PropertyDescription";
 import PropertyOffers from "../components/PropertyOffers";
 import PropertyLocation from "../components/Location";
 import Button from "../components/Button";
-import ChatBox from "../components/Chatbox";
+import ChatBox from "../components/ChatBox";
 import HostCard from "../components/HostCard";
 
 const PropertyDetails = () => {
