@@ -181,7 +181,7 @@
 //           authOptions={{
 //             clientId: import.meta.VITE_APPLE_CLIENT_ID,
 //             scope: "email",
-//             redirectURI: "http:localhost:5173",
+//             redirectURI: "https://evencen.onrender.com",
 //             state: "state",
 //             nonce: "nonce",
 //             usePopup: true,

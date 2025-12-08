@@ -360,7 +360,7 @@
 //       );
 
 //       const token = localStorage.getItem("token");
-//       const res = await fetch("http://localhost:5000/api/properties", {
+//       const res = await fetch("https://evencen.onrender.com/api/properties", {
 //         method: "POST",
 //         headers: {
 //           Authorization: `Bearer ${token}`,
@@ -1402,7 +1402,7 @@ const CreateSpace = () => {
       });
 
       const response = await fetch(
-        `http://localhost:5000/api/geocode?${params.toString()}`
+        `https://evencen.onrender.com/api/geocode?${params.toString()}`
       );
 
       if (!response.ok) {
@@ -1484,7 +1484,7 @@ const CreateSpace = () => {
       spaceData.imageFiles.forEach((file) => formData.append("images", file));
 
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/properties", {
+      const res = await fetch("https://evencen.onrender.com/api/properties", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,

@@ -22,7 +22,8 @@ const ChatBox = ({ propertyId, onClose }) => {
         setMessages(data.messages);
 
         const token = localStorage.getItem("token");
-        socketRef.current = io("http://localhost:5000", {
+        // socketRef.current = io("http://localhost:5000", {
+        socketRef.current = io("https://evencen.onrender.com", {
           auth: { token },
         });
 
