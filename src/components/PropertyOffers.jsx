@@ -1,7 +1,6 @@
 import Accordion from "./Accordion";
 
 export default function PropertyOffers({ data }) {
-  // data is already an object
   const features = data || {}; // fallback to empty object
 
   // Convert booleans to "Yes"/"No"
@@ -10,13 +9,18 @@ export default function PropertyOffers({ data }) {
     return val;
   };
 
+  // Filter out falsy values (false, null, undefined, 0, "")
+  const visibleFeatures = Object.entries(features).filter(
+    ([, value]) => value // only keep truthy
+  );
+
   return (
     <Accordion title="What this place offers">
-      {Object.keys(features).length === 0 ? (
+      {visibleFeatures.length === 0 ? (
         <p>No features available</p>
       ) : (
         <ul className="list-disc pl-6 space-y-1">
-          {Object.entries(features).map(([key, value]) => (
+          {visibleFeatures.map(([key, value]) => (
             <li key={key}>
               <strong>{key}:</strong> {formatValue(value)}
             </li>

@@ -6,6 +6,7 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import TripCard from "../components/TripCard";
 import ReviewCard from "../components/ReviewCard";
+import IdentityVerification from "../components/IdentityVerification";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -152,6 +153,7 @@ const Profile = () => {
                 className="w-64 h-64 object-cover rounded-full"
               />
               <div className="flex-1">
+                <IdentityVerification user={user} />
                 <h2 className="text-4xl">About</h2>
                 <p className="mb-6">
                   Hosts and guests can see your profile and it may appear across

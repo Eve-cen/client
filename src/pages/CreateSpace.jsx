@@ -1098,7 +1098,7 @@ import Notification from "../components/Notification";
 
 const CreateSpace = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(4);
+  const [step, setStep] = useState(8);
   const totalSteps = 10;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -1113,7 +1113,20 @@ const CreateSpace = () => {
     description: "",
     location: { address: "", city: "", country: "" },
     coordinates: { latitude: null, longitude: null },
-    features: { wifi: true, restrooms: 1, sizeSQM: 0, seatCapacity: 0 },
+    features: {
+      wifi: true,
+      restrooms: 1,
+      sizeSQM: 0,
+      seatCapacity: 0,
+      consultationArea: false,
+      examinationCouch: false,
+      sinkCounter: false,
+      adjustableEnvironment: false,
+      sharpsBin: false,
+      naturalLight: false,
+      dirtyTowelShoot: false,
+      cqcCompliance: false,
+    },
     extras: [],
     imageFiles: [],
     imagePreviews: [],
@@ -1121,8 +1134,13 @@ const CreateSpace = () => {
     category: "",
     price: 0,
     pricing: {
-      weekdayPrice: 0,
+      pricingType: "DAILY", // "DAILY" | "HOURLY"
+
+      weekdayPrice: 0, // used when DAILY
+      hourlyPrice: 0, // used when HOURLY
+
       preTaxPrice: 0,
+
       discounts: {
         newListing: true,
         lastMinute: false,
@@ -1266,6 +1284,17 @@ const CreateSpace = () => {
     }));
   };
 
+  const handleMedicalFeatureChange = (e) => {
+    const { name, checked } = e.target;
+    setSpaceData((prev) => ({
+      ...prev,
+      features: {
+        ...prev.features,
+        [name]: checked,
+      },
+    }));
+  };
+
   // Validate current step
   const validateStep = () => {
     const newErrors = {};
@@ -1330,7 +1359,7 @@ const CreateSpace = () => {
           newErrors.images = "At least one photo is required";
         break;
 
-      case 7:
+      case 8:
         if (
           !spaceData.pricing.weekdayPrice ||
           spaceData.pricing.weekdayPrice <= 0
@@ -1338,7 +1367,7 @@ const CreateSpace = () => {
           newErrors.weekdayPrice = "Enter a valid price per hour";
         break;
 
-      case 10:
+      case 7:
         if (!spaceData.category)
           newErrors.category = "Please select a category";
         break;
@@ -1401,13 +1430,35 @@ const CreateSpace = () => {
   const handleNext = () => {
     if (validateStep()) {
       setErrors({});
-      setStep((prev) => prev + 1);
+
+      setStep((prev) => {
+        // If current step is 7 and next step would be 8, check category
+        if (
+          prev + 1 === 8 &&
+          spaceData.category !== "6915bd724f4f95223e555e5b"
+        ) {
+          // Skip step 8 and go directly to step 9
+          return prev + 2;
+        }
+
+        return prev + 1;
+      });
     }
   };
 
   const handleBack = () => {
     setErrors({});
-    setStep((prev) => Math.max(1, prev - 1));
+
+    setStep((prev) => {
+      const prevStep = prev - 1;
+
+      // If going back from step 9 to 8 but category is not medical, skip step 8
+      if (prevStep === 8 && spaceData.category !== "6915bd724f4f95223e555e5b") {
+        return prevStep - 1; // skip step 8
+      }
+
+      return Math.max(1, prevStep);
+    });
   };
 
   // Final submit
@@ -1464,7 +1515,53 @@ const CreateSpace = () => {
     }
   };
 
-  // ... (keep your existing step JSX, just add error displays where needed)
+  const medicalFeatures = [
+    {
+      key: "consultationArea",
+      title: "Consultation area with desk and chairs",
+      description:
+        "Providing exceptional comfort for patient evaluations and discussions with healthcare professionals.",
+    },
+    {
+      key: "examinationCouch",
+      title: "Examination couch with draw around curtain",
+      description: "For added privacy during patient consultations.",
+    },
+    {
+      key: "sinkCounter",
+      title: "Sink & counter space",
+      description: "To ensure hygienic and efficient medical procedures.",
+    },
+    {
+      key: "adjustableEnvironment",
+      title: "Adjustable room environment",
+      description: "Air filtration, temperature control and lighting.",
+    },
+    {
+      key: "sharpsBin",
+      title: "Sharps disposable bin",
+      description:
+        "Providing a secure and hygienic solution for the proper disposal of medical sharps.",
+    },
+    {
+      key: "naturalLight",
+      title: "Natural light",
+      description:
+        "Enhances the overall ambiance and promotes a healing, calming environment for patients.",
+    },
+    {
+      key: "dirtyTowelShoot",
+      title: "In-built dirty towel disposal chute",
+      description:
+        "Promoting a clean and sterile environment for patients and staff.",
+    },
+    {
+      key: "cqcCompliance",
+      title: "Fully CQC compliant",
+      description:
+        "We are not CQC registered, but the space is fully compliant so basic procedures can be carried out by practitioners with their own CQC approval.",
+    },
+  ];
 
   return (
     <div className="min-h-[calc(100vh-65px)] flex flex-col justify-between bg-gray-50 p-4 sm:p-8">
@@ -1737,7 +1834,7 @@ const CreateSpace = () => {
 
         {step === 7 && (
           <div>
-            <h2 className="text-4xl my-4">Category</h2>
+            <h2 className="text-4xl my-4">Step 7: Category</h2>
             <p className="text-gray-600 mb-4">What type of space is this?</p>
             <div className="grid grid-cols-2 gap-4">
               {categories.map((cat) => (
@@ -1774,42 +1871,255 @@ const CreateSpace = () => {
           </div>
         )}
 
-        {step === 8 && (
-          <div className="text-center flex flex-col items-center p-6">
-            <h3 className="text-3xl font-semibold mb-2">
-              Set a Weekday Price per Hour
-            </h3>
-            <p className="text-gray-600 mb-6">You can change it anytime.</p>
+        {spaceData.category === "6915bd724f4f95223e555e5b" && step === 8 && (
+          <div className="space-y-4 mb-20">
+            <h2 className="text-4xl my-4">Medical Room Features</h2>
+            {/* {medicalFeatures.map(({ key, title, description }) => {
+              const isChecked = spaceData.features[key];
 
-            <div className="flex items-center justify-center px-6 pt-4 mb-3">
-              <span className="text-4xl font-bold text-blue-600 mr-1 mb-4">
-                £
-              </span>
-              <Input
-                name="pricing.weekdayPrice"
-                type="number"
-                min="0"
-                value={spaceData.pricing.weekdayPrice}
-                onChange={handleChange}
-                required
-                className="border-none bg-transparent text-center text-4xl font-semibold text-blue-600 focus:ring-0 focus:outline-none no-spinner dynamic-width"
-              />
-            </div>
+              return (
+                <label
+                  key={key}
+                  className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+                    isChecked
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                  // onClick={() =>
+                  //   handleDiscountChange({
+                  //     target: {
+                  //       name: key,
+                  //       checked: !isChecked,
+                  //     },
+                  //   })
+                  // }
 
-            {errors.weekdayPrice && (
-              <p className="text-red-500 text-sm mt-1">{errors.weekdayPrice}</p>
-            )}
+                  onClick={() =>
+                    handleMedicalFeatureChange({
+                      target: { name: key, checked: !isChecked },
+                    })
+                  }
+                >
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium text-gray-800">{title}</span>
+                    <p className="text-sm text-gray-500 mt-1 text-left">
+                      {description}
+                    </p>
+                  </div>
 
-            <p className="text-gray-500 mt-2">
-              Price before tax:{" "}
-              <span className="font-medium text-gray-700">
-                £{spaceData.pricing.weekdayPrice + 5 || 0}
-              </span>
-            </p>
+                  <div
+                    className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+                      isChecked
+                        ? "border-blue-500 bg-blue-500"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    {isChecked && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-3 h-3 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={3}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                </label>
+              );
+            })} */}
+
+            {medicalFeatures.map(({ key, title, description }) => {
+              const isChecked = spaceData.features[key]; // <-- corrected
+
+              return (
+                <label
+                  key={key}
+                  className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+                    isChecked
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                  onClick={() =>
+                    setSpaceData((prev) => ({
+                      ...prev,
+                      features: {
+                        ...prev.features,
+                        [key]: !prev.features[key], // toggle only this one
+                      },
+                    }))
+                  }
+                >
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium text-gray-800">{title}</span>
+                    <p className="text-sm text-gray-500 mt-1 text-left">
+                      {description}
+                    </p>
+                  </div>
+
+                  {/* Custom checkbox */}
+                  <div
+                    className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+                      isChecked
+                        ? "border-blue-500 bg-blue-500"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    {isChecked && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-3 h-3 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={3}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                </label>
+              );
+            })}
           </div>
         )}
 
         {step === 9 && (
+          <div className="text-center flex flex-col items-center p-6">
+            {/* Pricing Type Toggle */}
+            <div className="flex items-center gap-6 mb-8">
+              <button
+                type="button"
+                onClick={() =>
+                  setSpaceData((prev) => ({
+                    ...prev,
+                    pricing: {
+                      ...prev.pricing,
+                      pricingType: "DAILY",
+                      hourlyPrice: 0,
+                    },
+                  }))
+                }
+                className={`px-5 py-2 rounded-full font-medium transition ${
+                  spaceData.pricing.pricingType === "DAILY"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 text-gray-700"
+                }`}
+              >
+                Daily
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setSpaceData((prev) => ({
+                    ...prev,
+                    pricing: {
+                      ...prev.pricing,
+                      pricingType: "HOURLY",
+                      weekdayPrice: 0,
+                    },
+                  }))
+                }
+                className={`px-5 py-2 rounded-full font-medium transition ${
+                  spaceData.pricing.pricingType === "HOURLY"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 text-gray-700"
+                }`}
+              >
+                Hourly
+              </button>
+            </div>
+
+            {/* DAILY PRICING */}
+            {spaceData.pricing.pricingType === "DAILY" && (
+              <>
+                <h3 className="text-3xl font-semibold mb-2">
+                  Set a Weekday Price
+                </h3>
+                <p className="text-gray-600 mb-6">You can change it anytime.</p>
+
+                <div className="flex items-center justify-center px-6 pt-4 mb-3">
+                  <span className="text-4xl font-bold text-blue-600 mr-1 mb-4">
+                    £
+                  </span>
+                  <Input
+                    name="pricing.weekdayPrice"
+                    type="number"
+                    min="0"
+                    value={spaceData.pricing.weekdayPrice}
+                    onChange={handleChange}
+                    required
+                    className="border-none bg-transparent text-center text-4xl font-semibold text-blue-600 focus:ring-0 focus:outline-none no-spinner dynamic-width"
+                  />
+                </div>
+
+                {errors.weekdayPrice && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.weekdayPrice}
+                  </p>
+                )}
+
+                <p className="text-gray-500 mt-2">
+                  Price before tax:{" "}
+                  <span className="font-medium text-gray-700">
+                    £{spaceData.pricing.weekdayPrice + 5 || 0}
+                  </span>
+                </p>
+              </>
+            )}
+
+            {/* HOURLY PRICING */}
+            {spaceData.pricing.pricingType === "HOURLY" && (
+              <>
+                <h3 className="text-3xl font-semibold mb-2">
+                  Set an Hourly Price
+                </h3>
+                <p className="text-gray-600 mb-6">You can change it anytime.</p>
+
+                <div className="flex items-center justify-center px-6 pt-4 mb-3">
+                  <span className="text-4xl font-bold text-blue-600 mr-1 mb-4">
+                    £
+                  </span>
+                  <Input
+                    name="pricing.hourlyPrice"
+                    type="number"
+                    min="0"
+                    value={spaceData.pricing.hourlyPrice}
+                    onChange={handleChange}
+                    required
+                    className="border-none bg-transparent text-center text-4xl font-semibold text-blue-600 focus:ring-0 focus:outline-none no-spinner dynamic-width"
+                  />
+                </div>
+
+                {errors.hourlyPrice && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.hourlyPrice}
+                  </p>
+                )}
+
+                <p className="text-gray-500 mt-2">
+                  Price before tax:{" "}
+                  <span className="font-medium text-gray-700">
+                    £{spaceData.pricing.hourlyPrice + 5 || 0}
+                  </span>
+                </p>
+              </>
+            )}
+          </div>
+        )}
+
+        {step === 10 && (
           <div className="p-6">
             <h2 className="text-4xl font-semibold mb-2">
               Price your booking settings
@@ -1906,7 +2216,7 @@ const CreateSpace = () => {
           </div>
         )}
 
-        {step === 10 && (
+        {step === 11 && (
           <div className="p-6">
             <h2 className="text-4xl font-semibold mb-2">
               Set up your discounts
