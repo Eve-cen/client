@@ -81,14 +81,14 @@ const Hero = ({ onExplore }) => {
 
   return (
     <div
-      className="relative w-full h-[400px] sm:h-[500px] md:h-screen bg-cover bg-center"
+      className="relative w-full h-full md:h-screen bg-cover bg-center"
       style={{
         backgroundImage: "url('/src/assets/hero-bg.jpg')",
       }}
     >
       <div className="relative z-10 flex flex-col items-center justify-between pb-8 h-full text-white px-4">
         <Navbar />
-        <div className="w-full max-w-6xl bg-white bg-opacity-90 p-6 rounded-[24px] shadow-lg">
+        <div className="w-full max-w-6xl bg-white bg-opacity-90 p-6 rounded-[24px] shadow-lg mt-10">
           <form
             onSubmit={handleSearchSubmit}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"
@@ -127,7 +127,7 @@ const Hero = ({ onExplore }) => {
           </form>
           {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
         </div>
-        <div className="container mx-auto flex items-center justify-between">
+        <div className="container mx-auto mt-10 flex items-center justify-between">
           <h2 className="text-4xl">
             Book the <span className="block text-blue-500">Perfect Venue</span>{" "}
             with Ease
