@@ -22,7 +22,7 @@ const ReviewsSection = ({}) => {
   return (
     <Accordion title="Reviews">
       <div className="flex flex-col items-center">
-        <img src="../src/assets/review.png" className="w-48" />
+        <img src="/review.png" className="w-48" />
         <p className="font-semibold text-center">
           This home is a guest favorite based on <br /> ratings, reviews, and
           reliability

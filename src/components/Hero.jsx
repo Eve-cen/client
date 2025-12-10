@@ -83,7 +83,7 @@ const Hero = ({ onExplore }) => {
     <div
       className="relative w-full h-full md:h-screen bg-cover bg-center"
       style={{
-        backgroundImage: "url('/src/assets/hero-bg.jpg')",
+        backgroundImage: "url('/hero-bg.jpg')",
       }}
     >
       <div className="relative z-10 flex flex-col items-center justify-between pb-8 h-full text-white px-4">
