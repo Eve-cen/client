@@ -1099,7 +1099,7 @@ import Notification from "../components/Notification";
 const CreateSpace = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const totalSteps = 10;
+  const totalSteps = 11;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [errors, setErrors] = useState({});
