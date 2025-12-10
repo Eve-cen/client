@@ -33,9 +33,12 @@ export default function Testimonials() {
           exclusive and luxurious accommodations around the world.
         </p>
       </div>
-      <div className="flex justify-between">
+      <div className="flex flex-col md:flex-row gap-10">
         {guests.map((guest, idx) => (
-          <div key={idx} className="bg-white shadow rounded-lg p-6 w-[30%]">
+          <div
+            key={idx}
+            className="bg-white shadow rounded-lg p-6 w-full md:w-[30%]"
+          >
             <div className="flex items-center mb-2">
               <img
                 src={guest.img}
