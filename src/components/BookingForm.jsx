@@ -21,12 +21,20 @@ export default function BookingForm({ property }) {
     },
   ]);
 
-  const [formData, setFormData] = useState({
-    checkInTime: "14:00",
-    checkOutTime: "11:00",
-  });
+  const [checkInTime, setCheckInTime] = useState("");
+  const [checkOutTime, setCheckOutTime] = useState("");
 
-  const nights = differenceInDays(range[0].endDate, range[0].startDate);
+  const nights = differenceInDays(range[0].endDate, range[0].startDate) || 1;
+  // Combine selected date + time
+  const start = new Date(`${range[0].startDate.toDateString()} ${checkInTime}`);
+  const end = new Date(`${range[0].endDate.toDateString()} ${checkOutTime}`);
+
+  const diffMs = end - start;
+  const diffHours = Math.max(diffMs / (1000 * 60 * 60), 0);
+
+  // Hourly total cost
+  const hourlyTotal = diffHours * nights * (property.pricing?.hourlyPrice || 0);
+
   const pricePerNight = property.pricing.weekdayPrice; // example
   const totalPrice = nights * pricePerNight;
 
@@ -44,31 +52,42 @@ export default function BookingForm({ property }) {
 
   const timeOptions = generateTimes();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    // Combine date and time into a single ISO string
+    const checkInStr = checkInTime || "00:00";
+    const checkOutStr = checkOutTime || "23:59";
+
+    const [inHour, inMinute] = checkInStr.split(":").map(Number);
+    const [outHour, outMinute] = checkOutStr.split(":").map(Number);
+
+    const fullCheckIn = new Date(range[0].startDate);
+    fullCheckIn.setHours(inHour, inMinute, 0, 0);
+
+    const fullCheckOut = new Date(range[0].endDate);
+    fullCheckOut.setHours(outHour, outMinute, 0, 0);
+
+    const bookingData = {
+      propertyId: property._id,
+      checkIn: fullCheckIn.toISOString(),
+      checkOut: fullCheckOut.toISOString(),
+      guests,
+      extras: [
+        { name: "Projector", price: 50 },
+        { name: "Sound System", price: 50 },
+        { name: "Catering Available", price: 50 },
+      ],
+      // extras: selectedExtras, // if you have extras selection
+    };
     try {
       const booking = await apiFetch({
         endpoint: "/bookings",
         method: "POST",
-        body: {
-          propertyId: property._id,
-          checkIn: range[0].startDate,
-          checkOut: range[0].endDate,
-          guests,
-          extras: [
-            { name: "Projector", price: 50 },
-            { name: "Sound System", price: 50 },
-            { name: "Catering Available", price: 50 },
-          ],
-        },
+        body: bookingData,
         credentials: "include",
       });
+      console.log("newbooking", booking);
       setShowModal(true);
 
       // Start countdown
@@ -77,8 +96,8 @@ export default function BookingForm({ property }) {
           if (prev <= 1) {
             clearInterval(interval);
             setShowModal(false);
-            navigate("/my-bookings", { replace: true });
-            window.location.reload(); // Reload homepage
+            // navigate("/my-bookings", { replace: true });
+            // window.location.reload(); // Reload homepage
           }
           return prev - 1;
         });
@@ -117,8 +136,8 @@ export default function BookingForm({ property }) {
           </label>
           <select
             name="checkInTime"
-            value={formData.checkInTime}
-            onChange={handleChange}
+            value={checkInTime}
+            onChange={(e) => setCheckInTime(e.target.value)}
             className="w-full p-2 border rounded-lg"
           >
             {timeOptions.map((time) => (
@@ -138,8 +157,8 @@ export default function BookingForm({ property }) {
           </label>
           <select
             name="checkOutTime"
-            value={formData.checkOutTime}
-            onChange={handleChange}
+            value={checkOutTime}
+            onChange={(e) => setCheckOutTime(e.target.value)}
             className="w-full p-2 border rounded-lg"
           >
             {timeOptions.map((time) => (
@@ -161,9 +180,16 @@ export default function BookingForm({ property }) {
           showDateDisplay={false}
         />
 
-        <p className="text-lg font-semibold">
-          Total: ${totalPrice} ({nights} nights)
-        </p>
+        {property.pricing?.pricingType === "HOURLY" ? (
+          <p className="text-lg font-semibold">
+            Total: ${hourlyTotal.toFixed(2)} ({diffHours.toFixed(1)} hrs ×{" "}
+            {nights} days)
+          </p>
+        ) : (
+          <p className="text-lg font-semibold">
+            Total: ${totalPrice} ({nights} nights)
+          </p>
+        )}
 
         <div className="my-4">
           <label className="block mb-1 font-medium">Guests:</label>
@@ -183,31 +209,12 @@ export default function BookingForm({ property }) {
         />
       </form>
       {showModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "#fff",
-              padding: "2rem",
-              borderRadius: "8px",
-              textAlign: "center",
-              minWidth: "300px",
-            }}
-          >
-            <h2>Your booking is successfully created!</h2>
-            <p>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+          <div className="bg-white w-full max-w-sm rounded-xl p-6 text-center shadow-lg">
+            <h2 className="text-xl font-semibold mb-2">
+              Your booking is successfully created!
+            </h2>
+            <p className="text-gray-600">
               Redirecting in {countdown} second{countdown > 1 ? "s" : ""}...
             </p>
           </div>

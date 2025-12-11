@@ -11,7 +11,7 @@ const ImageReorder = ({ images, onReorder, onAddMore }) => {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-2 mb-4 pb-10 h-[600px] overflow-scroll">
+    <div className="grid grid-cols-2 gap-2 mb-4 pb-10  h-[500px] md:h-[600px] overflow-scroll">
       {images.map((img, index) => (
         <div
           key={index}

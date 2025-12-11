@@ -11,17 +11,7 @@ const Featured = ({ properties }) => {
       {hasProperties ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {properties.map((property) => (
-            <Card
-              key={property._id}
-              id={property._id}
-              image={
-                property.coverImage || (property.images && property.images[0])
-              } // main image
-              title={property.title}
-              price={property.pricing?.weekdayPrice}
-              rating={property.rating}
-              location={property.location}
-            />
+            <Card key={property._id} id={property._id} data={property} />
           ))}
         </div>
       ) : (

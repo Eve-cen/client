@@ -21,9 +21,14 @@ const PropertyCard = ({ property, onEdit, onDelete }) => {
           {property.title}
         </h3>
         <p className="text-sm text-gray-600">{property.location.address}</p>
-        <p className="text-lg font-bold text-pink-600 mt-2">
+        {/* <p className="text-lg font-bold text-pink-600 mt-2">
           ${property.pricing.weekdayPrice}/day
-        </p>
+        </p> */}
+        {property.pricing?.pricingType === "HOURLY" ? (
+          <p className="text-lg">${property.pricing?.hourlyPrice} / hour</p>
+        ) : (
+          <p className="text-lg">${property.pricing?.weekdayPrice} / night</p>
+        )}
         <p className="text-xs text-gray-500 mt-1">
           {property.features.sizeSQM} SQM • {property.features.seatCapacity}{" "}
           seats

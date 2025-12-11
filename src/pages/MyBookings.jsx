@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { apiFetch } from "../utils/api";
-import Sidebar from "../components/Sidebar";
+import ProfileSidebar from "../components/ProfileSidebar";
 import Button from "../components/Button";
+import { Menu, X } from "lucide-react";
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
@@ -28,7 +30,7 @@ const MyBookings = () => {
         credentials: "include",
       });
       setBookings(data);
-      // console.log(data);
+      console.log(data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -50,12 +52,45 @@ const MyBookings = () => {
       alert("Failed to start payment");
     }
   };
-  console.log(bookings);
   if (loading) return <div className="p-8 text-center">Loading...</div>;
 
   return (
     <div className="min-h-screen flex">
-      <Sidebar activeSection="/my-bookings" />
+      {/* Mobile Menu Button - Fixed at top */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="lg:hidden fixed top-18 right-4 z-50 p-2 bg-white rounded-lg shadow-lg hover:bg-gray-100 transition-colors"
+        aria-label="Toggle menu"
+      >
+        {sidebarOpen ? (
+          <X className="w-6 h-6 text-gray-700" />
+        ) : (
+          <Menu className="w-6 h-6 text-gray-700" />
+        )}
+      </button>
+      {/* MOBILE OVERLAY (shows only when sidebarOpen = true) */}
+      {sidebarOpen && (
+        <div
+          className="
+      fixed inset-0 bg-black/40 backdrop-blur-sm
+      z-30 lg:hidden
+      transition-opacity duration-300
+    "
+          onClick={() => setSidebarOpen(false)} // Clicking overlay closes sidebar
+        ></div>
+      )}
+      {/* SIDEBAR CONTAINER */}
+      <div
+        className={`
+    fixed lg:static inset-y-0 left-0 z-40
+    w-64 bg-white shadow-lg lg:shadow-none
+    transform transition-transform duration-300 ease-in-out
+    ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+    lg:translate-x-0
+  `}
+      >
+        <ProfileSidebar onLinkClick={() => setSidebarOpen(false)} />
+      </div>
       <div className="flex-1 ml-0 sm:ml-64 p-4 sm:p-8">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-8">

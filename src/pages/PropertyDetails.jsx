@@ -108,9 +108,15 @@ const PropertyDetails = () => {
                     {/* ({property.reviews.length} reviews) */}
                   </span>
                 </div>
-                <p className="text-2xl">
-                  ${property.pricing?.weekdayPrice} / night
-                </p>
+                {property.pricing?.pricingType === "HOURLY" ? (
+                  <p className="text-2xl">
+                    ${property.pricing?.hourlyPrice} / hour
+                  </p>
+                ) : (
+                  <p className="text-2xl">
+                    ${property.pricing?.weekdayPrice} / night
+                  </p>
+                )}
               </div>
 
               <BookingForm propertyId={property._id} property={property} />

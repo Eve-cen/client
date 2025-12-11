@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const EvenCard = ({ id, image, title, price, rating, location }) => {
+const EvenCard = ({ id, data }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -16,8 +16,8 @@ const EvenCard = ({ id, image, title, price, rating, location }) => {
       {/* Image */}
       <div className="relative">
         <img
-          src={image}
-          alt={title}
+          src={data.coverImage}
+          alt={data.title}
           className="w-full h-72 rounded-[16px] object-cover"
           loading="lazy"
         />
@@ -26,17 +26,19 @@ const EvenCard = ({ id, image, title, price, rating, location }) => {
       {/* Content */}
       <div className="p-4 bg-white rounded-[16px]">
         <h3 className="text-lg font-semibold text-gray-900 truncate">
-          {title}
+          {data.title}
         </h3>
         <p className="text-sm text-gray-600 mt-1">
-          {location.address}, {location.city}, {location.country}
+          {data.location.address}, {data.location.city}, {data.location.country}
         </p>
         <div className="flex items-center">
-          <p className="text-lg font-bold text-gray-900">
-            ${price} <span className="text-sm font-normal">per day</span>
-          </p>
+          {data.pricing?.pricingType === "HOURLY" ? (
+            <p className="text-lg">${data.pricing?.hourlyPrice} / hour</p>
+          ) : (
+            <p className="text-lg">${data.pricing?.weekdayPrice} / night</p>
+          )}
           <div className="px-2 py-1 text-sm font-semibold text-gray-800">
-            {rating} ★
+            {data.rating} ★
           </div>
         </div>
       </div>

@@ -24,6 +24,8 @@ import MyBookings from "./pages/MyBookings";
 import BlogList from "./components/BlogList";
 import BlogDetails from "./pages/BlogDetails";
 import SearchPage from "./pages/SearchPage";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function AppContent() {
   const location = useLocation();
@@ -34,6 +36,7 @@ function AppContent() {
   return (
     <>
       {!hideNavbar && <Navbar />}
+      <ToastContainer />
       <div>
         <Routes>
           <Route path="/login" element={<Login />} />
