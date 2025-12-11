@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
-const Sidebar = () => {
+const Sidebar = ({ onLinkClick }) => {
   const { pathname } = useLocation();
 
   const sections = [
@@ -10,12 +10,13 @@ const Sidebar = () => {
     { name: "Reviews", path: "/profile/reviews" },
   ];
   return (
-    <div className="w-64 h-screen border-r fixed top-16 left-0 p-4 hidden sm:flex flex-col justify-between pb-[100px]">
+    <div className="w-64 h-screen border-r fixed top-16 left-0 p-4 sm:flex flex-col justify-between pb-[100px]">
       <div>
         {sections.map((section) => (
           <Link
             key={section.path}
             to={section.path}
+            onClick={onLinkClick}
             className={`block py-2 px-4 rounded-lg mb-2 ${
               pathname === section.path
                 ? "bg-blue-600 text-white"

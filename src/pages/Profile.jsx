@@ -7,6 +7,7 @@ import Button from "../components/Button";
 import TripCard from "../components/TripCard";
 import ReviewCard from "../components/ReviewCard";
 import IdentityVerification from "../components/IdentityVerification";
+import { Menu, X } from "lucide-react";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const Profile = () => {
   const { pathname } = useLocation();
   const [filters, setFilters] = useState({ location: "", date: "", price: "" });
   const [sort, setSort] = useState("recent");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -118,6 +120,14 @@ const Profile = () => {
     return b.rating - a.rating; // Sort by stars
   });
 
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [sidebarOpen]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -142,18 +152,54 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen flex">
-      <ProfileSidebar />
-      <div className="flex-1 ml-64 p-8">
+      {/* Mobile Menu Button - Fixed at top */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="lg:hidden fixed top-18 right-4 z-50 p-2 bg-white rounded-lg shadow-lg hover:bg-gray-100 transition-colors"
+        aria-label="Toggle menu"
+      >
+        {sidebarOpen ? (
+          <X className="w-6 h-6 text-gray-700" />
+        ) : (
+          <Menu className="w-6 h-6 text-gray-700" />
+        )}
+      </button>
+      {/* MOBILE OVERLAY (shows only when sidebarOpen = true) */}
+      {sidebarOpen && (
+        <div
+          className="
+      fixed inset-0 bg-black/40 backdrop-blur-sm
+      z-30 lg:hidden
+      transition-opacity duration-300
+    "
+          onClick={() => setSidebarOpen(false)} // Clicking overlay closes sidebar
+        ></div>
+      )}
+      {/* SIDEBAR CONTAINER */}
+      <div
+        className={`
+    fixed lg:static inset-y-0 left-0 z-40
+    w-64 bg-white shadow-lg lg:shadow-none
+    transform transition-transform duration-300 ease-in-out
+    ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+    lg:translate-x-0
+  `}
+      >
+        <ProfileSidebar onLinkClick={() => setSidebarOpen(false)} />
+      </div>
+      <div className="flex-1 lg:ml-64 p-8 sm:p-6 lg:p-8 w-full">
         {pathname === "/profile/about" && (
           <div>
             {error && <p className="text-red-500 mb-4">{error}</p>}
-            <form onSubmit={handleProfileUpdate} className="w-full flex gap-10">
+            <form
+              onSubmit={handleProfileUpdate}
+              className="w-full flex flex-col md:flex-row gap-10"
+            >
               <img
                 src={user.profileImage}
-                className="w-64 h-64 object-cover rounded-full"
+                className="w-32 lg:w-64 h-32 lg:h-64 object-cover rounded-full"
               />
               <div className="flex-1">
-                <IdentityVerification user={user} />
                 <h2 className="text-4xl">About</h2>
                 <p className="mb-6">
                   Hosts and guests can see your profile and it may appear across
@@ -175,6 +221,7 @@ const Profile = () => {
                     error ? "border-red-500" : "border-gray-300"
                   }`}
                 ></textarea>
+                <IdentityVerification user={user} />
                 <Button type="submit" children="Save Changes" />
               </div>
             </form>
