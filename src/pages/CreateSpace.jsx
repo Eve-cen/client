@@ -408,7 +408,7 @@ const CreateSpace = () => {
         setCountdown((c) => {
           if (c <= 1) {
             clearInterval(timer);
-            // navigate("/", { replace: true });
+            navigate("/", { replace: true });
           }
           return c - 1;
         });
@@ -1282,14 +1282,17 @@ const CreateSpace = () => {
           </div>
         )}
       </div>
-      {/* {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-lg text-center">
-            <h2 className="text-2xl font-bold mb-4">Success!</h2>
-            <p>Redirecting in {countdown}...</p>
+      {showModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center">
+            <div className="text-6xl mb-4">✅</div>
+            <h2 className="text-2xl font-bold mb-2">Property Created!</h2>
+            <p className="text-gray-600">
+              Redirecting in {countdown} second{countdown > 1 ? "s" : ""}...
+            </p>
           </div>
         </div>
-      )} */}
+      )}
 
       {/* Progress + Navigation */}
       <div>

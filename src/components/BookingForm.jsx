@@ -143,7 +143,8 @@ export default function BookingForm({ property }) {
           if (prev <= 1) {
             clearInterval(interval);
             setShowModal(false);
-            // navigate("/my-bookings");
+            navigate("/my-bookings", { replace: true });
+            window.location.reload(); // Reload homepage
           }
           return prev - 1;
         });
