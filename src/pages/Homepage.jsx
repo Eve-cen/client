@@ -98,17 +98,17 @@ const Home = () => {
         <div className="text-lg">Loading...</div>
       ) : (
         <>
-          <PropertyList
-            properties={filteredProperties}
-            onUpdate={handleUpdate}
-            onDelete={handleDelete}
-          />
           <div className="bg-[#F2F2F2]">
             <CategoryList
               categories={categories}
               onSelect={handleCategorySelect}
             />
           </div>
+          <PropertyList
+            properties={filteredProperties}
+            onUpdate={handleUpdate}
+            onDelete={handleDelete}
+          />
         </>
       )}
       <BlogSection />
