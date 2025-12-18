@@ -8,6 +8,7 @@ import TripCard from "../components/TripCard";
 import ReviewCard from "../components/ReviewCard";
 import IdentityVerification from "../components/IdentityVerification";
 import { Menu, X } from "lucide-react";
+import EvencenLoader from "../components/Loader";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -129,11 +130,7 @@ const Profile = () => {
   }, [sidebarOpen]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
-      </div>
-    );
+    return <EvencenLoader />;
   }
 
   if (error || !user) {
@@ -187,7 +184,7 @@ const Profile = () => {
       >
         <ProfileSidebar onLinkClick={() => setSidebarOpen(false)} />
       </div>
-      <div className="flex-1 lg:ml-64 p-8 sm:p-6 lg:p-8 w-full">
+      <div className="flex-1 p-8 sm:p-6 lg:p-8 w-full">
         {pathname === "/profile/about" && (
           <div>
             {error && <p className="text-red-500 mb-4">{error}</p>}

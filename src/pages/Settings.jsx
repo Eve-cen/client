@@ -432,6 +432,7 @@ import CardInput from "../components/CardInput";
 import Button from "../components/Button";
 import Modal from "../components/Modal";
 import { Menu, X } from "lucide-react";
+import EvencenLoader from "../components/Loader";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -584,13 +585,7 @@ const Settings = () => {
     }
   }, [sidebarOpen]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
-      </div>
-    );
-  }
+  if (loading) return <EvencenLoader />;
 
   if (error || !user) {
     return (
@@ -641,9 +636,9 @@ const Settings = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-64 p-8 sm:p-6 lg:p-8 w-full">
+      <div className="flex-1 p-8 sm:p-6 lg:p-8 w-full">
         {/* Add top padding on mobile to account for the menu button */}
-        <div className="max-w-3xl mx-auto pt-4 lg:pt-0">
+        <div className="max-w-3xl md:max-w-full mx-auto md:mx-0 pt-4 lg:pt-0">
           {pathname === "/settings/personal" && (
             <div>
               <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">

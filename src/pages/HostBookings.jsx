@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { apiFetch } from "../utils/api";
 import Sidebar from "../components/Sidebar";
+import EvencenLoader from "../components/Loader";
 
 const HostBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -29,7 +30,7 @@ const HostBookings = () => {
     setBookings((prev) => prev.map((b) => (b._id === id ? updated : b)));
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <EvencenLoader />;
 
   return (
     <div className="min-h-screen bg-gray-50 flex">

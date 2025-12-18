@@ -10,6 +10,7 @@ import PropertyLocation from "../components/Location";
 import Button from "../components/Button";
 import ChatBox from "../components/ChatBox";
 import HostCard from "../components/HostCard";
+import EvencenLoader from "../components/Loader";
 
 const PropertyDetails = () => {
   const { id } = useParams();
@@ -46,11 +47,7 @@ const PropertyDetails = () => {
   }, [id]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
+    return <EvencenLoader />;
   }
 
   if (error || !property) {

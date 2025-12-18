@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { apiFetch } from "../utils/api";
 import Card from "../components/EvenCard";
+import EvencenLoader from "../components/Loader";
 
 const CategoryPage = () => {
   const { id } = useParams();
@@ -29,11 +30,7 @@ const CategoryPage = () => {
     fetchData();
   }, [id]);
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
-      </div>
-    );
+    return <EvencenLoader />;
   }
 
   if (error || !category) {
@@ -75,15 +72,7 @@ const CategoryPage = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {properties.map((property) => (
-              <Card
-                key={property._id}
-                id={property._id}
-                image={property.image}
-                title={property.title}
-                price={property.pricing?.weekdayPrice}
-                rating={property.rating}
-                location={property.location}
-              />
+              <Card key={property._id} id={property._id} data={property} />
             ))}
           </div>
         )}

@@ -4,6 +4,7 @@ import { apiFetch } from "../utils/api";
 import ProfileSidebar from "../components/ProfileSidebar";
 import Button from "../components/Button";
 import { Menu, X } from "lucide-react";
+import EvencenLoader from "../components/Loader";
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -52,7 +53,7 @@ const MyBookings = () => {
       alert("Failed to start payment");
     }
   };
-  if (loading) return <div className="p-8 text-center">Loading...</div>;
+  if (loading) return <EvencenLoader />;
 
   return (
     <div className="min-h-screen flex">
@@ -91,7 +92,7 @@ const MyBookings = () => {
       >
         <ProfileSidebar onLinkClick={() => setSidebarOpen(false)} />
       </div>
-      <div className="flex-1 ml-0 sm:ml-64 p-4 sm:p-8">
+      <div className="flex-1 ml-0 p-4 sm:p-8">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-8">
             My Bookings
