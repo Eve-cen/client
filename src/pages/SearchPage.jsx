@@ -76,16 +76,8 @@ export default function SearchPage() {
         <p className="text-gray-600 text-lg">No matching properties found.</p>
       ) : (
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {displayed.map((prop) => (
-            <Card
-              key={prop._id}
-              id={prop._id}
-              image={prop.coverImage || (prop.images && prop.images[0])} // main image
-              title={prop.title}
-              price={prop.pricing?.weekdayPrice}
-              rating={prop.rating}
-              location={prop.location}
-            />
+          {displayed.map((property) => (
+            <Card key={property._id} id={property._id} data={property} />
           ))}
         </div>
       )}

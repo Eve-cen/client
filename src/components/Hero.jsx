@@ -18,12 +18,6 @@ const Hero = ({ onExplore }) => {
     checkOut: "",
   });
   const [error, setError] = useState("");
-  const currentTime = new Date();
-  const hour = currentTime.getUTCHours() + 1; // Adjust for WAT (UTC+1)
-  let greeting = "Welcome";
-  if (hour >= 5 && hour < 12) greeting = "Good Morning";
-  else if (hour >= 12 && hour < 17) greeting = "Good Afternoon";
-  else if (hour >= 17 || hour < 5) greeting = "Good Evening";
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -86,7 +80,7 @@ const Hero = ({ onExplore }) => {
         backgroundImage: "url('/hero-bg.jpg')",
       }}
     >
-      <div className="relative z-10 flex flex-col items-center justify-between pb-8 h-full text-white px-4">
+      <div className="relative z-10 flex flex-col items-center justify-between pb-8 h-full px-4">
         <Navbar />
         <div className="w-full max-w-6xl bg-white bg-opacity-90 p-6 rounded-[24px] shadow-lg mt-10">
           <form
@@ -102,17 +96,19 @@ const Hero = ({ onExplore }) => {
             />
             <Input
               label="Date"
+              type="date"
               name="date"
               value={formData.date}
               onChange={handleChange}
-              placeholder="16th Oct"
+              placeholder="16/03/2026"
             />
             <Input
               label="Capacity"
+              type="number"
               name="capacity"
               value={formData.capacity}
               onChange={handleChange}
-              placeholder="20 - 50"
+              placeholder="20"
             />
             <Input
               label="Event Type"
