@@ -12,6 +12,7 @@ import YesNoToggle from "../components/YesNoToggle";
 import Counter from "../components/Counter";
 import MapComponent from "../components/MapComponent";
 import Notification from "../components/Notification";
+import { Autocomplete, useLoadScript } from "@react-google-maps/api";
 
 const CreateSpace = () => {
   const navigate = useNavigate();
@@ -24,6 +25,9 @@ const CreateSpace = () => {
   const [categories, setCategories] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [countdown, setCountdown] = useState(3);
+  const [currentUser, setCurrentUser] = useState("");
+
+  const libraries = ["places"];
 
   const [spaceData, setSpaceData] = useState({
     title: "",
@@ -73,11 +77,78 @@ const CreateSpace = () => {
 
   const [showPopup, setShowPopup] = useState(false);
 
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    libraries,
+  });
+
+  const autocompleteRef = useRef(null);
+
+  const onLoad = (autocomplete) => {
+    autocompleteRef.current = autocomplete;
+  };
+
+  const onPlaceChanged = () => {
+    const place = autocompleteRef.current.getPlace();
+    if (!place.address_components) return;
+
+    let address = "";
+    let city = "";
+    let country = "";
+
+    place.address_components.forEach((component) => {
+      const types = component.types;
+
+      if (types.includes("street_number")) {
+        address = component.long_name + " " + address;
+      }
+      if (types.includes("route")) {
+        address += component.long_name;
+      }
+      if (types.includes("locality")) {
+        city = component.long_name;
+      }
+      if (types.includes("country")) {
+        country = component.long_name;
+      }
+    });
+
+    setSpaceData((prev) => ({
+      ...prev,
+      location: {
+        ...prev.location,
+        address,
+        city,
+        country,
+      },
+    }));
+  };
+
   useEffect(() => {
     if (step > totalSteps) {
       handleSubmit();
     }
   }, [step]);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const user = await apiFetch({
+          endpoint: "/auth/me",
+          method: "GET",
+          credentials: "include",
+        });
+        setCurrentUser(user._id);
+        if (!user) {
+          navigate("/login");
+          return;
+        }
+      } catch (err) {
+        console.error("Failed to fetch user:", err);
+      }
+    };
+    fetchUser();
+  }, []);
 
   // Cleanup blob URLs on unmount
   useEffect(() => {
@@ -474,7 +545,7 @@ const CreateSpace = () => {
       <div className="container mx-auto">
         {step === 1 && (
           <div>
-            <h2 className="text-4xl my-4">Basic Info</h2>
+            <h2 className="text-4xl my-4">Publish your space</h2>
             <Input
               label="Event space name"
               name="title"
@@ -486,7 +557,7 @@ const CreateSpace = () => {
               <p className="text-red-500 text-sm mt-1">{errors.title}</p>
             )}
             <label className="block text-sm font-medium text-gray-700 mt-4">
-              Bio
+              Description
             </label>
             <textarea
               label="Description"
@@ -502,17 +573,24 @@ const CreateSpace = () => {
             )}
           </div>
         )}
-        {step === 2 && (
+        {step === 2 && isLoaded && (
           <div>
             <h2 className="text-4xl my-4">Step 2: Location</h2>
 
-            <Input
-              placeholder="Address"
-              name="location.address"
-              value={spaceData.location.address}
-              onChange={handleChange}
-              required
-            />
+            <Autocomplete
+              onLoad={onLoad}
+              onPlaceChanged={onPlaceChanged}
+              options={{
+                types: ["address"],
+              }}
+            >
+              <Input
+                placeholder="Address"
+                value={spaceData.location.address}
+                required
+              />
+            </Autocomplete>
+
             {errors["location.address"] && (
               <p className="text-red-500 text-sm mt-1">
                 {errors["location.address"]}

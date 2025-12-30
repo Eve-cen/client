@@ -18,6 +18,9 @@ const Hero = ({ onExplore }) => {
     checkOut: "",
   });
   const [error, setError] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const locations = ["Nearby", "London, UK", "New York, US", "Dubai, UAE"];
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -87,13 +90,41 @@ const Hero = ({ onExplore }) => {
             onSubmit={handleSearchSubmit}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"
           >
-            <Input
-              label="Location"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              placeholder="e.g., Miami, FL"
-            />
+            <div className="relative">
+              <Input
+                label="Location"
+                name="location"
+                value={formData.location}
+                onChange={(e) => {
+                  handleChange(e);
+                  setShowSuggestions(true);
+                }}
+                placeholder="Type location"
+                onFocus={() => setShowSuggestions(true)}
+              />
+
+              {showSuggestions && (
+                <div className="absolute z-50 mt-2 w-full bg-white border rounded-lg shadow-md">
+                  {locations.map((loc) => (
+                    <button
+                      key={loc}
+                      type="button"
+                      onClick={() => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          location: loc,
+                        }));
+                        setShowSuggestions(false);
+                      }}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                    >
+                      {loc}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <Input
               label="Date"
               type="date"

@@ -3,11 +3,12 @@
 // import Modal from "./Modal";
 // import AuthForm from "./AuthForm";
 // import ForgotPassword from "../pages/ForgotPassword";
-// import Button from "./Button";
+// import { HiMenu, HiX } from "react-icons/hi";
 
 // const Navbar = () => {
 //   const [isModalOpen, setIsModalOpen] = useState(false);
 //   const [isForgotPassword, setIsForgotPassword] = useState(false);
+//   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 //   const navigate = useNavigate();
 //   const token = localStorage.getItem("token");
 
@@ -20,17 +21,21 @@
 //     setIsForgotPassword(true);
 //   };
 
+//   const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
+
 //   return (
-//     <nav className="border-b border-b-gray-100 w-full z-50">
+//     <nav className="w-full z-50">
 //       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
 //         {/* Logo */}
 //         <Link to="/" className="text-2xl font-bold text-[#305CDE]">
 //           EvenCen
 //         </Link>
 
-//         {/* Auth Buttons */}
-//         <div className="space-x-4">
-//           <Link to="/create-space">List your Event Center</Link>
+//         {/* Desktop Links */}
+//         <div className="hidden md:flex space-x-4 items-center">
+//           <Link to="/create-space" className="text-[#305CDE] hover:underline">
+//             Publish Your Space
+//           </Link>
 //           {!token ? (
 //             <button
 //               onClick={() => setIsModalOpen(true)}
@@ -40,157 +45,254 @@
 //             </button>
 //           ) : (
 //             <>
-//               <Link to="/my-listings" className="">
+//               <Link
+//                 to="/my-listings"
+//                 className="text-[#305CDE] hover:underline"
+//               >
 //                 My Listings
 //               </Link>
-//               <Link to="/profile/about" className="">
+//               <Link
+//                 to="/profile/about"
+//                 className="text-[#305CDE] hover:underline"
+//               >
 //                 Profile
 //               </Link>
 //             </>
 //           )}
 //         </div>
 
-//         {/* Modal for Auth */}
-//         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-//           {isForgotPassword ? (
-//             <ForgotPassword onBackToLogin={() => setIsForgotPassword(false)} />
-//           ) : (
-//             <AuthForm
-//               onForgotPassword={handleForgotPasswordClick}
-//               onSuccess={handleAuthSuccess}
-//             />
-//           )}
-//         </Modal>
+//         {/* Hamburger Icon */}
+//         <button
+//           className="md:hidden text-2xl text-[#305CDE] cursor-pointer"
+//           onClick={toggleMobileMenu}
+//         >
+//           {isMobileMenuOpen ? <HiX /> : <HiMenu />}
+//         </button>
 //       </div>
+//       <hr />
+//       {/* Mobile Menu */}
+//       {isMobileMenuOpen && (
+//         <div className="md:hidden bg-white shadow-lg rounded-b-xl border-t border-gray-100 overflow-hidden transform transition-all duration-300 ease-out">
+//           <div className="flex flex-col px-6 py-4 space-y-3">
+//             <Link
+//               to="/create-space"
+//               className="text-[#305CDE] font-medium hover:bg-blue-50 px-3 py-2 rounded-lg transition"
+//               onClick={() => setIsMobileMenuOpen(false)}
+//             >
+//               List your Event Center
+//             </Link>
+
+//             {!token ? (
+//               <button
+//                 onClick={() => {
+//                   setIsModalOpen(true);
+//                   setIsMobileMenuOpen(false);
+//                 }}
+//                 className="text-[#305CDE] font-medium hover:bg-blue-50 px-3 py-2 rounded-lg text-left transition"
+//               >
+//                 Login / Sign Up
+//               </button>
+//             ) : (
+//               <>
+//                 <Link
+//                   to="/my-listings"
+//                   className="text-[#305CDE] font-medium hover:bg-blue-50 px-3 py-2 rounded-lg transition"
+//                   onClick={() => setIsMobileMenuOpen(false)}
+//                 >
+//                   My Listings
+//                 </Link>
+//                 <Link
+//                   to="/profile/about"
+//                   className="text-[#305CDE] font-medium hover:bg-blue-50 px-3 py-2 rounded-lg transition"
+//                   onClick={() => setIsMobileMenuOpen(false)}
+//                 >
+//                   Profile
+//                 </Link>
+//               </>
+//             )}
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Modal for Auth */}
+//       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+//         {isForgotPassword ? (
+//           <ForgotPassword onBackToLogin={() => setIsForgotPassword(false)} />
+//         ) : (
+//           <AuthForm
+//             onForgotPassword={handleForgotPasswordClick}
+//             onSuccess={handleAuthSuccess}
+//           />
+//         )}
+//       </Modal>
 //     </nav>
 //   );
 // };
 
 // export default Navbar;
 
-import React, { useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Modal from "./Modal";
 import AuthForm from "./AuthForm";
 import ForgotPassword from "../pages/ForgotPassword";
-import { HiMenu, HiX } from "react-icons/hi";
+import { HiMenu, HiX, HiChevronDown } from "react-icons/hi";
+import { apiFetch } from "../utils/api";
 
 const Navbar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const user = await apiFetch({
+          endpoint: "/auth/me",
+          method: "GET",
+          credentials: "include",
+        });
+        setCurrentUser(user);
+      } catch (err) {
+        setCurrentUser(null);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  const profileRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleAuthSuccess = () => {
     setIsModalOpen(false);
     navigate("/");
+    window.location.reload(); // ensures navbar refresh after login
   };
 
-  const handleForgotPasswordClick = () => {
-    setIsForgotPassword(true);
-  };
-
-  const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
+  const avatar = currentUser?.profileImage;
 
   return (
     <nav className="w-full z-50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
-        <Link to="/" className="text-2xl font-bold text-[#305CDE]">
+        <Link
+          to="/"
+          className="text-2xl font-bold text-[#305CDE] cursor-pointer"
+        >
           EvenCen
         </Link>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex space-x-4 items-center">
-          <Link to="/create-space" className="text-[#305CDE] hover:underline">
-            List your Event Center
-          </Link>
-          {!token ? (
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="text-[#305CDE] hover:underline"
-            >
-              Login / Sign Up
-            </button>
-          ) : (
-            <>
-              <Link
-                to="/my-listings"
-                className="text-[#305CDE] hover:underline"
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center space-x-6">
+          {currentUser && (
+            <div ref={profileRef} className="relative">
+              <button
+                onClick={() => setIsProfileOpen((prev) => !prev)}
+                className="cursor-pointer hover:bg-white/20 p-2 rounded-lg flex items-center gap-2 focus:outline-none"
               >
-                My Listings
-              </Link>
-              <Link
-                to="/profile/about"
-                className="text-[#305CDE] hover:underline"
-              >
-                Profile
-              </Link>
-            </>
+                <img
+                  src={avatar}
+                  alt="Profile"
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+
+                <HiChevronDown
+                  className={`text-[#305CDE] transition-transform duration-200 ${
+                    isProfileOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {isProfileOpen && (
+                <div className="absolute right-0 mt-3 w-52 bg-white rounded-xl shadow-lg overflow-hidden z-50">
+                  <Link
+                    to="/create-space"
+                    className="block px-4 py-3 hover:bg-blue-50"
+                    onClick={() => setIsProfileOpen(false)}
+                  >
+                    Publish your space
+                  </Link>
+
+                  <Link
+                    to="/my-listings"
+                    className="block px-4 py-3 hover:bg-blue-50"
+                    onClick={() => setIsProfileOpen(false)}
+                  >
+                    My Listings
+                  </Link>
+
+                  <Link
+                    to="/profile/about"
+                    className="block px-4 py-3 hover:bg-blue-50"
+                    onClick={() => setIsProfileOpen(false)}
+                  >
+                    Profile
+                  </Link>
+
+                  <Link
+                    to="/settings/personal"
+                    className="block px-4 py-3 hover:bg-blue-50"
+                    onClick={() => setIsProfileOpen(false)}
+                  >
+                    Settings
+                  </Link>
+                </div>
+              )}
+            </div>
           )}
         </div>
 
-        {/* Hamburger Icon */}
+        {/* Mobile Hamburger */}
         <button
-          className="md:hidden text-2xl text-[#305CDE] cursor-pointer"
-          onClick={toggleMobileMenu}
+          className="md:hidden text-2xl text-[#305CDE]"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           {isMobileMenuOpen ? <HiX /> : <HiMenu />}
         </button>
       </div>
-      <hr />
+
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white shadow-lg rounded-b-xl border-t border-gray-100 overflow-hidden transform transition-all duration-300 ease-out">
+        <div className="md:hidden border-t bg-white shadow-lg">
           <div className="flex flex-col px-6 py-4 space-y-3">
-            <Link
-              to="/create-space"
-              className="text-[#305CDE] font-medium hover:bg-blue-50 px-3 py-2 rounded-lg transition"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              List your Event Center
-            </Link>
+            <Link to="/create-space">Publish your space</Link>
 
-            {!token ? (
-              <button
-                onClick={() => {
-                  setIsModalOpen(true);
-                  setIsMobileMenuOpen(false);
-                }}
-                className="text-[#305CDE] font-medium hover:bg-blue-50 px-3 py-2 rounded-lg text-left transition"
-              >
+            {!currentUser ? (
+              <button onClick={() => setIsModalOpen(true)}>
                 Login / Sign Up
               </button>
             ) : (
               <>
-                <Link
-                  to="/my-listings"
-                  className="text-[#305CDE] font-medium hover:bg-blue-50 px-3 py-2 rounded-lg transition"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  My Listings
-                </Link>
-                <Link
-                  to="/profile/about"
-                  className="text-[#305CDE] font-medium hover:bg-blue-50 px-3 py-2 rounded-lg transition"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Profile
-                </Link>
+                <Link to="/my-listings">My Listings</Link>
+                <Link to="/profile/about">Profile</Link>
+                <Link to="/profile/settings">Settings</Link>
               </>
             )}
           </div>
         </div>
       )}
 
-      {/* Modal for Auth */}
+      {/* Auth Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         {isForgotPassword ? (
           <ForgotPassword onBackToLogin={() => setIsForgotPassword(false)} />
         ) : (
           <AuthForm
-            onForgotPassword={handleForgotPasswordClick}
+            onForgotPassword={() => setIsForgotPassword(true)}
             onSuccess={handleAuthSuccess}
           />
         )}

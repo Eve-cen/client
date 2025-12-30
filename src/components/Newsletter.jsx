@@ -7,8 +7,8 @@ export default function Newsletter() {
           Stay Inspired
         </h2>
         <p className="text-gray-300 mb-6">
-          Join our newsletter and be the first to discover new destinations,
-          exclusive offers, and travel inspiration.
+          Join our newsletter and be the first to discover new spaces, exclusive
+          offers, and handpicked spaces worldwide.
         </p>
         <form className="flex gap-2 justify-center">
           <input

@@ -15,13 +15,6 @@ const MyListings = () => {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    if (!currentUser && !loading) {
-      navigate("/login");
-      return;
-    }
-  }, [currentUser, loading, navigate]);
-
-  useEffect(() => {
     const fetchUser = async () => {
       try {
         const user = await apiFetch({
@@ -30,6 +23,10 @@ const MyListings = () => {
           credentials: "include",
         });
         setCurrentUser(user._id);
+        if (!user) {
+          navigate("/login");
+          return;
+        }
       } catch (err) {
         console.error("Failed to fetch user:", err);
       }

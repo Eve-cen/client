@@ -11,7 +11,7 @@ const Sidebar = ({ onLinkClick }) => {
     { name: "My Bookings", path: "/my-bookings" },
   ];
   return (
-    <div className="w-64 h-screen border-r fixed top-16 left-0 p-4 sm:flex flex-col justify-between pb-[100px]">
+    <div className="w-64 h-screen border-r fixed top-16 md:top-0 left-0 p-4 sm:flex flex-col justify-between pb-[100px]">
       <div>
         {sections.map((section) => (
           <Link

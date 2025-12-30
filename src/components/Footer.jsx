@@ -1,4 +1,3 @@
-// Footer.js
 export default function Footer() {
   return (
     <footer className="bg-gray-50 py-8">
@@ -7,8 +6,8 @@ export default function Footer() {
         <div className="mb-6">
           <div className="font-bold text-lg mb-2">Evecen</div>
           <p className="text-gray-500 text-sm max-w-xs mb-3">
-            Discover the world’s most extraordinary places to stay, from
-            boutique hotels to luxury villas and private islands.
+            Discover the worlds most exceptional commercial spaces, from offices
+            and studios to venues and landmark locations.
           </p>
           <div className="flex space-x-3 text-gray-500">
             <a href="#">

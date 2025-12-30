@@ -730,19 +730,19 @@ const Settings = () => {
                 <InputToggle
                   label="Read Receipts for Messages"
                   name="readReceipts"
-                  checked={user.privacySettings.readReceipts}
+                  // checked={user.privacySettings.readReceipts}
                   onChange={handleToggleChange}
                 />
                 <InputToggle
                   label="Show Listings on Search"
                   name="showListings"
-                  checked={user.privacySettings.showListings}
+                  // checked={user.privacySettings.showListings}
                   onChange={handleToggleChange}
                 />
                 <InputToggle
                   label="Show Review Information"
                   name="showReviewInfo"
-                  checked={user.privacySettings.showReviewInfo}
+                  // checked={user.privacySettings.showReviewInfo}
                   onChange={handleToggleChange}
                 />
                 <Button type="submit" children="Save Changes" />
