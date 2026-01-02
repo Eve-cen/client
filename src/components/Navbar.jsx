@@ -150,17 +150,37 @@ const Navbar = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setCurrentUser(null);
+        return;
+      }
+
       try {
-        const user = await apiFetch({
-          endpoint: "/auth/me",
+        const response = await fetch(`http://localhost:5000/api/auth/me`, {
           method: "GET",
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         });
+
+        if (!response.ok || !response.status === "401") {
+          // Token expired or invalid
+          console.log("not logged in");
+          setCurrentUser(null);
+          return;
+        }
+
+        const user = await response.json();
         setCurrentUser(user);
-      } catch (err) {
+      } catch (error) {
+        console.error("Auth check failed:", error);
         setCurrentUser(null);
       }
     };
+
     fetchUser();
   }, []);
 
@@ -198,7 +218,7 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
-          {currentUser && (
+          {currentUser ? (
             <div ref={profileRef} className="relative">
               <button
                 onClick={() => setIsProfileOpen((prev) => !prev)}
@@ -253,12 +273,16 @@ const Navbar = () => {
                 </div>
               )}
             </div>
+          ) : (
+            <Link to="/login" className="text-[#305CDE] cursor-pointer">
+              Login/Signup
+            </Link>
           )}
         </div>
 
         {/* Mobile Hamburger */}
         <button
-          className="md:hidden text-2xl text-[#305CDE]"
+          className="cursor-pointer md:hidden text-2xl text-[#305CDE]"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           {isMobileMenuOpen ? <HiX /> : <HiMenu />}
@@ -269,17 +293,27 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden border-t bg-white shadow-lg">
           <div className="flex flex-col px-6 py-4 space-y-3">
-            <Link to="/create-space">Publish your space</Link>
-
             {!currentUser ? (
-              <button onClick={() => setIsModalOpen(true)}>
+              <button
+                className="cursor-pointer hover:text-[#305CDE]"
+                onClick={() => setIsModalOpen(true)}
+              >
                 Login / Sign Up
               </button>
             ) : (
               <>
-                <Link to="/my-listings">My Listings</Link>
-                <Link to="/profile/about">Profile</Link>
-                <Link to="/profile/settings">Settings</Link>
+                <Link to="/create-space" className="hover:text-[#305CDE]">
+                  Publish your space
+                </Link>
+                <Link to="/my-listings" className="hover:text-[#305CDE]">
+                  My Listings
+                </Link>
+                <Link to="/profile/about" className="hover:text-[#305CDE]">
+                  Profile
+                </Link>
+                <Link to="/profile/settings" className="hover:text-[#305CDE]">
+                  Settings
+                </Link>
               </>
             )}
           </div>

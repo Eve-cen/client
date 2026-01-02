@@ -13,13 +13,14 @@ import Counter from "../components/Counter";
 import MapComponent from "../components/MapComponent";
 import Notification from "../components/Notification";
 import { Autocomplete, useLoadScript } from "@react-google-maps/api";
+import { Home, Bell, Compass } from "lucide-react";
 
 const CreateSpace = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const totalSteps = 11;
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [selected, setSelected] = useState("");
   const [errors, setErrors] = useState({});
   const [apiKey] = useState(import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ""); // set your key in .env
   const [categories, setCategories] = useState([]);
@@ -540,10 +541,95 @@ const CreateSpace = () => {
     },
   ];
 
+  const options = [
+    {
+      id: "home",
+      label: "Home",
+      icon: Home,
+    },
+    {
+      id: "experience",
+      label: "Experience",
+      icon: Compass,
+    },
+    {
+      id: "service",
+      label: "Service",
+      icon: Bell,
+    },
+  ];
+
   return (
     <div className="min-h-[calc(100vh-65px)] flex flex-col justify-between bg-gray-50 p-4 sm:p-8">
       <div className="container mx-auto">
         {step === 1 && (
+          <div>
+            <h2 className="text-3xl font-semibold text-center mb-12">
+              What would you like to host?
+            </h2>
+
+            {/* Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {options.map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => setSelected(id)}
+                  className={`border rounded-2xl p-10 flex flex-col items-center justify-center gap-6 transition-all
+                ${
+                  selected === id
+                    ? "border-black shadow-md"
+                    : "border-gray-300 hover:border-black"
+                }
+              `}
+                >
+                  <Icon size={56} className="text-black" />
+                  <span className="text-lg font-medium">{label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div>
+            <h2 className="text-4xl my-4">Category</h2>
+            <p className="text-gray-600 mb-4">What type of space is this?</p>
+            <div className="grid grid-cols-2 gap-4">
+              {categories.map((cat) => (
+                <label
+                  key={cat._id}
+                  className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+                    spaceData.category === cat._id
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                  onClick={() => {
+                    setSpaceData((prev) => ({ ...prev, category: cat._id }));
+                    setErrors((prev) => ({ ...prev, category: "" }));
+                  }}
+                >
+                  <span className="font-medium text-gray-800">{cat.name}</span>
+                  <div
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                      spaceData.category === cat._id
+                        ? "border-blue-500"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    {spaceData.category === cat._id && (
+                      <div className="w-3 h-3 bg-blue-500 rounded-full" />
+                    )}
+                  </div>
+                </label>
+              ))}
+            </div>
+            {errors.category && (
+              <p className="text-red-500 text-sm mt-2">{errors.category}</p>
+            )}
+          </div>
+        )}
+
+        {step === 3 && (
           <div>
             <h2 className="text-4xl my-4">Publish your space</h2>
             <Input
@@ -573,7 +659,7 @@ const CreateSpace = () => {
             )}
           </div>
         )}
-        {step === 2 && isLoaded && (
+        {step === 4 && isLoaded && (
           <div>
             <h2 className="text-4xl my-4">Step 2: Location</h2>
 
@@ -625,7 +711,7 @@ const CreateSpace = () => {
           </div>
         )}
 
-        {step === 3 && (
+        {step === 5 && (
           <div>
             <h2 className="text-4xl my-4">Step 3: Confirm Location</h2>
             <p className="mb-4">
@@ -687,7 +773,7 @@ const CreateSpace = () => {
           </div>
         )}
 
-        {step === 4 && (
+        {step === 6 && (
           <div>
             <h2 className="text-4xl my-4">Features & Extras</h2>
             <div className="mb-4">
@@ -755,7 +841,7 @@ const CreateSpace = () => {
             </div>
           </div>
         )}
-        {step === 5 && (
+        {step === 7 && (
           <div>
             <h2 className="text-4xl my-4">Step 5: Add Photos</h2>
 
@@ -805,7 +891,7 @@ const CreateSpace = () => {
             )}
           </div>
         )}
-        {step === 6 && (
+        {step === 8 && (
           <div>
             <h2 className="text-4xl my-4">Step 6: Rearrange Images</h2>
             <ImageReorder
@@ -813,45 +899,6 @@ const CreateSpace = () => {
               onReorder={handleImageReorder}
               onAddMore={() => setShowPopup(true)}
             />
-          </div>
-        )}
-
-        {step === 7 && (
-          <div>
-            <h2 className="text-4xl my-4">Step 7: Category</h2>
-            <p className="text-gray-600 mb-4">What type of space is this?</p>
-            <div className="grid grid-cols-2 gap-4">
-              {categories.map((cat) => (
-                <label
-                  key={cat._id}
-                  className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
-                    spaceData.category === cat._id
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
-                  }`}
-                  onClick={() => {
-                    setSpaceData((prev) => ({ ...prev, category: cat._id }));
-                    setErrors((prev) => ({ ...prev, category: "" }));
-                  }}
-                >
-                  <span className="font-medium text-gray-800">{cat.name}</span>
-                  <div
-                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                      spaceData.category === cat._id
-                        ? "border-blue-500"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    {spaceData.category === cat._id && (
-                      <div className="w-3 h-3 bg-blue-500 rounded-full" />
-                    )}
-                  </div>
-                </label>
-              ))}
-            </div>
-            {errors.category && (
-              <p className="text-red-500 text-sm mt-2">{errors.category}</p>
-            )}
           </div>
         )}
 
