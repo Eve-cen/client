@@ -452,6 +452,7 @@ const CreateSpace = () => {
     setIsSubmitting(true);
     try {
       const formData = new FormData();
+      formData.append("listingType", JSON.stringify(spaceData.listingType));
       formData.append("title", spaceData.title);
       formData.append("description", spaceData.description);
       formData.append("category", spaceData.category);
@@ -469,6 +470,7 @@ const CreateSpace = () => {
 
       const token = localStorage.getItem("token");
       const res = await fetch("https://evencen.onrender.com/api/properties", {
+        // const res = await fetch("http://localhost:5000/api/properties", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -549,17 +551,17 @@ const CreateSpace = () => {
 
   const options = [
     {
-      id: "home",
+      id: "Home",
       label: "Home",
       icon: Home,
     },
     {
-      id: "experience",
+      id: "Experience",
       label: "Experience",
       icon: Compass,
     },
     {
-      id: "service",
+      id: "Service",
       label: "Service",
       icon: Bell,
     },
