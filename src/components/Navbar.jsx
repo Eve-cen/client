@@ -158,13 +158,16 @@ const Navbar = () => {
       }
 
       try {
-        const response = await fetch(`http://localhost:5000/api/auth/me`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          `https://evencen.onrender.com/api/auth/me`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (!response.ok || !response.status === "401") {
           // Token expired or invalid
