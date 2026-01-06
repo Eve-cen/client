@@ -31,6 +31,7 @@ const CreateSpace = () => {
   const libraries = ["places"];
 
   const [spaceData, setSpaceData] = useState({
+    listingType: "",
     title: "",
     description: "",
     location: { address: "", city: "", country: "" },
@@ -279,6 +280,16 @@ const CreateSpace = () => {
 
     switch (step) {
       case 1:
+        if (!spaceData.listingType)
+          newErrors.listingType = "Please select a type";
+        break;
+
+      case 2:
+        if (!spaceData.category)
+          newErrors.category = "Please select a category";
+        break;
+
+      case 3:
         if (!spaceData.title.trim()) {
           newErrors.title = "Space name is required";
         } else if (spaceData.title.trim().length < 5) {
@@ -293,7 +304,7 @@ const CreateSpace = () => {
         }
         break;
 
-      case 2:
+      case 4:
         if (!spaceData.location.address.trim())
           newErrors["location.address"] = "Address is required";
         if (!spaceData.location.city.trim())
@@ -302,12 +313,12 @@ const CreateSpace = () => {
           newErrors["location.country"] = "Country is required";
         break;
 
-      case 3:
+      case 5:
         if (!spaceData.coordinates.latitude || !spaceData.coordinates.longitude)
           newErrors.coordinates = "Please pin a location on the map";
         break;
 
-      case 4:
+      case 6:
         if (!spaceData.features.sizeSQM || spaceData.features.sizeSQM <= 5)
           newErrors["features.sizeSQM"] = "Size must be greater than 5";
 
@@ -332,22 +343,17 @@ const CreateSpace = () => {
         });
         break;
 
-      case 5:
+      case 7:
         if (spaceData.imageFiles.length === 0)
           newErrors.images = "At least one photo is required";
         break;
 
-      case 8:
+      case 9:
         if (
           !spaceData.pricing.weekdayPrice ||
           spaceData.pricing.weekdayPrice <= 0
         )
           newErrors.weekdayPrice = "Enter a valid price per hour";
-        break;
-
-      case 7:
-        if (!spaceData.category)
-          newErrors.category = "Please select a category";
         break;
 
       default:
@@ -564,23 +570,39 @@ const CreateSpace = () => {
       <div className="container mx-auto">
         {step === 1 && (
           <div>
+            {errors.listingType && (
+              <div className="mb-6">
+                <Notification message={errors.listingType} type="danger" />
+              </div>
+            )}
             <h2 className="text-3xl font-semibold text-center mb-12">
               What would you like to host?
             </h2>
 
-            {/* Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {options.map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
-                  onClick={() => setSelected(id)}
-                  className={`border rounded-2xl p-10 flex flex-col items-center justify-center gap-6 transition-all
-                ${
-                  selected === id
-                    ? "border-black shadow-md"
-                    : "border-gray-300 hover:border-black"
-                }
-              `}
+                  onClick={() => {
+                    setSelected(id);
+
+                    setSpaceData((prev) => ({
+                      ...prev,
+                      listingType: id,
+                    }));
+
+                    setErrors((prev) => ({
+                      ...prev,
+                      listingType: "",
+                    }));
+                  }}
+                  className={`border rounded-2xl p-10 flex flex-col items-center justify-center cursor-pointer gap-6 transition-all
+            ${
+              selected === id
+                ? "border-black shadow-md"
+                : "border-gray-300 hover:border-black"
+            }
+          `}
                 >
                   <Icon size={56} className="text-black" />
                   <span className="text-lg font-medium">{label}</span>
@@ -592,6 +614,11 @@ const CreateSpace = () => {
 
         {step === 2 && (
           <div>
+            {errors.category && (
+              <div className="mt-6">
+                <Notification message={errors.category} type="danger" />
+              </div>
+            )}
             <h2 className="text-4xl my-4">Category</h2>
             <p className="text-gray-600 mb-4">What type of space is this?</p>
             <div className="grid grid-cols-2 gap-4">
@@ -623,9 +650,6 @@ const CreateSpace = () => {
                 </label>
               ))}
             </div>
-            {errors.category && (
-              <p className="text-red-500 text-sm mt-2">{errors.category}</p>
-            )}
           </div>
         )}
 
@@ -637,11 +661,9 @@ const CreateSpace = () => {
               name="title"
               value={spaceData.title}
               onChange={handleChange}
+              error={errors.title}
               required
             />
-            {errors.title && (
-              <p className="text-red-500 text-sm mt-1">{errors.title}</p>
-            )}
             <label className="block text-sm font-medium text-gray-700 mt-4">
               Description
             </label>
@@ -661,7 +683,7 @@ const CreateSpace = () => {
         )}
         {step === 4 && isLoaded && (
           <div>
-            <h2 className="text-4xl my-4">Step 2: Location</h2>
+            <h2 className="text-4xl my-4">Location</h2>
 
             <Autocomplete
               onLoad={onLoad}
@@ -713,7 +735,7 @@ const CreateSpace = () => {
 
         {step === 5 && (
           <div>
-            <h2 className="text-4xl my-4">Step 3: Confirm Location</h2>
+            <h2 className="text-4xl my-4">Confirm Location</h2>
             <p className="mb-4">
               Pin your location on the map or adjust the marker below
             </p>
@@ -843,7 +865,7 @@ const CreateSpace = () => {
         )}
         {step === 7 && (
           <div>
-            <h2 className="text-4xl my-4">Step 5: Add Photos</h2>
+            <h2 className="text-4xl my-4">Add Photos</h2>
 
             <Button
               onClick={() => setShowPopup(true)}
@@ -893,7 +915,7 @@ const CreateSpace = () => {
         )}
         {step === 8 && (
           <div>
-            <h2 className="text-4xl my-4">Step 6: Rearrange Images</h2>
+            <h2 className="text-4xl my-4"> Rearrange Images</h2>
             <ImageReorder
               images={spaceData.imagePreviews} // ✅ Use imagePreviews for display
               onReorder={handleImageReorder}
