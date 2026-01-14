@@ -145,9 +145,18 @@ const Navbar = () => {
               )}
             </div>
           ) : (
-            <Link to="/login" className="text-[#305CDE] cursor-pointer">
-              Login/Signup
-            </Link>
+            <>
+              <Link
+                to="/create-space"
+                className="text-[#305CDE] cursor-pointer"
+                onClick={() => setIsProfileOpen(false)}
+              >
+                Publish your space
+              </Link>
+              <Link to="/login" className="text-[#305CDE] cursor-pointer">
+                Login/Signup
+              </Link>
+            </>
           )}
         </div>
 
@@ -165,12 +174,21 @@ const Navbar = () => {
         <div className="md:hidden border-t bg-white shadow-lg">
           <div className="flex flex-col px-6 py-4 space-y-3">
             {!currentUser ? (
-              <button
-                className="cursor-pointer hover:text-[#305CDE]"
-                onClick={() => setIsModalOpen(true)}
-              >
-                Login / Sign Up
-              </button>
+              <>
+                <Link
+                  to="/create-space"
+                  className="block px-4 py-3 hover:bg-blue-50"
+                  onClick={() => setIsProfileOpen(false)}
+                >
+                  Publish your space
+                </Link>
+                <button
+                  className="cursor-pointer hover:text-[#305CDE]"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  Login / Sign Up
+                </button>
+              </>
             ) : (
               <>
                 <Link to="/create-space" className="hover:text-[#305CDE]">

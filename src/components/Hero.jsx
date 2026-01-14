@@ -154,7 +154,7 @@ const Hero = ({ onExplore }) => {
           </form>
           {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
         </div>
-        <div className="container mx-auto mt-10 flex items-center justify-between">
+        <div className="container mx-auto mt-10 flex items-center justify-between text-white">
           <h2 className="text-4xl">
             Book the <span className="block text-blue-500">Perfect Venue</span>{" "}
             with Ease

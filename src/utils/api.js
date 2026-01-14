@@ -10,8 +10,8 @@ const apiFetch = async ({
   timeout = 10000, // 10 seconds timeout
   headers = {},
 }) => {
-  // const baseURL = "http://localhost:5000/api"; // Replace with env variable in production
-  const baseURL = "https://evencen.onrender.com/api"; // Replace with env variable in production
+  const baseURL = "http://localhost:5000/api"; // Replace with env variable in production
+  // const baseURL = "https://evencen.onrender.com/api"; // Replace with env variable in production
   const url = `${baseURL}${endpoint}`;
   const token = localStorage.getItem("token");
 

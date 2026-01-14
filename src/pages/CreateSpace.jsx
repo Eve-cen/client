@@ -13,13 +13,14 @@ import Counter from "../components/Counter";
 import MapComponent from "../components/MapComponent";
 import Notification from "../components/Notification";
 import { Autocomplete, useLoadScript } from "@react-google-maps/api";
-import { Home, Bell, Compass } from "lucide-react";
+import { Home, Bell, Compass, Save, FileText } from "lucide-react";
 
 const CreateSpace = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const totalSteps = 11;
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [selected, setSelected] = useState("");
   const [errors, setErrors] = useState({});
   const [apiKey] = useState(import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ""); // set your key in .env
@@ -27,7 +28,9 @@ const CreateSpace = () => {
   const [showModal, setShowModal] = useState(false);
   const [countdown, setCountdown] = useState(3);
   const [currentUser, setCurrentUser] = useState("");
-
+  const [hasDraft, setHasDraft] = useState(false);
+  const [showDraftPrompt, setShowDraftPrompt] = useState(false);
+  const [draftId, setDraftId] = useState(null);
   const libraries = ["places"];
 
   const [spaceData, setSpaceData] = useState({
@@ -150,6 +153,180 @@ const CreateSpace = () => {
       }
     };
     fetchUser();
+    checkForDraft();
+  }, []);
+
+  const checkForDraft = async () => {
+    try {
+      const response = await apiFetch({
+        endpoint: "/drafts",
+        method: "GET",
+      });
+
+      if (response.success && response.draft) {
+        setHasDraft(true);
+        setDraftId(response.draft._id);
+        setShowDraftPrompt(true);
+      }
+    } catch (err) {
+      // No draft found, that's okay
+      console.log("No draft found");
+    }
+  };
+
+  const loadDraft = async () => {
+    try {
+      const response = await apiFetch({
+        endpoint: "/drafts",
+        method: "GET",
+      });
+
+      if (response.success && response.draft) {
+        const draft = response.draft;
+
+        // Convert server images to previews
+        const serverImagePreviews =
+          draft.images?.map(
+            (img) => `http://localhost:5000${img.url}` // Adjust URL based on your server
+          ) || [];
+
+        setSpaceData({
+          listingType: draft.listingType || "",
+          title: draft.title || "",
+          description: draft.description || "",
+          location: draft.location || { address: "", city: "", country: "" },
+          coordinates: draft.coordinates || { latitude: null, longitude: null },
+          features: { ...spaceData.features, ...draft.features },
+          extras: draft.extras || [],
+          imageFiles: [], // Can't repopulate file input
+          imagePreviews: serverImagePreviews,
+          serverImages: draft.images || [],
+          removedImages: [],
+          coverImage: serverImagePreviews[0] || null,
+          category: draft.category?._id || draft.category || "",
+          pricing: { ...spaceData.pricing, ...draft.pricing },
+          bookingSettings: {
+            ...spaceData.bookingSettings,
+            ...draft.bookingSettings,
+          },
+        });
+
+        setStep(draft.currentStep || 1);
+        setSelected(draft.listingType || "");
+        setShowDraftPrompt(false);
+        toast.success("Draft loaded successfully!");
+      }
+    } catch (err) {
+      console.error("Failed to load draft:", err);
+      toast.error("Failed to load draft");
+    }
+  };
+
+  const saveDraft = async () => {
+    setIsSavingDraft(true);
+    try {
+      const formData = new FormData();
+
+      // Prepare draft data
+      const draftData = {
+        listingType: spaceData.listingType,
+        title: spaceData.title,
+        description: spaceData.description,
+        location: spaceData.location,
+        coordinates: spaceData.coordinates,
+        features: spaceData.features,
+        extras: spaceData.extras,
+        category: spaceData.category,
+        pricing: spaceData.pricing,
+        bookingSettings: spaceData.bookingSettings,
+        currentStep: step,
+        coverImage: spaceData.coverImage,
+      };
+
+      formData.append("data", JSON.stringify(draftData));
+
+      // Append only NEW image files (not server images)
+      spaceData.imageFiles.forEach((file) => {
+        formData.append("images", file);
+      });
+
+      // Append removed images
+      // if (spaceData.removedImages.length > 0) {
+      //   formData.append(
+      //     "removedImages",
+      //     JSON.stringify(spaceData.removedImages)
+      //   );
+      // }
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      const res = await fetch("http://localhost:5000/api/drafts/save", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+        credentials: "include",
+      });
+
+      console.log(res);
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || "Failed to save draft");
+
+      // Update serverImages with the response
+      if (data.draft.images) {
+        const serverImagePreviews = data.draft.images.map(
+          (img) => `http://localhost:5000${img.url}`
+        );
+
+        setSpaceData((prev) => ({
+          ...prev,
+          serverImages: data.draft.images,
+          imagePreviews: serverImagePreviews,
+          imageFiles: [], // Clear new files since they're now on server
+          removedImages: [], // Clear removed list
+        }));
+      }
+
+      setHasDraft(true);
+      setDraftId(data.draft._id);
+      toast.success("Draft saved successfully!");
+    } catch (err) {
+      console.error("Save draft error:", err);
+      toast.error(err.message || "Failed to save draft");
+    } finally {
+      setIsSavingDraft(false);
+    }
+  };
+
+  const deleteDraft = async () => {
+    try {
+      await apiFetch({
+        endpoint: "/drafts",
+        method: "DELETE",
+      });
+
+      setHasDraft(false);
+      setDraftId(null);
+      toast.success("Draft deleted");
+    } catch (err) {
+      console.error("Delete draft error:", err);
+    }
+  };
+
+  // Cleanup blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      spaceData.imagePreviews.forEach((url) => {
+        if (url.startsWith("blob:")) {
+          URL.revokeObjectURL(url);
+        }
+      });
+    };
   }, []);
 
   // Cleanup blob URLs on unmount
@@ -465,17 +642,30 @@ const CreateSpace = () => {
       formData.append("location", JSON.stringify(spaceData.location));
       formData.append("coordinates", JSON.stringify(spaceData.coordinates));
       formData.append("extras", JSON.stringify(spaceData.extras || []));
+      formData.append("draftId", draftId);
 
       spaceData.imageFiles.forEach((file) => formData.append("images", file));
 
       const token = localStorage.getItem("token");
-      const res = await fetch("https://evencen.onrender.com/api/properties", {
-        // const res = await fetch("http://localhost:5000/api/properties", {
+      if (!token) {
+        navigate("/login");
+        saveDraft();
+        return;
+      }
+      // const res = await fetch("https://evencen.onrender.com/api/properties", {
+      const res = await fetch("http://localhost:5000/api/properties", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
         credentials: "include",
       });
+
+      if (res.status === 401) {
+        localStorage.removeItem("token");
+        saveDraft();
+        navigate("/login");
+        return;
+      }
 
       const data = await res.json();
 
@@ -569,7 +759,50 @@ const CreateSpace = () => {
 
   return (
     <div className="min-h-[calc(100vh-65px)] flex flex-col justify-between bg-gray-50 p-4 sm:p-8">
+      {showDraftPrompt && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full">
+            <div className="flex items-center justify-center mb-4">
+              <FileText size={48} className="text-blue-600" />
+            </div>
+            <h2 className="text-2xl font-bold mb-2 text-center">
+              Draft Found!
+            </h2>
+            <p className="text-gray-600 mb-6 text-center">
+              You have an unfinished listing. Would you like to continue from
+              where you left off?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDraftPrompt(false)}
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Start Fresh
+              </button>
+              <button
+                onClick={loadDraft}
+                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Use Draft
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="container mx-auto">
+        {/* Save Draft Button - Always visible */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={saveDraft}
+            disabled={isSavingDraft}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg disabled:opacity-50"
+          >
+            <Save size={18} />
+            {isSavingDraft ? "Saving..." : "Save Draft"}
+          </button>
+        </div>
+
         {step === 1 && (
           <div>
             {errors.listingType && (
