@@ -185,9 +185,13 @@ const CreateSpace = () => {
         const draft = response.draft;
 
         // Convert server images to previews
+        // const serverImagePreviews =
+        //   draft.images?.map(
+        //     (img) => `http://localhost:5000${img.url}` // Adjust URL based on your server
+        //   ) || [];
         const serverImagePreviews =
           draft.images?.map(
-            (img) => `http://localhost:5000${img.url}` // Adjust URL based on your server
+            (img) => `https://evencen.onrender.com/api/${img.url}` // Adjust URL based on your server
           ) || [];
 
         setSpaceData({
@@ -264,7 +268,8 @@ const CreateSpace = () => {
         return;
       }
 
-      const res = await fetch("http://localhost:5000/api/drafts/save", {
+      const res = await fetch("https://evencen.onrender.com/api/drafts/save", {
+        // const res = await fetch("http://localhost:5000/api/drafts/save", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -280,7 +285,7 @@ const CreateSpace = () => {
       // Update serverImages with the response
       if (data.draft.images) {
         const serverImagePreviews = data.draft.images.map(
-          (img) => `http://localhost:5000${img.url}`
+          (img) => `https://evencen.onrender.com/api/${img.url}`
         );
 
         setSpaceData((prev) => ({
@@ -652,8 +657,8 @@ const CreateSpace = () => {
         saveDraft();
         return;
       }
-      // const res = await fetch("https://evencen.onrender.com/api/properties", {
-      const res = await fetch("http://localhost:5000/api/properties", {
+      const res = await fetch("https://evencen.onrender.com/api/properties", {
+        // const res = await fetch("http://localhost:5000/api/properties", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
