@@ -34,7 +34,6 @@ const CreateSpace = () => {
   const libraries = ["places"];
 
   const [spaceData, setSpaceData] = useState({
-    listingType: "",
     title: "",
     description: "",
     location: { address: "", city: "", country: "" },
@@ -44,6 +43,20 @@ const CreateSpace = () => {
       restrooms: 1,
       sizeSQM: 0,
       seatCapacity: 0,
+      plug: false,
+      sound: false,
+      lockable: false,
+      washbasin: false,
+      clinicalSurface: false,
+      wasteBin: false,
+      meetCQCStandards: false,
+      electricBed: false,
+      adjustableStool: false,
+      trolley: false,
+      magnifyingLamp: false,
+      storage: false,
+      mirror: false,
+      bathroom: 1,
       consultationArea: false,
       examinationCouch: false,
       sinkCounter: false,
@@ -94,10 +107,13 @@ const CreateSpace = () => {
   };
 
   const onPlaceChanged = () => {
+    if (!autocompleteRef.current) return;
+
     const place = autocompleteRef.current.getPlace();
     if (!place.address_components) return;
 
-    let address = "";
+    let streetNumber = "";
+    let route = "";
     let city = "";
     let country = "";
 
@@ -105,18 +121,27 @@ const CreateSpace = () => {
       const types = component.types;
 
       if (types.includes("street_number")) {
-        address = component.long_name + " " + address;
+        streetNumber = component.long_name;
       }
+
       if (types.includes("route")) {
-        address += component.long_name;
+        route = component.long_name;
       }
-      if (types.includes("locality")) {
-        city = component.long_name;
+
+      if (
+        types.includes("locality") ||
+        types.includes("postal_town") ||
+        types.includes("administrative_area_level_2")
+      ) {
+        if (!city) city = component.long_name;
       }
+
       if (types.includes("country")) {
         country = component.long_name;
       }
     });
+
+    const address = [streetNumber, route].filter(Boolean).join(" ");
 
     setSpaceData((prev) => ({
       ...prev,
@@ -185,17 +210,12 @@ const CreateSpace = () => {
         const draft = response.draft;
 
         // Convert server images to previews
-        // const serverImagePreviews =
-        //   draft.images?.map(
-        //     (img) => `http://localhost:5000${img.url}` // Adjust URL based on your server
-        //   ) || [];
         const serverImagePreviews =
           draft.images?.map(
-            (img) => `https://evencen.onrender.com/api/${img.url}` // Adjust URL based on your server
+            (img) => `${import.meta.env.VITE_API_URL}${img.url}` // Adjust URL based on your server
           ) || [];
 
         setSpaceData({
-          listingType: draft.listingType || "",
           title: draft.title || "",
           description: draft.description || "",
           location: draft.location || { address: "", city: "", country: "" },
@@ -216,7 +236,7 @@ const CreateSpace = () => {
         });
 
         setStep(draft.currentStep || 1);
-        setSelected(draft.listingType || "");
+        setSelected(draft.categories || "");
         setShowDraftPrompt(false);
         toast.success("Draft loaded successfully!");
       }
@@ -233,7 +253,6 @@ const CreateSpace = () => {
 
       // Prepare draft data
       const draftData = {
-        listingType: spaceData.listingType,
         title: spaceData.title,
         description: spaceData.description,
         location: spaceData.location,
@@ -268,8 +287,7 @@ const CreateSpace = () => {
         return;
       }
 
-      const res = await fetch("https://evencen.onrender.com/api/drafts/save", {
-        // const res = await fetch("http://localhost:5000/api/drafts/save", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/drafts/save`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -285,7 +303,7 @@ const CreateSpace = () => {
       // Update serverImages with the response
       if (data.draft.images) {
         const serverImagePreviews = data.draft.images.map(
-          (img) => `https://evencen.onrender.com/api/${img.url}`
+          (img) => `${import.meta.env.VITE_API_URL}/${img.url}`
         );
 
         setSpaceData((prev) => ({
@@ -462,16 +480,11 @@ const CreateSpace = () => {
 
     switch (step) {
       case 1:
-        if (!spaceData.listingType)
-          newErrors.listingType = "Please select a type";
-        break;
-
-      case 2:
         if (!spaceData.category)
           newErrors.category = "Please select a category";
         break;
 
-      case 3:
+      case 2:
         if (!spaceData.title.trim()) {
           newErrors.title = "Space name is required";
         } else if (spaceData.title.trim().length < 5) {
@@ -486,7 +499,7 @@ const CreateSpace = () => {
         }
         break;
 
-      case 4:
+      case 3:
         if (!spaceData.location.address.trim())
           newErrors["location.address"] = "Address is required";
         if (!spaceData.location.city.trim())
@@ -495,12 +508,12 @@ const CreateSpace = () => {
           newErrors["location.country"] = "Country is required";
         break;
 
-      case 5:
+      case 4:
         if (!spaceData.coordinates.latitude || !spaceData.coordinates.longitude)
           newErrors.coordinates = "Please pin a location on the map";
         break;
 
-      case 6:
+      case 5:
         if (!spaceData.features.sizeSQM || spaceData.features.sizeSQM <= 5)
           newErrors["features.sizeSQM"] = "Size must be greater than 5";
 
@@ -525,12 +538,12 @@ const CreateSpace = () => {
         });
         break;
 
-      case 7:
+      case 6:
         if (spaceData.imageFiles.length === 0)
           newErrors.images = "At least one photo is required";
         break;
 
-      case 9:
+      case 8:
         if (
           !spaceData.pricing.weekdayPrice ||
           spaceData.pricing.weekdayPrice <= 0
@@ -551,7 +564,7 @@ const CreateSpace = () => {
 
   useEffect(() => {
     if (
-      step === 3 &&
+      step === 4 &&
       !spaceData.coordinates.latitude &&
       !spaceData.coordinates.longitude
     ) {
@@ -568,7 +581,7 @@ const CreateSpace = () => {
       });
 
       const response = await fetch(
-        `https://evencen.onrender.com/api/geocode?${params.toString()}`
+        `${import.meta.env.VITE_API_URL}/geocode?${params.toString()}`
       );
 
       if (!response.ok) {
@@ -634,7 +647,6 @@ const CreateSpace = () => {
     setIsSubmitting(true);
     try {
       const formData = new FormData();
-      formData.append("listingType", JSON.stringify(spaceData.listingType));
       formData.append("title", spaceData.title);
       formData.append("description", spaceData.description);
       formData.append("category", spaceData.category);
@@ -657,8 +669,7 @@ const CreateSpace = () => {
         saveDraft();
         return;
       }
-      const res = await fetch("https://evencen.onrender.com/api/properties", {
-        // const res = await fetch("http://localhost:5000/api/properties", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/properties`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -695,6 +706,82 @@ const CreateSpace = () => {
       setIsSubmitting(false);
     }
   };
+
+  const treatmentRoomFeatures = [
+    {
+      key: "plug",
+      title: "Plug sockets",
+      description: "Guests have access to electrical power outlets",
+    },
+    {
+      key: "sound",
+      title: "Sound Insulation",
+      description: "Designed to minimize external and internal noise",
+    },
+    {
+      key: "lockable",
+      title: "Lockable door/storage",
+      description: "Provides secure lockable storage or doors",
+    },
+    {
+      key: "washbasin",
+      title: "Washbasin",
+      description: "Dedicated basin for washing and daily use",
+    },
+    {
+      key: "clinicalSurface",
+      title: "Clinical grade, wipeable surfaces",
+      description:
+        "Durable, non-porous surfaces designed for effective cleaning",
+    },
+    {
+      key: "wasteBin",
+      title: "Sharp bin & clinical waste",
+      description:
+        "Designated containers for sharps and medical waste disposal",
+    },
+    {
+      key: "meetCQCStandards",
+      title: "Meet CQC / local health authority standards",
+      description:
+        "Meets all required standards set by CQC and local health authorities",
+    },
+    {
+      key: "electricBed",
+      title: "Electric or hydraulic treatment bed",
+      description:
+        "Treatment bed that can be raised, lowered, and tilted electronically or hydraulically",
+    },
+    {
+      key: "adjustableStool",
+      title: "Adjustable stool for practitioners",
+      description: "Ergonomic stool that can be adjusted for practitioner use",
+    },
+    {
+      key: "trolley",
+      title: "Clinical trolley",
+      description:
+        "Trolley designed to store and transport clinical instruments",
+    },
+    {
+      key: "magnifyingLamp",
+      title: "Magnifying lamp or ring",
+      description:
+        "Magnifying lamp or ring to enhance visibility during treatments",
+    },
+    {
+      key: "storage",
+      title: "Built-in storage cabinets or drawers",
+      description:
+        "Built-in storage solutions to keep supplies neatly arranged",
+    },
+    {
+      key: "mirror",
+      title: "Mirror for good facial lighting",
+      description:
+        "Well-lit mirror designed to enhance visibility for facial care",
+    },
+  ];
 
   const medicalFeatures = [
     {
@@ -744,31 +831,13 @@ const CreateSpace = () => {
     },
   ];
 
-  const options = [
-    {
-      id: "Home",
-      label: "Home",
-      icon: Home,
-    },
-    {
-      id: "Experience",
-      label: "Experience",
-      icon: Compass,
-    },
-    {
-      id: "Service",
-      label: "Service",
-      icon: Bell,
-    },
-  ];
-
   return (
     <div className="min-h-[calc(100vh-65px)] flex flex-col justify-between bg-gray-50 p-4 sm:p-8">
       {showDraftPrompt && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-8 max-w-md w-full">
             <div className="flex items-center justify-center mb-4">
-              <FileText size={48} className="text-blue-600" />
+              <FileText size={48} className="text-[#305CDE]" />
             </div>
             <h2 className="text-2xl font-bold mb-2 text-center">
               Draft Found!
@@ -786,7 +855,7 @@ const CreateSpace = () => {
               </button>
               <button
                 onClick={loadDraft}
-                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="flex-1 px-4 py-3 bg-[#305CDE] text-white rounded-lg hover:bg-blue-700"
               >
                 Use Draft
               </button>
@@ -797,7 +866,7 @@ const CreateSpace = () => {
 
       <div className="container mx-auto">
         {/* Save Draft Button - Always visible */}
-        <div className="flex justify-end mb-4">
+        <div className="absolute right-18 flex justify-end mb-4">
           <button
             onClick={saveDraft}
             disabled={isSavingDraft}
@@ -809,50 +878,6 @@ const CreateSpace = () => {
         </div>
 
         {step === 1 && (
-          <div>
-            {errors.listingType && (
-              <div className="mb-6">
-                <Notification message={errors.listingType} type="danger" />
-              </div>
-            )}
-            <h2 className="text-3xl font-semibold text-center mb-12">
-              What would you like to host?
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {options.map(({ id, label, icon: Icon }) => (
-                <button
-                  key={id}
-                  onClick={() => {
-                    setSelected(id);
-
-                    setSpaceData((prev) => ({
-                      ...prev,
-                      listingType: id,
-                    }));
-
-                    setErrors((prev) => ({
-                      ...prev,
-                      listingType: "",
-                    }));
-                  }}
-                  className={`border rounded-2xl p-10 flex flex-col items-center justify-center cursor-pointer gap-6 transition-all
-            ${
-              selected === id
-                ? "border-black shadow-md"
-                : "border-gray-300 hover:border-black"
-            }
-          `}
-                >
-                  <Icon size={56} className="text-black" />
-                  <span className="text-lg font-medium">{label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {step === 2 && (
           <div>
             {errors.category && (
               <div className="mt-6">
@@ -867,7 +892,7 @@ const CreateSpace = () => {
                   key={cat._id}
                   className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
                     spaceData.category === cat._id
-                      ? "border-blue-500 bg-blue-50"
+                      ? "border-[#305CDE] bg-blue-50"
                       : "border-gray-200 hover:border-gray-300"
                   }`}
                   onClick={() => {
@@ -879,12 +904,12 @@ const CreateSpace = () => {
                   <div
                     className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                       spaceData.category === cat._id
-                        ? "border-blue-500"
+                        ? "border-[#305CDE]"
                         : "border-gray-300"
                     }`}
                   >
                     {spaceData.category === cat._id && (
-                      <div className="w-3 h-3 bg-blue-500 rounded-full" />
+                      <div className="w-3 h-3 bg-[#305CDE] rounded-full" />
                     )}
                   </div>
                 </label>
@@ -893,7 +918,7 @@ const CreateSpace = () => {
           </div>
         )}
 
-        {step === 3 && (
+        {step === 2 && (
           <div>
             <h2 className="text-4xl my-4">Publish your space</h2>
             <Input
@@ -912,7 +937,7 @@ const CreateSpace = () => {
               name="description"
               value={spaceData.description || ""}
               onChange={handleChange}
-              className={`mt-1 p-2 w-full h-48 border rounded-lg focus:ring-blue-500 focus:border-blue-500 ${
+              className={`mt-1 p-2 w-full h-48 border rounded-lg focus:ring-[#305CDE] focus:border-[#305CDE] ${
                 errors.description ? "border-red-500" : "border-gray-300"
               }`}
             ></textarea>
@@ -921,20 +946,20 @@ const CreateSpace = () => {
             )}
           </div>
         )}
-        {step === 4 && isLoaded && (
+        {step === 3 && isLoaded && (
           <div>
             <h2 className="text-4xl my-4">Location</h2>
-
             <Autocomplete
               onLoad={onLoad}
               onPlaceChanged={onPlaceChanged}
               options={{
+                fields: ["address_components", "geometry", "formatted_address"],
                 types: ["address"],
               }}
             >
               <Input
                 placeholder="Address"
-                value={spaceData.location.address}
+                defaultValue={spaceData.location.address}
                 required
               />
             </Autocomplete>
@@ -973,7 +998,7 @@ const CreateSpace = () => {
           </div>
         )}
 
-        {step === 5 && (
+        {step === 4 && (
           <div>
             <h2 className="text-4xl my-4">Confirm Location</h2>
             <p className="mb-4">
@@ -990,7 +1015,7 @@ const CreateSpace = () => {
                   value={spaceData.coordinates.latitude || ""}
                   onChange={handleChange}
                   placeholder="Latitude"
-                  className={`mt-1 p-2 w-full border rounded-lg focus:ring-blue-500 focus:border-blue-500 ${
+                  className={`mt-1 p-2 w-full border rounded-lg focus:ring-[#305CDE] focus:border-[#305CDE] ${
                     errors.latitude ? "border-red-500" : "border-gray-300"
                   }`}
                 />
@@ -1008,7 +1033,7 @@ const CreateSpace = () => {
                   value={spaceData.coordinates.longitude || ""}
                   onChange={handleChange}
                   placeholder="Longitude"
-                  className={`mt-1 p-2 w-full border rounded-lg focus:ring-blue-500 focus:border-blue-500 ${
+                  className={`mt-1 p-2 w-full border rounded-lg focus:ring-[#305CDE] focus:border-[#305CDE] ${
                     errors.longitude ? "border-red-500" : "border-gray-300"
                   }`}
                 />
@@ -1035,8 +1060,8 @@ const CreateSpace = () => {
           </div>
         )}
 
-        {step === 6 && (
-          <div>
+        {step === 5 && (
+          <div className="h-[500px] md:h-[600px] overflow-y-scroll">
             <h2 className="text-4xl my-4">Features & Extras</h2>
             <div className="mb-4">
               <YesNoToggle
@@ -1062,6 +1087,136 @@ const CreateSpace = () => {
                 <p className="text-red-500 text-sm mt-1">
                   {errors["features.restrooms"]}
                 </p>
+              )}
+              {spaceData.category === "6915bd724f4f95223e555e57" && (
+                <>
+                  <h2 className="text-xl font-semibold my-4">
+                    Treatment Room Features
+                  </h2>
+                  {treatmentRoomFeatures.map(({ key, title, description }) => {
+                    const isChecked = spaceData.features[key]; // <-- corrected
+
+                    return (
+                      <label
+                        key={key}
+                        className={`flex items-center justify-between p-4 mt-4 border rounded-xl cursor-pointer transition-all ${
+                          isChecked
+                            ? "border-[#305CDE] bg-blue-50"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                        onClick={() =>
+                          setSpaceData((prev) => ({
+                            ...prev,
+                            features: {
+                              ...prev.features,
+                              [key]: !prev.features[key], // toggle only this one
+                            },
+                          }))
+                        }
+                      >
+                        <div className="flex flex-col items-start">
+                          <span className="font-medium text-gray-800">
+                            {title}
+                          </span>
+                          <p className="text-sm text-gray-500 mt-1 text-left">
+                            {description}
+                          </p>
+                        </div>
+
+                        {/* Custom checkbox */}
+                        <div
+                          className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+                            isChecked
+                              ? "border-[#305CDE] bg-[#305CDE]"
+                              : "border-gray-300"
+                          }`}
+                        >
+                          {isChecked && (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="w-3 h-3 text-white"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth={3}
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                      </label>
+                    );
+                  })}
+                </>
+              )}
+              {spaceData.category === "6915bd724f4f95223e555e5b" && (
+                <>
+                  <h2 className="text-xl font-semibold my-4">
+                    Medical Room Features
+                  </h2>
+                  {medicalFeatures.map(({ key, title, description }) => {
+                    const isChecked = spaceData.features[key]; // <-- corrected
+
+                    return (
+                      <label
+                        key={key}
+                        className={`flex items-center justify-between p-4 mt-4 border rounded-xl cursor-pointer transition-all ${
+                          isChecked
+                            ? "border-[#305CDE] bg-blue-50"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                        onClick={() =>
+                          setSpaceData((prev) => ({
+                            ...prev,
+                            features: {
+                              ...prev.features,
+                              [key]: !prev.features[key], // toggle only this one
+                            },
+                          }))
+                        }
+                      >
+                        <div className="flex flex-col items-start">
+                          <span className="font-medium text-gray-800">
+                            {title}
+                          </span>
+                          <p className="text-sm text-gray-500 mt-1 text-left">
+                            {description}
+                          </p>
+                        </div>
+
+                        {/* Custom checkbox */}
+                        <div
+                          className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+                            isChecked
+                              ? "border-[#305CDE] bg-[#305CDE]"
+                              : "border-gray-300"
+                          }`}
+                        >
+                          {isChecked && (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="w-3 h-3 text-white"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth={3}
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                      </label>
+                    );
+                  })}
+                </>
               )}
               <div className="mt-5 flex gap-6 items-center">
                 <Input
@@ -1096,20 +1251,20 @@ const CreateSpace = () => {
               ))}
               <Button
                 onClick={handleAddExtra}
-                className="mt-2 bg-pink-600 text-white px-4 py-2 rounded-lg"
+                className="mt-2 bg-[#305CDE] text-white px-4 py-2 rounded-lg"
               >
                 Add More
               </Button>
             </div>
           </div>
         )}
-        {step === 7 && (
+        {step === 6 && (
           <div>
             <h2 className="text-4xl my-4">Add Photos</h2>
 
             <Button
               onClick={() => setShowPopup(true)}
-              className="mb-4 bg-pink-600 text-white px-4 py-2 rounded-lg"
+              className="mb-4 bg-[#305CDE] text-white px-4 py-2 rounded-lg"
             >
               Add Photos
             </Button>
@@ -1153,7 +1308,7 @@ const CreateSpace = () => {
             )}
           </div>
         )}
-        {step === 8 && (
+        {step === 7 && (
           <div>
             <h2 className="text-4xl my-4"> Rearrange Images</h2>
             <ImageReorder
@@ -1164,70 +1319,13 @@ const CreateSpace = () => {
           </div>
         )}
 
-        {spaceData.category === "6915bd724f4f95223e555e5b" && step === 8 && (
+        {/* {spaceData.category === "6915bd724f4f95223e555e5b" && step === 7 && (
           <div className="space-y-4 mb-20">
             <h2 className="text-4xl my-4">Medical Room Features</h2>
-
-            {medicalFeatures.map(({ key, title, description }) => {
-              const isChecked = spaceData.features[key]; // <-- corrected
-
-              return (
-                <label
-                  key={key}
-                  className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
-                    isChecked
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
-                  }`}
-                  onClick={() =>
-                    setSpaceData((prev) => ({
-                      ...prev,
-                      features: {
-                        ...prev.features,
-                        [key]: !prev.features[key], // toggle only this one
-                      },
-                    }))
-                  }
-                >
-                  <div className="flex flex-col items-start">
-                    <span className="font-medium text-gray-800">{title}</span>
-                    <p className="text-sm text-gray-500 mt-1 text-left">
-                      {description}
-                    </p>
-                  </div>
-
-                  {/* Custom checkbox */}
-                  <div
-                    className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
-                      isChecked
-                        ? "border-blue-500 bg-blue-500"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    {isChecked && (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-3 h-3 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={3}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    )}
-                  </div>
-                </label>
-              );
-            })}
           </div>
-        )}
+        )} */}
 
-        {step === 9 && (
+        {step === 8 && (
           <div className="text-center flex flex-col items-center p-6">
             {/* Pricing Type Toggle */}
             <div className="flex items-center gap-6 mb-8">
@@ -1245,7 +1343,7 @@ const CreateSpace = () => {
                 }
                 className={`px-5 py-2 rounded-full font-medium transition ${
                   spaceData.pricing.pricingType === "DAILY"
-                    ? "bg-blue-600 text-white"
+                    ? "bg-[#305CDE] text-white"
                     : "bg-gray-200 text-gray-700"
                 }`}
               >
@@ -1266,7 +1364,7 @@ const CreateSpace = () => {
                 }
                 className={`px-5 py-2 rounded-full font-medium transition ${
                   spaceData.pricing.pricingType === "HOURLY"
-                    ? "bg-blue-600 text-white"
+                    ? "bg-[#305CDE] text-white"
                     : "bg-gray-200 text-gray-700"
                 }`}
               >
@@ -1283,7 +1381,7 @@ const CreateSpace = () => {
                 <p className="text-gray-600 mb-6">You can change it anytime.</p>
 
                 <div className="flex items-center justify-center px-6 pt-4 mb-3">
-                  <span className="text-4xl font-bold text-blue-600 mr-1 mb-4">
+                  <span className="text-4xl font-bold text-[#305CDE] mr-1 mb-4">
                     £
                   </span>
                   <Input
@@ -1293,7 +1391,7 @@ const CreateSpace = () => {
                     value={spaceData.pricing.weekdayPrice}
                     onChange={handleChange}
                     required
-                    className="border-none bg-transparent text-center text-4xl font-semibold text-blue-600 focus:ring-0 focus:outline-none no-spinner dynamic-width"
+                    className="border-none bg-transparent text-center text-4xl font-semibold text-[#305CDE] focus:ring-0 focus:outline-none no-spinner dynamic-width"
                   />
                 </div>
 
@@ -1321,7 +1419,7 @@ const CreateSpace = () => {
                 <p className="text-gray-600 mb-6">You can change it anytime.</p>
 
                 <div className="flex items-center justify-center px-6 pt-4 mb-3">
-                  <span className="text-4xl font-bold text-blue-600 mr-1 mb-4">
+                  <span className="text-4xl font-bold text-[#305CDE] mr-1 mb-4">
                     £
                   </span>
                   <Input
@@ -1331,7 +1429,7 @@ const CreateSpace = () => {
                     value={spaceData.pricing.hourlyPrice}
                     onChange={handleChange}
                     required
-                    className="border-none bg-transparent text-center text-4xl font-semibold text-blue-600 focus:ring-0 focus:outline-none no-spinner dynamic-width"
+                    className="border-none bg-transparent text-center text-4xl font-semibold text-[#305CDE] focus:ring-0 focus:outline-none no-spinner dynamic-width"
                   />
                 </div>
 
@@ -1352,7 +1450,7 @@ const CreateSpace = () => {
           </div>
         )}
 
-        {step === 10 && (
+        {step === 9 && (
           <div>
             <h2 className="text-4xl font-semibold mb-2">
               Price your booking settings
@@ -1364,7 +1462,7 @@ const CreateSpace = () => {
               <label
                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
                   spaceData.bookingSettings.approveFirstFive
-                    ? "border-blue-500 bg-blue-50"
+                    ? "border-[#305CDE] bg-blue-50"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
                 onClick={() =>
@@ -1382,7 +1480,7 @@ const CreateSpace = () => {
                     <span className="font-medium text-gray-800">
                       Approve first 5 bookings
                     </span>
-                    <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                    <span className="bg-[#305CDE] text-white text-xs px-2 py-0.5 rounded-full">
                       Recommended
                     </span>
                   </div>
@@ -1396,12 +1494,12 @@ const CreateSpace = () => {
                 <div
                   className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                     spaceData.bookingSettings.approveFirstFive
-                      ? "border-blue-500"
+                      ? "border-[#305CDE]"
                       : "border-gray-300"
                   }`}
                 >
                   {spaceData.bookingSettings.approveFirstFive && (
-                    <div className="w-3 h-3 bg-blue-500 rounded-full" />
+                    <div className="w-3 h-3 bg-[#305CDE] rounded-full" />
                   )}
                 </div>
               </label>
@@ -1410,7 +1508,7 @@ const CreateSpace = () => {
               <label
                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
                   spaceData.bookingSettings.instantBook
-                    ? "border-blue-500 bg-blue-50"
+                    ? "border-[#305CDE] bg-blue-50"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
                 onClick={() =>
@@ -1436,12 +1534,12 @@ const CreateSpace = () => {
                 <div
                   className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                     spaceData.bookingSettings.instantBook
-                      ? "border-blue-500"
+                      ? "border-[#305CDE]"
                       : "border-gray-300"
                   }`}
                 >
                   {spaceData.bookingSettings.instantBook && (
-                    <div className="w-3 h-3 bg-blue-500 rounded-full" />
+                    <div className="w-3 h-3 bg-[#305CDE] rounded-full" />
                   )}
                 </div>
               </label>
@@ -1449,7 +1547,7 @@ const CreateSpace = () => {
           </div>
         )}
 
-        {step === 11 && (
+        {step === 10 && (
           <div>
             <h2 className="text-4xl font-semibold mb-2">
               Set up your discounts
@@ -1463,7 +1561,7 @@ const CreateSpace = () => {
               <label
                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
                   spaceData.pricing.discounts.newListing
-                    ? "border-blue-500 bg-blue-50"
+                    ? "border-[#305CDE] bg-blue-50"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
                 onClick={() =>
@@ -1489,7 +1587,7 @@ const CreateSpace = () => {
                 <div
                   className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
                     spaceData.pricing.discounts.newListing
-                      ? "border-blue-500 bg-blue-500"
+                      ? "border-[#305CDE] bg-[#305CDE]"
                       : "border-gray-300"
                   }`}
                 >
@@ -1516,7 +1614,7 @@ const CreateSpace = () => {
               <label
                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
                   spaceData.pricing.discounts.lastMinute
-                    ? "border-blue-500 bg-blue-50"
+                    ? "border-[#305CDE] bg-blue-50"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
                 onClick={() =>
@@ -1541,7 +1639,7 @@ const CreateSpace = () => {
                 <div
                   className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
                     spaceData.pricing.discounts.lastMinute
-                      ? "border-blue-500 bg-blue-500"
+                      ? "border-[#305CDE] bg-[#305CDE]"
                       : "border-gray-300"
                   }`}
                 >
@@ -1568,7 +1666,7 @@ const CreateSpace = () => {
               <label
                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
                   spaceData.pricing.discounts.weekly
-                    ? "border-blue-500 bg-blue-50"
+                    ? "border-[#305CDE] bg-blue-50"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
                 onClick={() =>
@@ -1592,7 +1690,7 @@ const CreateSpace = () => {
                 <div
                   className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
                     spaceData.pricing.discounts.weekly
-                      ? "border-blue-500 bg-blue-500"
+                      ? "border-[#305CDE] bg-[#305CDE]"
                       : "border-gray-300"
                   }`}
                 >
@@ -1619,7 +1717,7 @@ const CreateSpace = () => {
               <label
                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
                   spaceData.pricing.discounts.monthly
-                    ? "border-blue-500 bg-blue-50"
+                    ? "border-[#305CDE] bg-blue-50"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
                 onClick={() =>
@@ -1643,7 +1741,7 @@ const CreateSpace = () => {
                 <div
                   className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
                     spaceData.pricing.discounts.monthly
-                      ? "border-blue-500 bg-blue-500"
+                      ? "border-[#305CDE] bg-[#305CDE]"
                       : "border-gray-300"
                   }`}
                 >
