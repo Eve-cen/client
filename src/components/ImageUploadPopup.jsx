@@ -76,12 +76,12 @@ export default function UploadModal({ onClose, onUpload }) {
         <div
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
-          className="border-2 border-dashed border-gray-300 p-4 mb-4 text-center cursor-pointer hover:border-pink-600 transition-colors"
+          className="border-2 border-dashed border-gray-300 p-4 mb-4 text-center cursor-pointer hover:border-primary transition-colors"
           onClick={() => fileInputRef.current.click()}
         >
           <p className="text-gray-600">
             Drag and drop images here, or{" "}
-            <span className="text-pink-600 font-semibold">browse</span>
+            <span className="text-primary font-semibold">browse</span>
           </p>
           <input
             type="file"
@@ -134,7 +134,7 @@ export default function UploadModal({ onClose, onUpload }) {
           <button
             onClick={handleUpload}
             disabled={imageFiles.length === 0}
-            className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
           >
             Upload ({imageFiles.length})
           </button>

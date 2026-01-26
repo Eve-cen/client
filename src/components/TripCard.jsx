@@ -28,14 +28,14 @@ const TripCard = ({ trip, onWriteReview, onBookAgain }) => {
       {!trip.reviewed && (
         <Button
           onClick={onWriteReview}
-          className="mt-2 bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700"
+          className="mt-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/80"
         >
           Write Review
         </Button>
       )}
       <Button
         onClick={onBookAgain}
-        className="mt-2 ml-2 bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700"
+        className="mt-2 ml-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/80"
       >
         Book Again
       </Button>

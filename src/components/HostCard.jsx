@@ -47,7 +47,7 @@ const HostCard = ({ host }) => {
 
       <Link
         to={`/host/${host._id}`}
-        className="mt-4 inline-block text-pink-600 font-medium hover:underline"
+        className="mt-4 inline-block text-primary font-medium hover:underline"
       >
         View Host Profile →
       </Link>

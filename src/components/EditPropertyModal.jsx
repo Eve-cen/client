@@ -169,7 +169,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                   name="title"
                   value={data.title}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
               <div>
@@ -181,7 +181,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                   value={data.description}
                   onChange={handleChange}
                   rows={4}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
             </div>
@@ -200,7 +200,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                   name="location.address"
                   value={data.location.address}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
               <div>
@@ -210,7 +210,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                   name="location.city"
                   value={data.location.city}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
               <div>
@@ -220,7 +220,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                   name="location.state"
                   value={data.location.state}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
               <div>
@@ -232,7 +232,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                   name="location.country"
                   value={data.location.country}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
               <div>
@@ -245,7 +245,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                   name="location.coordinates.lat"
                   value={data.location.coordinates.lat}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
               <div>
@@ -258,7 +258,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                   name="location.coordinates.lng"
                   value={data.location.coordinates.lng}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
             </div>
@@ -277,7 +277,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                   name="features.capacity"
                   value={data.features.capacity}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
               <div>
@@ -289,7 +289,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                   name="features.size"
                   value={data.features.size}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
             </div>
@@ -306,12 +306,12 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                     e.key === "Enter" && (e.preventDefault(), addAmenity())
                   }
                   placeholder="Add amenity"
-                  className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
                 <button
                   type="button"
                   onClick={addAmenity}
-                  className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700"
+                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80"
                 >
                   Add
                 </button>
@@ -349,7 +349,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                   name="pricing.weekdayPrice"
                   value={data.pricing.weekdayPrice}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
               <div>
@@ -361,7 +361,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                   name="pricing.weekendPrice"
                   value={data.pricing.weekendPrice}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
               <div>
@@ -373,7 +373,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                   name="pricing.minimumBookingHours"
                   value={data.pricing.minimumBookingHours}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
             </div>
@@ -389,7 +389,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                   name="bookingSettings.instantBooking"
                   checked={data.bookingSettings.instantBooking}
                   onChange={handleChange}
-                  className="w-4 h-4 text-pink-600 rounded focus:ring-pink-500"
+                  className="w-4 h-4 text-primary rounded focus:ring-primary"
                 />
                 <label className="ml-2 text-sm font-medium">
                   Instant Booking
@@ -405,7 +405,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                     name="bookingSettings.advanceBookingDays"
                     value={data.bookingSettings.advanceBookingDays}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -416,7 +416,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                     name="bookingSettings.cancellationPolicy"
                     value={data.bookingSettings.cancellationPolicy}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   >
                     <option value="flexible">Flexible</option>
                     <option value="moderate">Moderate</option>
@@ -438,7 +438,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                   setNewExtra({ ...newExtra, name: e.target.value })
                 }
                 placeholder="Extra name"
-                className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
               <input
                 type="number"
@@ -450,12 +450,12 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
                   })
                 }
                 placeholder="Price"
-                className="w-32 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                className="w-32 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
               <button
                 type="button"
                 onClick={addExtra}
-                className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700"
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80"
               >
                 Add
               </button>
@@ -487,7 +487,7 @@ const EditPropertyModal = ({ property, onClose, onUpdate }) => {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="flex-1 bg-pink-600 text-white py-3 rounded-lg font-medium hover:bg-pink-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="flex-1 bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {loading ? "Saving..." : "Save Changes"}
             </button>

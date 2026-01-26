@@ -99,7 +99,7 @@ const MyListings = () => {
           </h1>
           <Button
             onClick={() => navigate("/create-space")}
-            className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700"
+            className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/80"
           >
             + Add New Space
           </Button>
@@ -114,7 +114,7 @@ const MyListings = () => {
             </p>
             <Button
               onClick={() => navigate("/create-space")}
-              className="bg-pink-600 text-white px-6 py-2 rounded-lg"
+              className="bg-primary text-white px-6 py-2 rounded-lg"
             >
               List Your First Space
             </Button>

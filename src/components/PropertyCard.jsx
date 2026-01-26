@@ -21,9 +21,6 @@ const PropertyCard = ({ property, onEdit, onDelete }) => {
           {property.title}
         </h3>
         <p className="text-sm text-gray-600">{property.location.address}</p>
-        {/* <p className="text-lg font-bold text-pink-600 mt-2">
-          ${property.pricing.weekdayPrice}/day
-        </p> */}
         {property.pricing?.pricingType === "HOURLY" ? (
           <p className="text-lg">${property.pricing?.hourlyPrice} / hour</p>
         ) : (

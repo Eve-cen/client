@@ -8,7 +8,7 @@ import TripCard from "../components/TripCard";
 import ReviewCard from "../components/ReviewCard";
 import IdentityVerification from "../components/IdentityVerification";
 import { Menu, X } from "lucide-react";
-import vencomeLoader from "../components/Loader";
+import VencomeLoader from "../components/Loader";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -130,7 +130,7 @@ const Profile = () => {
   }, [sidebarOpen]);
 
   if (loading) {
-    return <vencomeLoader />;
+    return <VencomeLoader />;
   }
 
   if (error || !user) {
@@ -139,7 +139,7 @@ const Profile = () => {
         <div className="text-red-500">{error || "User not found."}</div>
         <button
           onClick={() => navigate("/")}
-          className="mt-4 px-4 py-2 bg-pink-600 text-white rounded-lg"
+          className="mt-4 px-4 py-2 bg-primary text-white rounded-lg"
         >
           Back to Login
         </button>

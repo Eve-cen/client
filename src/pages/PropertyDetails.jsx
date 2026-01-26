@@ -10,7 +10,7 @@ import PropertyLocation from "../components/Location";
 import Button from "../components/Button";
 import ChatBox from "../components/ChatBox";
 import HostCard from "../components/HostCard";
-import vencomeLoader from "../components/Loader";
+import VencomeLoader from "../components/Loader";
 
 const PropertyDetails = () => {
   const { id } = useParams();
@@ -47,7 +47,7 @@ const PropertyDetails = () => {
   }, [id]);
 
   if (loading) {
-    return <vencomeLoader />;
+    return <VencomeLoader />;
   }
 
   if (error || !property) {
@@ -57,7 +57,7 @@ const PropertyDetails = () => {
           <p>{error || "Property not found."}</p>
           <button
             onClick={() => navigate("/")}
-            className="mt-4 px-4 py-2 bg-pink-600 text-white rounded-lg"
+            className="mt-4 px-4 py-2 bg-primary text-white rounded-lg"
           >
             Back to Home
           </button>
@@ -65,16 +65,6 @@ const PropertyDetails = () => {
       </div>
     );
   }
-
-  // const images = [property.images].concat(
-  //   Array(4)
-  //     .fill()
-  //     .map(
-  //       () =>
-  //         property.image ||
-  //         "https://images.squarespace-cdn.com/content/v1/5b850dd4da02bc525570db40/1570534941146-CSQDPR3G9L8RGMG47OZ5/002.jpg?format=2500w"
-  //     )
-  // );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -120,7 +110,7 @@ const PropertyDetails = () => {
               {/* {user && user._id !== property.host._id && ( */}
               <Button
                 onClick={() => setShowChat(true)}
-                className="mt-4 w-full bg-pink-600 text-white"
+                className="mt-4 w-full bg-primary text-white"
               >
                 Message Host
               </Button>

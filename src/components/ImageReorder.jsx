@@ -31,7 +31,7 @@ const ImageReorder = ({ images, onReorder, onAddMore }) => {
             className="w-full h-full object-cover"
           />
           {index === 0 && (
-            <span className="absolute top-2 left-2 bg-pink-600 text-white px-2 py-1 rounded">
+            <span className="absolute top-2 left-2 bg-primary text-white px-2 py-1 rounded">
               Cover
             </span>
           )}
@@ -40,7 +40,7 @@ const ImageReorder = ({ images, onReorder, onAddMore }) => {
 
       <button
         onClick={onAddMore}
-        className="w-full h-40 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center text-pink-600 hover:bg-gray-200"
+        className="w-full h-40 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center text-primary hover:bg-gray-200"
       >
         + Add More
       </button>

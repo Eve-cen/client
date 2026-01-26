@@ -65,7 +65,7 @@ const ChatBox = ({ propertyId, onClose }) => {
 
   return (
     <div className="fixed bottom-4 right-4 w-96 h-96 sm:h-[500px] bg-white rounded-lg shadow-xl flex flex-col z-50">
-      <div className="bg-pink-600 text-white p-3 rounded-t-lg flex justify-between items-center">
+      <div className="bg-primary text-white p-3 rounded-t-lg flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <img
             src={conversation.host.profileImage}
@@ -92,7 +92,7 @@ const ChatBox = ({ propertyId, onClose }) => {
             <div
               className={`max-w-xs px-4 py-2 rounded-lg ${
                 msg.sender._id === localStorage.getItem("userId")
-                  ? "bg-pink-600 text-white"
+                  ? "bg-primary text-white"
                   : "bg-gray-200 text-gray-800"
               }`}
             >
@@ -116,9 +116,9 @@ const ChatBox = ({ propertyId, onClose }) => {
           onChange={(e) => setText(e.target.value)}
           onKeyPress={(e) => e.key === "Enter" && sendMessage()}
           placeholder="Type a message..."
-          className="flex-1 p-2 border rounded-lg focus:outline-none focus:border-pink-600"
+          className="flex-1 p-2 border rounded-lg focus:outline-none focus:border-primary"
         />
-        <Button onClick={sendMessage} className="bg-pink-600 text-white px-4">
+        <Button onClick={sendMessage} className="bg-primary text-white px-4">
           Send
         </Button>
       </div>

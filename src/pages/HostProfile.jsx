@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "../utils/api";
-import vencomeLoader from "../components/Loader";
+import VencomeLoader from "../components/Loader";
 
 const HostProfile = () => {
   const { id } = useParams();
@@ -31,7 +31,7 @@ const HostProfile = () => {
 
   const hostProperties = listings.filter((p) => p.host._id === host._id);
 
-  if (loading) return <vencomeLoader />;
+  if (loading) return <VencomeLoader />;
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -89,7 +89,7 @@ const HostProfile = () => {
                 className="w-full h-40 object-cover rounded"
               />
               <h3 className="font-semibold mt-2">{prop.title}</h3>
-              <p className="text-pink-600">${prop.pricing.weekdayPrice}/day</p>
+              <p className="text-primary">${prop.pricing.weekdayPrice}/day</p>
             </div>
           ))}
         </div>

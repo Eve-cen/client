@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { apiFetch } from "../utils/api";
 import Card from "../components/EvenCard";
-import vencomeLoader from "../components/Loader";
+import VencomeLoader from "../components/Loader";
 
 const CategoryPage = () => {
   const { id } = useParams();
@@ -30,7 +30,7 @@ const CategoryPage = () => {
     fetchData();
   }, [id]);
   if (loading) {
-    return <vencomeLoader />;
+    return <VencomeLoader />;
   }
 
   if (error || !category) {
@@ -64,7 +64,7 @@ const CategoryPage = () => {
             </p>
             <button
               onClick={() => navigate("/create-space")}
-              className="bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700"
+              className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/80"
             >
               Be the First to List
             </button>

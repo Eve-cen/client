@@ -57,7 +57,7 @@ const IdentityVerification = ({ user }) => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 text-center shadow-xl">
+    <div className="bg-primary/10 rounded-2xl p-8 text-center shadow-xl">
       <h3 className="text-2xl font-bold mb-4">Verify Your Identity</h3>
       <p className="text-gray-600 mb-8 max-w-md mx-auto">
         Upload your government ID and take a selfie. This helps build trust with

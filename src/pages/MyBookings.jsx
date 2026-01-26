@@ -4,7 +4,7 @@ import { apiFetch } from "../utils/api";
 import ProfileSidebar from "../components/ProfileSidebar";
 import Button from "../components/Button";
 import { Menu, X } from "lucide-react";
-import vencomeLoader from "../components/Loader";
+import VencomeLoader from "../components/Loader";
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -53,7 +53,7 @@ const MyBookings = () => {
       alert("Failed to start payment");
     }
   };
-  if (loading) return <vencomeLoader />;
+  if (loading) return <VencomeLoader />;
 
   return (
     <div className="min-h-screen flex">
@@ -103,7 +103,7 @@ const MyBookings = () => {
               <p className="text-xl text-gray-500">No bookings yet.</p>
               <Button
                 onClick={() => (window.location.href = "/")}
-                className="mt-6 bg-pink-600 text-white px-8 py-3 rounded-full hover:bg-pink-700"
+                className="mt-6 bg-primary text-white px-8 py-3 rounded-full hover:bg-primary/80"
               >
                 Explore Spaces
               </Button>
@@ -134,7 +134,7 @@ const MyBookings = () => {
 
                     <div className="mt-4 flex items-center justify-between">
                       <div>
-                        <p className="text-2xl font-bold text-pink-600">
+                        <p className="text-2xl font-bold text-primary">
                           ${booking.totalPrice}
                         </p>
                         {booking.discountApplied > 0 && (
@@ -160,7 +160,7 @@ const MyBookings = () => {
                         {!booking.isPaid && booking.status !== "declined" && (
                           <Button
                             onClick={() => handlePay(booking._id)}
-                            className="bg-gradient-to-r from-pink-600 to-purple-600 text-white px-6 py-2 rounded-full hover:shadow-lg transform hover:scale-105 transition"
+                            className="bg-gradient-to-r from-primary to-purple-600 text-white px-6 py-2 rounded-full hover:shadow-lg transform hover:scale-105 transition"
                           >
                             Pay Now
                           </Button>

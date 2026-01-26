@@ -8,7 +8,7 @@ import CardInput from "../components/CardInput";
 import Button from "../components/Button";
 import Modal from "../components/Modal";
 import { Menu, X } from "lucide-react";
-import vencomeLoader from "../components/Loader";
+import VencomeLoader from "../components/Loader";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -161,7 +161,7 @@ const Settings = () => {
     }
   }, [sidebarOpen]);
 
-  if (loading) return <vencomeLoader />;
+  if (loading) return <VencomeLoader />;
 
   if (error || !user) {
     return (
