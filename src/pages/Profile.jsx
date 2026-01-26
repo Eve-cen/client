@@ -8,7 +8,7 @@ import TripCard from "../components/TripCard";
 import ReviewCard from "../components/ReviewCard";
 import IdentityVerification from "../components/IdentityVerification";
 import { Menu, X } from "lucide-react";
-import EvencenLoader from "../components/Loader";
+import vencomeLoader from "../components/Loader";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -130,7 +130,7 @@ const Profile = () => {
   }, [sidebarOpen]);
 
   if (loading) {
-    return <EvencenLoader />;
+    return <vencomeLoader />;
   }
 
   if (error || !user) {
@@ -214,7 +214,7 @@ const Profile = () => {
                   name="bio"
                   value={user.bio || ""}
                   onChange={handleChange}
-                  className={`mt-1 p-2 w-full h-48 border rounded-lg focus:ring-blue-500 focus:border-blue-500 ${
+                  className={`mt-1 p-2 w-full h-48 border rounded-lg focus:ring-primary focus:border-primary ${
                     error ? "border-red-500" : "border-gray-300"
                   }`}
                 ></textarea>

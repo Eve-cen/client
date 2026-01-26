@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { apiFetch } from "../utils/api";
 import Card from "../components/EvenCard";
-import EvencenLoader from "../components/Loader";
+import vencomeLoader from "../components/Loader";
 
 const CategoryPage = () => {
   const { id } = useParams();
@@ -30,7 +30,7 @@ const CategoryPage = () => {
     fetchData();
   }, [id]);
   if (loading) {
-    return <EvencenLoader />;
+    return <vencomeLoader />;
   }
 
   if (error || !category) {

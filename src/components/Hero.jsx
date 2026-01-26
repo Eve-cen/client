@@ -156,7 +156,7 @@ const Hero = ({ onExplore }) => {
         </div>
         <div className="container mx-auto mt-10 flex items-center justify-between text-white">
           <h2 className="text-4xl">
-            Book the <span className="block text-blue-500">Perfect Venue</span>{" "}
+            Book the <span className="block text-primary">Perfect Venue</span>{" "}
             with Ease
           </h2>
           <p className="w-1/4">

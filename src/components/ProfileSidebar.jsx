@@ -20,7 +20,7 @@ const Sidebar = ({ onLinkClick }) => {
             onClick={onLinkClick}
             className={`block py-2 px-4 rounded-lg mb-2 ${
               pathname === section.path
-                ? "bg-blue-600 text-white"
+                ? "bg-primary text-white"
                 : "text-gray-600 hover:bg-gray-100"
             }`}
           >

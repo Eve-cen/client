@@ -83,7 +83,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
               {loading ? "Sending..." : "Send OTP"}
             </Button>
             <p
-              className="mt-4 text-blue-600 cursor-pointer text-center"
+              className="mt-4 text-primary cursor-pointer text-center"
               onClick={onBackToLogin}
             >
               Back to Login
@@ -117,7 +117,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
               {loading ? "Resetting..." : "Reset Password"}
             </Button>
             <p
-              className="mt-4 text-blue-600 cursor-pointer text-center"
+              className="mt-4 text-primary cursor-pointer text-center"
               onClick={onBackToLogin}
             >
               Back to Login

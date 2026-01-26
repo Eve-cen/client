@@ -1,7 +1,7 @@
 // Newsletter.js
 export default function Newsletter() {
   return (
-    <section className="bg-gray-900 py-20 flex justify-center">
+    <section className="bg-primary py-20 flex justify-center">
       <div className="text-center max-w-xl w-full px-8">
         <h2 className="text-2xl font-semibold text-white mb-2">
           Stay Inspired
@@ -14,11 +14,11 @@ export default function Newsletter() {
           <input
             type="email"
             placeholder="Enter your email"
-            className="px-4 py-2 rounded bg-gray-800 text-white focus:outline-none"
+            className="px-4 py-2 rounded bg-[#5a7ada] text-white focus:outline-none"
           />
           <button
             type="submit"
-            className="px-4 py-2 bg-black text-white rounded hover:bg-gray-700 cursor-pointer"
+            className="px-4 py-2 bg-[#5a7ada] text-white rounded hover:bg-[#bbcbfc] cursor-pointer"
           >
             Subscribe &rarr;
           </button>

@@ -42,7 +42,7 @@ const PropertyCard = ({ property, onEdit, onDelete }) => {
           </Button>
           <Button
             onClick={() => onEdit(property)}
-            className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
+            className="flex-1 bg-primary text-white hover:bg-primary/80"
           >
             Edit
           </Button>

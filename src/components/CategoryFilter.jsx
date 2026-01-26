@@ -6,7 +6,7 @@ export default function CategoryFilter({ categories, active, setActive }) {
         onClick={() => setActive(null)}
         className={`px-3 py-1 text-sm rounded ${
           active === null
-            ? "bg-blue-600 text-white"
+            ? "bg-primary text-white"
             : "bg-gray-100 text-gray-700"
         }`}
       >
@@ -18,9 +18,7 @@ export default function CategoryFilter({ categories, active, setActive }) {
           key={c}
           onClick={() => setActive(c)}
           className={`px-3 py-1 text-sm rounded ${
-            active === c
-              ? "bg-blue-600 text-white"
-              : "bg-gray-100 text-gray-700"
+            active === c ? "bg-primary text-white" : "bg-gray-100 text-gray-700"
           }`}
         >
           {c}

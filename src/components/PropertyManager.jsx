@@ -86,7 +86,7 @@ const PropertyManager = ({ property, onUpdate, onDelete }) => {
     <>
       <Button
         onClick={() => setIsOpen(true)}
-        className="bg-blue-600 text-white hover:bg-blue-700"
+        className="bg-primary text-white hover:bg-primary/80"
       >
         Edit Property
       </Button>

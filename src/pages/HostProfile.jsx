@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "../utils/api";
-import EvencenLoader from "../components/Loader";
+import vencomeLoader from "../components/Loader";
 
 const HostProfile = () => {
   const { id } = useParams();
@@ -31,7 +31,7 @@ const HostProfile = () => {
 
   const hostProperties = listings.filter((p) => p.host._id === host._id);
 
-  if (loading) return <EvencenLoader />;
+  if (loading) return <vencomeLoader />;
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">

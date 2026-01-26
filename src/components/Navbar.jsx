@@ -79,11 +79,9 @@ const Navbar = () => {
     <nav className="w-full z-50">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
-        <Link
-          to="/"
-          className="text-2xl font-bold text-[#305CDE] cursor-pointer"
-        >
-          EvenCen
+        <Link to="/" className="cursor-pointer">
+          {/* vencome */}
+          <img src="/logo-blue.png" className="w-[10rem]" />
         </Link>
 
         {/* Desktop Navigation */}
@@ -101,7 +99,7 @@ const Navbar = () => {
                 />
 
                 <HiChevronDown
-                  className={`text-[#305CDE] transition-transform duration-200 ${
+                  className={`text-primary transition-transform duration-200 ${
                     isProfileOpen ? "rotate-180" : ""
                   }`}
                 />
@@ -147,12 +145,12 @@ const Navbar = () => {
             <>
               <Link
                 to="/create-space"
-                className="text-[#305CDE] cursor-pointer"
+                className="text-primary cursor-pointer"
                 onClick={() => setIsProfileOpen(false)}
               >
                 Publish your space
               </Link>
-              <Link to="/login" className="text-[#305CDE] cursor-pointer">
+              <Link to="/login" className="text-primary cursor-pointer">
                 Login/Signup
               </Link>
             </>
@@ -161,7 +159,7 @@ const Navbar = () => {
 
         {/* Mobile Hamburger */}
         <button
-          className="cursor-pointer md:hidden text-2xl text-[#305CDE]"
+          className="cursor-pointer md:hidden text-2xl text-primary"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           {isMobileMenuOpen ? <HiX /> : <HiMenu />}
@@ -182,7 +180,7 @@ const Navbar = () => {
                   Publish your space
                 </Link>
                 <button
-                  className="cursor-pointer hover:text-[#305CDE]"
+                  className="cursor-pointer hover:text-primary"
                   onClick={() => setIsModalOpen(true)}
                 >
                   Login / Sign Up
@@ -190,16 +188,16 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Link to="/create-space" className="hover:text-[#305CDE]">
+                <Link to="/create-space" className="hover:text-primary">
                   Publish your space
                 </Link>
-                <Link to="/my-listings" className="hover:text-[#305CDE]">
+                <Link to="/my-listings" className="hover:text-primary">
                   My Listings
                 </Link>
-                <Link to="/profile/about" className="hover:text-[#305CDE]">
+                <Link to="/profile/about" className="hover:text-primary">
                   Profile
                 </Link>
-                <Link to="/profile/settings" className="hover:text-[#305CDE]">
+                <Link to="/profile/settings" className="hover:text-primary">
                   Settings
                 </Link>
               </>

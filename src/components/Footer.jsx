@@ -4,8 +4,9 @@ export default function Footer() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-wrap justify-between items-start">
         {/* Company Brand */}
         <div className="mb-6">
-          <div className="font-bold text-lg mb-2">Evecen</div>
-          <p className="text-gray-500 text-sm max-w-xs mb-3">
+          {/* <div className="font-bold text-lg mb-2">Evecen</div> */}
+          <img src="/logo-blue.png" className="w-[10rem]" />
+          <p className="text-gray-500 text-sm max-w-xs my-3">
             Discover the worlds most exceptional commercial spaces, from offices
             and studios to venues and landmark locations.
           </p>
@@ -86,7 +87,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center border-t border-gray-200 mt-8 pt-6 text-gray-400 text-sm">
-        <span>© 2025 Evecen. All rights reserved.</span>
+        <span>© 2025 Vencome. All rights reserved.</span>
         <div className="space-x-6">
           <a href="#">Privacy</a>
           <a href="#">Terms</a>

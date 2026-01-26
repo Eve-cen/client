@@ -837,7 +837,7 @@ const CreateSpace = () => {
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-8 max-w-md w-full">
             <div className="flex items-center justify-center mb-4">
-              <FileText size={48} className="text-[#305CDE]" />
+              <FileText size={48} className="text-primary" />
             </div>
             <h2 className="text-2xl font-bold mb-2 text-center">
               Draft Found!
@@ -855,7 +855,7 @@ const CreateSpace = () => {
               </button>
               <button
                 onClick={loadDraft}
-                className="flex-1 px-4 py-3 bg-[#305CDE] text-white rounded-lg hover:bg-blue-700"
+                className="flex-1 px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/80"
               >
                 Use Draft
               </button>
@@ -892,7 +892,7 @@ const CreateSpace = () => {
                   key={cat._id}
                   className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
                     spaceData.category === cat._id
-                      ? "border-[#305CDE] bg-blue-50"
+                      ? "border-primary bg-blue-50"
                       : "border-gray-200 hover:border-gray-300"
                   }`}
                   onClick={() => {
@@ -904,12 +904,12 @@ const CreateSpace = () => {
                   <div
                     className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                       spaceData.category === cat._id
-                        ? "border-[#305CDE]"
+                        ? "border-primary"
                         : "border-gray-300"
                     }`}
                   >
                     {spaceData.category === cat._id && (
-                      <div className="w-3 h-3 bg-[#305CDE] rounded-full" />
+                      <div className="w-3 h-3 bg-primary rounded-full" />
                     )}
                   </div>
                 </label>
@@ -937,7 +937,7 @@ const CreateSpace = () => {
               name="description"
               value={spaceData.description || ""}
               onChange={handleChange}
-              className={`mt-1 p-2 w-full h-48 border rounded-lg focus:ring-[#305CDE] focus:border-[#305CDE] ${
+              className={`mt-1 p-2 w-full h-48 border rounded-lg focus:ring-primary focus:border-primary ${
                 errors.description ? "border-red-500" : "border-gray-300"
               }`}
             ></textarea>
@@ -1015,7 +1015,7 @@ const CreateSpace = () => {
                   value={spaceData.coordinates.latitude || ""}
                   onChange={handleChange}
                   placeholder="Latitude"
-                  className={`mt-1 p-2 w-full border rounded-lg focus:ring-[#305CDE] focus:border-[#305CDE] ${
+                  className={`mt-1 p-2 w-full border rounded-lg focus:ring-primary focus:border-primary ${
                     errors.latitude ? "border-red-500" : "border-gray-300"
                   }`}
                 />
@@ -1033,7 +1033,7 @@ const CreateSpace = () => {
                   value={spaceData.coordinates.longitude || ""}
                   onChange={handleChange}
                   placeholder="Longitude"
-                  className={`mt-1 p-2 w-full border rounded-lg focus:ring-[#305CDE] focus:border-[#305CDE] ${
+                  className={`mt-1 p-2 w-full border rounded-lg focus:ring-primary focus:border-primary ${
                     errors.longitude ? "border-red-500" : "border-gray-300"
                   }`}
                 />
@@ -1101,7 +1101,7 @@ const CreateSpace = () => {
                         key={key}
                         className={`flex items-center justify-between p-4 mt-4 border rounded-xl cursor-pointer transition-all ${
                           isChecked
-                            ? "border-[#305CDE] bg-blue-50"
+                            ? "border-primary bg-blue-50"
                             : "border-gray-200 hover:border-gray-300"
                         }`}
                         onClick={() =>
@@ -1127,7 +1127,7 @@ const CreateSpace = () => {
                         <div
                           className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
                             isChecked
-                              ? "border-[#305CDE] bg-[#305CDE]"
+                              ? "border-primary bg-primary"
                               : "border-gray-300"
                           }`}
                         >
@@ -1166,7 +1166,7 @@ const CreateSpace = () => {
                         key={key}
                         className={`flex items-center justify-between p-4 mt-4 border rounded-xl cursor-pointer transition-all ${
                           isChecked
-                            ? "border-[#305CDE] bg-blue-50"
+                            ? "border-primary bg-blue-50"
                             : "border-gray-200 hover:border-gray-300"
                         }`}
                         onClick={() =>
@@ -1192,7 +1192,7 @@ const CreateSpace = () => {
                         <div
                           className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
                             isChecked
-                              ? "border-[#305CDE] bg-[#305CDE]"
+                              ? "border-primary bg-primary"
                               : "border-gray-300"
                           }`}
                         >
@@ -1251,7 +1251,7 @@ const CreateSpace = () => {
               ))}
               <Button
                 onClick={handleAddExtra}
-                className="mt-2 bg-[#305CDE] text-white px-4 py-2 rounded-lg"
+                className="mt-2 bg-primary text-white px-4 py-2 rounded-lg"
               >
                 Add More
               </Button>
@@ -1264,7 +1264,7 @@ const CreateSpace = () => {
 
             <Button
               onClick={() => setShowPopup(true)}
-              className="mb-4 bg-[#305CDE] text-white px-4 py-2 rounded-lg"
+              className="mb-4 bg-primary text-white px-4 py-2 rounded-lg"
             >
               Add Photos
             </Button>
@@ -1343,7 +1343,7 @@ const CreateSpace = () => {
                 }
                 className={`px-5 py-2 rounded-full font-medium transition ${
                   spaceData.pricing.pricingType === "DAILY"
-                    ? "bg-[#305CDE] text-white"
+                    ? "bg-primary text-white"
                     : "bg-gray-200 text-gray-700"
                 }`}
               >
@@ -1364,7 +1364,7 @@ const CreateSpace = () => {
                 }
                 className={`px-5 py-2 rounded-full font-medium transition ${
                   spaceData.pricing.pricingType === "HOURLY"
-                    ? "bg-[#305CDE] text-white"
+                    ? "bg-primary text-white"
                     : "bg-gray-200 text-gray-700"
                 }`}
               >
@@ -1381,7 +1381,7 @@ const CreateSpace = () => {
                 <p className="text-gray-600 mb-6">You can change it anytime.</p>
 
                 <div className="flex items-center justify-center px-6 pt-4 mb-3">
-                  <span className="text-4xl font-bold text-[#305CDE] mr-1 mb-4">
+                  <span className="text-4xl font-bold text-primary mr-1 mb-4">
                     £
                   </span>
                   <Input
@@ -1391,7 +1391,7 @@ const CreateSpace = () => {
                     value={spaceData.pricing.weekdayPrice}
                     onChange={handleChange}
                     required
-                    className="border-none bg-transparent text-center text-4xl font-semibold text-[#305CDE] focus:ring-0 focus:outline-none no-spinner dynamic-width"
+                    className="border-none bg-transparent text-center text-4xl font-semibold text-primary focus:ring-0 focus:outline-none no-spinner dynamic-width"
                   />
                 </div>
 
@@ -1419,7 +1419,7 @@ const CreateSpace = () => {
                 <p className="text-gray-600 mb-6">You can change it anytime.</p>
 
                 <div className="flex items-center justify-center px-6 pt-4 mb-3">
-                  <span className="text-4xl font-bold text-[#305CDE] mr-1 mb-4">
+                  <span className="text-4xl font-bold text-primary mr-1 mb-4">
                     £
                   </span>
                   <Input
@@ -1429,7 +1429,7 @@ const CreateSpace = () => {
                     value={spaceData.pricing.hourlyPrice}
                     onChange={handleChange}
                     required
-                    className="border-none bg-transparent text-center text-4xl font-semibold text-[#305CDE] focus:ring-0 focus:outline-none no-spinner dynamic-width"
+                    className="border-none bg-transparent text-center text-4xl font-semibold text-primary focus:ring-0 focus:outline-none no-spinner dynamic-width"
                   />
                 </div>
 
@@ -1462,7 +1462,7 @@ const CreateSpace = () => {
               <label
                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
                   spaceData.bookingSettings.approveFirstFive
-                    ? "border-[#305CDE] bg-blue-50"
+                    ? "border-primary bg-blue-50"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
                 onClick={() =>
@@ -1480,7 +1480,7 @@ const CreateSpace = () => {
                     <span className="font-medium text-gray-800">
                       Approve first 5 bookings
                     </span>
-                    <span className="bg-[#305CDE] text-white text-xs px-2 py-0.5 rounded-full">
+                    <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full">
                       Recommended
                     </span>
                   </div>
@@ -1494,12 +1494,12 @@ const CreateSpace = () => {
                 <div
                   className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                     spaceData.bookingSettings.approveFirstFive
-                      ? "border-[#305CDE]"
+                      ? "border-primary"
                       : "border-gray-300"
                   }`}
                 >
                   {spaceData.bookingSettings.approveFirstFive && (
-                    <div className="w-3 h-3 bg-[#305CDE] rounded-full" />
+                    <div className="w-3 h-3 bg-primary rounded-full" />
                   )}
                 </div>
               </label>
@@ -1508,7 +1508,7 @@ const CreateSpace = () => {
               <label
                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
                   spaceData.bookingSettings.instantBook
-                    ? "border-[#305CDE] bg-blue-50"
+                    ? "border-primary bg-blue-50"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
                 onClick={() =>
@@ -1534,12 +1534,12 @@ const CreateSpace = () => {
                 <div
                   className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                     spaceData.bookingSettings.instantBook
-                      ? "border-[#305CDE]"
+                      ? "border-primary"
                       : "border-gray-300"
                   }`}
                 >
                   {spaceData.bookingSettings.instantBook && (
-                    <div className="w-3 h-3 bg-[#305CDE] rounded-full" />
+                    <div className="w-3 h-3 bg-primary rounded-full" />
                   )}
                 </div>
               </label>
@@ -1561,7 +1561,7 @@ const CreateSpace = () => {
               <label
                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
                   spaceData.pricing.discounts.newListing
-                    ? "border-[#305CDE] bg-blue-50"
+                    ? "border-primary bg-blue-50"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
                 onClick={() =>
@@ -1587,7 +1587,7 @@ const CreateSpace = () => {
                 <div
                   className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
                     spaceData.pricing.discounts.newListing
-                      ? "border-[#305CDE] bg-[#305CDE]"
+                      ? "border-primary bg-primary"
                       : "border-gray-300"
                   }`}
                 >
@@ -1614,7 +1614,7 @@ const CreateSpace = () => {
               <label
                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
                   spaceData.pricing.discounts.lastMinute
-                    ? "border-[#305CDE] bg-blue-50"
+                    ? "border-primary bg-blue-50"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
                 onClick={() =>
@@ -1639,7 +1639,7 @@ const CreateSpace = () => {
                 <div
                   className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
                     spaceData.pricing.discounts.lastMinute
-                      ? "border-[#305CDE] bg-[#305CDE]"
+                      ? "border-primary bg-primary"
                       : "border-gray-300"
                   }`}
                 >
@@ -1666,7 +1666,7 @@ const CreateSpace = () => {
               <label
                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
                   spaceData.pricing.discounts.weekly
-                    ? "border-[#305CDE] bg-blue-50"
+                    ? "border-primary bg-blue-50"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
                 onClick={() =>
@@ -1690,7 +1690,7 @@ const CreateSpace = () => {
                 <div
                   className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
                     spaceData.pricing.discounts.weekly
-                      ? "border-[#305CDE] bg-[#305CDE]"
+                      ? "border-primary bg-primary"
                       : "border-gray-300"
                   }`}
                 >
@@ -1717,7 +1717,7 @@ const CreateSpace = () => {
               <label
                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
                   spaceData.pricing.discounts.monthly
-                    ? "border-[#305CDE] bg-blue-50"
+                    ? "border-primary bg-blue-50"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
                 onClick={() =>
@@ -1741,7 +1741,7 @@ const CreateSpace = () => {
                 <div
                   className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
                     spaceData.pricing.discounts.monthly
-                      ? "border-[#305CDE] bg-[#305CDE]"
+                      ? "border-primary bg-primary"
                       : "border-gray-300"
                   }`}
                 >
@@ -1794,7 +1794,7 @@ const CreateSpace = () => {
           <Button
             onClick={step === totalSteps ? handleSubmit : handleNext}
             disabled={isSubmitting}
-            className="px-8 py-3 bg-[#305CDE] text-white rounded-lg hover:bg-blue-700 disabled:opacity-70"
+            className="px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary/80 disabled:opacity-70"
           >
             {isSubmitting
               ? "Publishing..."

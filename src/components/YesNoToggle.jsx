@@ -13,7 +13,7 @@ const YesNoToggle = ({ label, subtitle, name, value, onChange }) => {
           type="button"
           onClick={() => onChange({ target: { name, value: true } })}
           className={`px-4 py-1 text-sm rounded-full transition-all cursor-pointer ${
-            value ? "bg-blue-600 text-white shadow-sm" : "text-gray-700"
+            value ? "bg-primary text-white shadow-sm" : "text-gray-700"
           }`}
         >
           Yes
@@ -22,7 +22,7 @@ const YesNoToggle = ({ label, subtitle, name, value, onChange }) => {
           type="button"
           onClick={() => onChange({ target: { name, value: false } })}
           className={`px-4 py-1 text-sm rounded-full transition-all cursor-pointer ${
-            !value ? "bg-blue-600 text-white shadow-sm" : "text-gray-700"
+            !value ? "bg-primary text-white shadow-sm" : "text-gray-700"
           }`}
         >
           No

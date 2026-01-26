@@ -4,6 +4,7 @@ import { apiFetch } from "../utils/api";
 import PropertyCard from "../components/PropertyCard";
 import EditPropertyModal from "../components/EditPropertyModal";
 import Button from "../components/Button";
+import VencomeLoader from "../components/Loader";
 
 const MyListings = () => {
   const navigate = useNavigate();
@@ -86,11 +87,7 @@ const MyListings = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
-      </div>
-    );
+    return <VencomeLoader />;
   }
 
   return (

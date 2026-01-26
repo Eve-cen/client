@@ -13,12 +13,12 @@ const Button = ({
     "my-4 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium focus:outline-none focus:ring-2 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
 
   const variants = {
-    primary: "bg-[#305CDE] text-white hover:bg-blue-700 focus:ring-blue-500",
+    primary: "bg-primary text-white hover:bg-primary focus:ring-primary",
     secondary:
       "bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-400",
     danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
     outline:
-      "border border-blue-600 text-blue-600 hover:bg-blue-50 focus:ring-blue-300",
+      "border border-primary text-primary hover:bg-primary focus:ring-primary",
   };
 
   return (

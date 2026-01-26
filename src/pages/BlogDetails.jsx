@@ -38,7 +38,7 @@ export default function BlogDetails() {
     return (
       <div className="text-center py-20">
         <h1 className="text-2xl font-bold mb-4">Blog Not Found</h1>
-        <Link to="/blog" className="text-blue-600 underline">
+        <Link to="/blog" className="text-primary underline">
           Go Back
         </Link>
       </div>
@@ -53,7 +53,7 @@ export default function BlogDetails() {
           className="w-full h-72 object-cover rounded-lg mb-6"
         />
 
-        <Link to="/blog" className="text-blue-600 underline text-sm">
+        <Link to="/blog" className="text-primary underline text-sm">
           ← Back to Blog
         </Link>
 

@@ -58,7 +58,7 @@ const OTPInput = ({ email, onVerify }) => {
             onChange={(e) => handleChange(e, index)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             ref={(el) => (inputs.current[index] = el)}
-            className="w-14 h-14 text-center text-lg border rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            className="w-14 h-14 text-center text-lg border rounded-lg focus:ring-primary focus:border-primary"
           />
         ))}
       </div>

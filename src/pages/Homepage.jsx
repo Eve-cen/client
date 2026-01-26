@@ -9,7 +9,7 @@ import Newsletter from "../components/Newsletter";
 import Footer from "../components/Footer";
 import BlogList from "../components/BlogList";
 import BlogSection from "../components/BlogsSection";
-import EvencenLoader from "../components/Loader";
+import VencomeLoader from "../components/Loader";
 
 const Home = () => {
   const [properties, setProperties] = useState([]);
@@ -96,7 +96,7 @@ const Home = () => {
     <div className="min-h-screen bg-gray-50">
       <Hero />
       {loading ? (
-        <EvencenLoader />
+        <VencomeLoader />
       ) : (
         <>
           <div className="bg-[#F2F2F2]">

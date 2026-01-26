@@ -3,6 +3,11 @@
 * {
   font-family: "Manrope", sans-serif;
 }
+
+@theme {
+  --color-primary: #305cde;
+}
+
 .rdrCalendarWrapper {
   border-radius: 22px;
   box-shadow: 5px 15px 15px #ddd;

@@ -103,7 +103,7 @@
 //   return (
 //     <div className="w-full text-black">
 //       <h2 className="text-2xl font-bold mb-6 text-center">
-//         Welcome to EvenCen
+//         Welcome to vencome
 //       </h2>
 //       {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
 //       <form onSubmit={handleEmailSubmit}>
@@ -132,7 +132,7 @@
 //           {loading ? "Loading..." : "Login"}
 //         </Button>
 //         <p
-//           className="mt-4 text-blue-600 cursor-pointer text-center"
+//           className="mt-4 text-primary cursor-pointer text-center"
 //           onClick={onForgotPassword}
 //         >
 //           Forgot Password?
@@ -181,7 +181,7 @@
 //           authOptions={{
 //             clientId: import.meta.VITE_APPLE_CLIENT_ID,
 //             scope: "email",
-//             redirectURI: "https://evencen.onrender.com",
+//             redirectURI: "https://vencome.onrender.com",
 //             state: "state",
 //             nonce: "nonce",
 //             usePopup: true,
@@ -438,7 +438,7 @@ const AuthForm = ({ onForgotPassword, onSuccess }) => {
 
       <div className="w-full text-black max-w-md mx-auto">
         <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">
-          Welcome to EvenCen
+          Welcome to vencome
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -528,7 +528,7 @@ const AuthForm = ({ onForgotPassword, onSuccess }) => {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                className="w-4 h-4 text-primary rounded focus:ring-primary"
               />
               <span className="text-sm text-gray-600">Remember me</span>
             </label>
@@ -536,7 +536,7 @@ const AuthForm = ({ onForgotPassword, onSuccess }) => {
             <button
               type="button"
               onClick={onForgotPassword}
-              className="text-sm text-blue-600 hover:underline"
+              className="text-sm text-primary hover:underline"
             >
               Forgot Password?
             </button>
@@ -547,7 +547,7 @@ const AuthForm = ({ onForgotPassword, onSuccess }) => {
             disabled={loading || !isFormValid()}
             className={`w-full font-medium transition-all ${
               isFormValid() && !loading
-                ? "bg-blue-600 hover:bg-blue-700 text-white"
+                ? "bg-primary hover:bg-primary text-white"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >

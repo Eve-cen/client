@@ -4,7 +4,7 @@ import { apiFetch } from "../utils/api";
 import ProfileSidebar from "../components/ProfileSidebar";
 import Button from "../components/Button";
 import { Menu, X } from "lucide-react";
-import EvencenLoader from "../components/Loader";
+import vencomeLoader from "../components/Loader";
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -53,7 +53,7 @@ const MyBookings = () => {
       alert("Failed to start payment");
     }
   };
-  if (loading) return <EvencenLoader />;
+  if (loading) return <vencomeLoader />;
 
   return (
     <div className="min-h-screen flex">
