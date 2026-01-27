@@ -173,12 +173,6 @@ const MyBookings = () => {
                             Paid
                           </span>
                         )}
-
-                        {/* {isReviewed && (
-                          <Button onClick={() => handleReview()}>
-                            Drop a review
-                          </Button>
-                        )} */}
                       </div>
                     </div>
                   </div>

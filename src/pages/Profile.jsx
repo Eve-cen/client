@@ -184,7 +184,7 @@ const Profile = () => {
       >
         <ProfileSidebar onLinkClick={() => setSidebarOpen(false)} />
       </div>
-      <div className="flex-1 p-8 sm:p-6 lg:p-8 w-full">
+      <div className="flex-1 p-8 sm:p-6 lg:p-6 w-full">
         {pathname === "/profile/about" && (
           <div>
             {error && <p className="text-red-500 mb-4">{error}</p>}
@@ -254,7 +254,7 @@ const Profile = () => {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {filteredTrips.length > 0 ? (
                 filteredTrips.map((trip) => (
                   <TripCard
