@@ -34,14 +34,14 @@ const Profile = () => {
             cacheable: true,
             credentials: "include",
           }),
-          // apiFetch({
-          //   endpoint: "/bookings/past",
-          //   method: "GET",
-          //   credentials: "include",
-          // }),
+          apiFetch({
+            endpoint: "/bookings/past",
+            method: "GET",
+            credentials: "include",
+          }),
         ]);
         setUser(userData);
-        // setPastTrips(tripsData);
+        setPastTrips(tripsData);
 
         const userReviews = await apiFetch({
           endpoint: "/auth/me",
@@ -225,47 +225,51 @@ const Profile = () => {
           </div>
         )}
         {pathname === "/profile/past-trips" && (
-          <div>
-            <h2 className="text-4xl">Past trips</h2>
-            <div className="flex gap-4 mb-4">
-              <Input
-                label="Location"
-                name="location"
-                value={filters.location}
-                onChange={handleFilterChange}
-                classes="flex-1"
-              />
-              <Input
-                label="Date"
-                name="date"
-                type="date"
-                value={filters.date}
-                onChange={handleFilterChange}
-                classes="flex-1"
-              />
-              <Input
-                label="Max Price"
-                name="price"
-                type="number"
-                value={filters.price}
-                onChange={handleFilterChange}
-                classes="flex-1"
-              />
-            </div>
-            {filteredTrips.length > 0 ? (
-              filteredTrips.map((trip) => (
-                <TripCard
-                  key={trip._id}
-                  trip={trip}
-                  onWriteReview={() => handleWriteReview(trip._id)}
-                  onBookAgain={() => handleBookAgain(trip.property._id)}
+          <>
+            <div>
+              <h2 className="text-4xl">Past trips</h2>
+              <div className="flex gap-4 mb-4">
+                <Input
+                  label="Location"
+                  name="location"
+                  value={filters.location}
+                  onChange={handleFilterChange}
+                  classes="flex-1"
                 />
-              ))
-            ) : (
-              <p className="text-gray-500">No past trips found.</p>
-            )}
-          </div>
+                <Input
+                  label="Date"
+                  name="date"
+                  type="date"
+                  value={filters.date}
+                  onChange={handleFilterChange}
+                  classes="flex-1"
+                />
+                <Input
+                  label="Max Price"
+                  name="price"
+                  type="number"
+                  value={filters.price}
+                  onChange={handleFilterChange}
+                  classes="flex-1"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              {filteredTrips.length > 0 ? (
+                filteredTrips.map((trip) => (
+                  <TripCard
+                    key={trip._id}
+                    trip={trip}
+                    onBookAgain={() => handleBookAgain(trip.property._id)}
+                  />
+                ))
+              ) : (
+                <p>No past booking</p>
+              )}
+            </div>
+          </>
         )}
+
         {pathname === "/profile/reviews" && (
           <div>
             <h2 className="text-4xl">Reviews</h2>

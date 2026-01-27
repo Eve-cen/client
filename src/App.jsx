@@ -26,9 +26,11 @@ import BlogDetails from "./pages/BlogDetails";
 import SearchPage from "./pages/SearchPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 function AppContent() {
   const location = useLocation();
+  const queryClient = new QueryClient();
 
   // ✅ Hide navbar only on homepage
   const hideNavbar = location.pathname === "/";
@@ -37,34 +39,36 @@ function AppContent() {
     <>
       {!hideNavbar && <Navbar />}
       <ToastContainer />
-      <div>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          />
-          <Route path="/create-space" element={<CreateSpace />} />
-          <Route path="/settings/*" element={<Settings />} />
-          <Route path="/profile/*" element={<Profile />} />
-          <Route path="/property/:id" element={<PropertyDetails />} />
-          <Route path="/category/:id" element={<CategoryPage />} />
-          <Route path="/my-listings" element={<MyListings />} />
-          <Route path="/host/:id" element={<HostProfile />} />
-          <Route path="/host/bookings" element={<HostBookings />} />
-          <Route path="/my-bookings" element={<MyBookings />} />
-          <Route path="/blogs" element={<BlogList />} />
-          <Route path="/blog/:slug" element={<BlogDetails />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/" element={<Homepage />} />
-          <Route path="*" element={<h1>404 - Page Not Found</h1>} />
-        </Routes>
-      </div>
+      <QueryClientProvider client={queryClient}>
+        <div>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route path="/create-space" element={<CreateSpace />} />
+            <Route path="/settings/*" element={<Settings />} />
+            <Route path="/profile/*" element={<Profile />} />
+            <Route path="/property/:id" element={<PropertyDetails />} />
+            <Route path="/category/:id" element={<CategoryPage />} />
+            <Route path="/my-listings" element={<MyListings />} />
+            <Route path="/host/:id" element={<HostProfile />} />
+            <Route path="/host/bookings" element={<HostBookings />} />
+            <Route path="/my-bookings" element={<MyBookings />} />
+            <Route path="/blogs" element={<BlogList />} />
+            <Route path="/blog/:slug" element={<BlogDetails />} />
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/" element={<Homepage />} />
+            <Route path="*" element={<h1>404 - Page Not Found</h1>} />
+          </Routes>
+        </div>
+      </QueryClientProvider>
     </>
   );
 }

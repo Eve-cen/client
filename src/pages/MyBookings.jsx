@@ -132,19 +132,19 @@ const MyBookings = () => {
                       {booking.guests} guest{booking.guests > 1 ? "s" : ""}
                     </p>
 
-                    <div className="mt-4 flex items-center justify-between">
+                    <div className="mt-2 flex items-center justify-between">
                       <div>
-                        <p className="text-2xl font-bold text-primary">
-                          ${booking.totalPrice}
-                        </p>
-                        {booking.discountApplied > 0 && (
-                          <p className="text-sm text-green-600">
-                            Saved ${booking.discountApplied.toFixed(2)}
+                        <div className="flex gap-2 items-baseline mb-2">
+                          <p className="text-2xl font-bold text-primary">
+                            ${booking.totalPrice}
                           </p>
-                        )}
-                      </div>
+                          {booking.discountApplied > 0 && (
+                            <p className="text-xs text-green-600">
+                              Saved ${booking.discountApplied.toFixed(2)}
+                            </p>
+                          )}
+                        </div>
 
-                      <div className="flex items-center space-x-3">
                         <span
                           className={`px-4 py-2 rounded-full text-xs font-medium ${
                             booking.status === "confirmed"
@@ -156,7 +156,9 @@ const MyBookings = () => {
                         >
                           {booking.status}
                         </span>
+                      </div>
 
+                      <div className="flex items-center space-x-3">
                         {!booking.isPaid && booking.status !== "declined" && (
                           <Button
                             onClick={() => handlePay(booking._id)}
@@ -171,6 +173,12 @@ const MyBookings = () => {
                             Paid
                           </span>
                         )}
+
+                        {/* {isReviewed && (
+                          <Button onClick={() => handleReview()}>
+                            Drop a review
+                          </Button>
+                        )} */}
                       </div>
                     </div>
                   </div>
