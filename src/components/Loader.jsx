@@ -3,7 +3,7 @@ const VencomeLoader = ({ label = "Loading..." }) => {
     <div className="flex items-center justify-center w-full h-screen">
       <img
         src="/logo-loader.svg"
-        className="w-[40rem] animate-[pulseScale_1.4s_ease-in-out_infinite]"
+        className="w-[20rem] md:w-[40rem] animate-[pulseScale_1.4s_ease-in-out_infinite]"
       />
 
       <style>

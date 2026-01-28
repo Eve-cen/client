@@ -9,6 +9,17 @@ const ChatPage = () => {
   const [loading, setLoading] = useState(!loaded);
   const navigate = useNavigate();
 
+  const currentUser = localStorage.getItem("currentUser");
+  let user = null;
+
+  if (currentUser) {
+    try {
+      user = JSON.parse(currentUser);
+    } catch (err) {
+      console.error("Failed to parse user from localStorage:", err);
+    }
+  }
+
   useEffect(() => {
     // Only fetch if we haven't loaded yet
     if (!loaded) {
@@ -51,7 +62,7 @@ const ChatPage = () => {
               <p className="font-semibold">
                 {conv.host.displayName === conv.guest.displayName
                   ? "Unknown User"
-                  : conv.host.displayName === currentUser?.displayName
+                  : conv.host.displayName === user?.displayName
                   ? conv.guest.displayName
                   : conv.host.displayName}
               </p>
