@@ -28,6 +28,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ChatWindow from "./components/ChatWindow";
+import ChatPage from "./pages/ChatPage";
+import Conversation from "./pages/Conversation";
 
 function AppContent() {
   const location = useLocation();
@@ -58,7 +60,8 @@ function AppContent() {
             <Route path="/profile/*" element={<Profile />} />
             <Route path="/property/:id" element={<PropertyDetails />} />
             <Route path="/category/:id" element={<CategoryPage />} />
-            <Route path="/chat/:conversationId" element={<ChatWindow />} />
+            <Route path="/chat/:conversationId" element={<Conversation />} />
+            <Route path="/chat" element={<ChatPage />} />
             <Route path="/my-listings" element={<MyListings />} />
             <Route path="/host/:id" element={<HostProfile />} />
             <Route path="/host/bookings" element={<HostBookings />} />

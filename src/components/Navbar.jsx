@@ -365,6 +365,14 @@ const Navbar = () => {
                   </Link>
 
                   <Link
+                    to="/chat"
+                    className="block px-4 py-3 hover:bg-blue-50"
+                    onClick={() => setIsProfileOpen(false)}
+                  >
+                    Chat
+                  </Link>
+
+                  <Link
                     to="/my-listings"
                     className="block px-4 py-3 hover:bg-blue-50"
                     onClick={() => setIsProfileOpen(false)}
@@ -446,6 +454,9 @@ const Navbar = () => {
               <>
                 <Link to="/create-space" className="hover:text-primary">
                   Publish your space
+                </Link>
+                <Link to="/chat" className="hover:text-primary">
+                  Chat
                 </Link>
                 <Link to="/my-listings" className="hover:text-primary">
                   My Listings

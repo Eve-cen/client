@@ -7,7 +7,7 @@ const Sidebar = ({ onLinkClick }) => {
   const sections = [
     { name: "About", path: "/profile/about" },
     { name: "Past Trips", path: "/profile/past-trips" },
-    { name: "Reviews", path: "/profile/reviews" },
+    // { name: "Reviews", path: "/profile/reviews" },
     { name: "My Bookings", path: "/my-bookings" },
   ];
   return (
