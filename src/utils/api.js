@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+
 // client/src/utils/api.js
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes in milliseconds
 const cache = new Map(); // In-memory cache
@@ -55,6 +57,7 @@ const apiFetch = async ({
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      toast.error(errorData.error);
       throw new Error(
         errorData.error || `HTTP error! Status: ${response.status}`
       );

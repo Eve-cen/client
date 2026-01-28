@@ -18,7 +18,7 @@ const PropertyDetails = () => {
   const [property, setProperty] = useState(null);
   const [host, setHost] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showChat, setShowChat] = useState(false);
+  // const [showChat, setShowChat] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -31,6 +31,7 @@ const PropertyDetails = () => {
           cacheable: true,
         });
         setProperty(data.property);
+        console.log(data.property);
         const hostData = await apiFetch({
           endpoint: `/hosts/${data.property.host._id}`,
         });
@@ -92,7 +93,7 @@ const PropertyDetails = () => {
                     ★ {property.rating.toFixed(1)}
                   </span>
                   <span className="text-gray-600 ml-2">
-                    {/* ({property.reviews.length} reviews) */}
+                    ({property.reviewNumber} reviews)
                   </span>
                 </div>
                 {property.pricing?.pricingType === "HOURLY" ? (
@@ -108,20 +109,7 @@ const PropertyDetails = () => {
 
               <BookingForm propertyId={property._id} property={property} />
               {/* {user && user._id !== property.host._id && ( */}
-              <Button
-                onClick={() => setShowChat(true)}
-                className="mt-4 w-full bg-primary text-white"
-              >
-                Message Host
-              </Button>
               {/* )} */}
-
-              {showChat && (
-                <ChatBox
-                  propertyId={property._id}
-                  onClose={() => setShowChat(false)}
-                />
-              )}
             </div>
           </div>
         </div>

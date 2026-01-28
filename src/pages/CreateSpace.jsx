@@ -18,7 +18,7 @@ import { Home, Bell, Compass, Save, FileText } from "lucide-react";
 const CreateSpace = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const totalSteps = 11;
+  const totalSteps = 10;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [selected, setSelected] = useState("");
@@ -30,7 +30,7 @@ const CreateSpace = () => {
   const [currentUser, setCurrentUser] = useState("");
   const [hasDraft, setHasDraft] = useState(false);
   const [showDraftPrompt, setShowDraftPrompt] = useState(false);
-  const [draftId, setDraftId] = useState(null);
+  const [draftId, setDraftId] = useState("");
   const libraries = ["places"];
 
   const [spaceData, setSpaceData] = useState({

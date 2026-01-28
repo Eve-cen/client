@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { apiFetch } from "../utils/api";
 import ProfileSidebar from "../components/ProfileSidebar";
 import Button from "../components/Button";
@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import VencomeLoader from "../components/Loader";
 
 const MyBookings = () => {
+  const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -53,6 +54,22 @@ const MyBookings = () => {
       alert("Failed to start payment");
     }
   };
+
+  const goToChat = async (bookingId, hostId) => {
+    try {
+      const conversation = await apiFetch({
+        endpoint: `/chat/conversation/${bookingId}`, // match backend
+        method: "POST",
+        body: { hostId }, // important!
+        credentials: "include",
+      });
+      navigate(`/chat/${conversation._id}`);
+    } catch (err) {
+      console.error(err);
+      alert("Unable to open chat. Please try again.");
+    }
+  };
+
   if (loading) return <VencomeLoader />;
 
   return (
@@ -167,6 +184,13 @@ const MyBookings = () => {
                             Pay Now
                           </Button>
                         )}
+
+                        <Button
+                          onClick={() => goToChat(booking._id, booking.host)}
+                          className="mt-4 w-full bg-primary text-white"
+                        >
+                          Message Host
+                        </Button>
 
                         {booking.isPaid && (
                           <span className="text-green-600 font-medium flex items-center">
