@@ -6,7 +6,9 @@ export default function PropertyDescription({ data }) {
 
   return (
     <Accordion title="Description" openState={true}>
-      {description && <p className="leading-relaxed">{description}</p>}
+      {description && (
+        <p className="break-words leading-relaxed">{description}</p>
+      )}
     </Accordion>
   );
 }
