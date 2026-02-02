@@ -6,6 +6,7 @@ import "react-date-range/dist/theme/default.css";
 import Button from "./Button";
 import { apiFetch } from "../utils/api";
 import { useNavigate } from "react-router-dom";
+import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 
 export default function BookingForm({ property }) {
   const navigate = useNavigate();
@@ -134,7 +135,6 @@ export default function BookingForm({ property }) {
         credentials: "include",
       });
 
-      console.log("Booking created:", booking);
       setShowModal(true);
 
       // Countdown redirect
@@ -271,9 +271,9 @@ export default function BookingForm({ property }) {
       {/* Success Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center">
-            <div className="text-6xl mb-4">✅</div>
-            <h2 className="text-2xl font-bold mb-2">Booking Confirmed!</h2>
+          <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center flex flex-col items-center">
+            <IoIosCheckmarkCircleOutline size={100} color="green" />
+            <h2 className="text-2xl font-bold mt-4 mb-2">Booking Confirmed!</h2>
             <p className="text-gray-600">
               Redirecting in {countdown} second{countdown > 1 ? "s" : ""}...
             </p>

@@ -4,6 +4,7 @@ const Input = ({
   label,
   type = "text",
   error,
+  disabled,
   shake = false, // New prop to trigger shake
   classes = "",
   ...props
@@ -24,6 +25,7 @@ const Input = ({
             focus:outline-none focus:ring-2 focus:ring-primary
             ${error ? "border-red-500" : "border-gray-300"}
             ${shake ? "animate-shake" : ""}
+            ${disabled ? "bg-gray-200" : ""}
           `}
           {...props}
         />

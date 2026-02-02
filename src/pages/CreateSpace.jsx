@@ -14,6 +14,7 @@ import MapComponent from "../components/MapComponent";
 import Notification from "../components/Notification";
 import { Autocomplete, useLoadScript } from "@react-google-maps/api";
 import { Home, Bell, Compass, Save, FileText } from "lucide-react";
+import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 
 const CreateSpace = () => {
   const navigate = useNavigate();
@@ -680,6 +681,12 @@ const CreateSpace = () => {
         localStorage.removeItem("token");
         saveDraft();
         navigate("/login");
+        return;
+      }
+
+      if (res.status === 403) {
+        toast.error("Please complete your profile before creating a property");
+        saveDraft();
         return;
       }
 
@@ -1769,9 +1776,9 @@ const CreateSpace = () => {
       </div>
       {showModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center">
-            <div className="text-6xl mb-4">✅</div>
-            <h2 className="text-2xl font-bold mb-2">Property Created!</h2>
+          <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center flex flex-col items-center">
+            <IoIosCheckmarkCircleOutline size={100} color="green" />
+            <h2 className="text-2xl font-bold mt-4 mb-2">Property Created!</h2>
             <p className="text-gray-600">
               Redirecting in {countdown} second{countdown > 1 ? "s" : ""}...
             </p>

@@ -5,6 +5,7 @@ import ProfileSidebar from "../components/ProfileSidebar";
 import Button from "../components/Button";
 import { Menu, X } from "lucide-react";
 import VencomeLoader from "../components/Loader";
+import { toast } from "react-toastify";
 
 const MyBookings = () => {
   const navigate = useNavigate();
@@ -16,11 +17,11 @@ const MyBookings = () => {
   useEffect(() => {
     fetchBookings();
     if (searchParams.get("success")) {
-      alert("Payment successful! Booking confirmed.");
+      toast.success("Payment successful! Booking confirmed.");
       window.history.replaceState({}, "", "/my-bookings");
     }
     if (searchParams.get("cancel")) {
-      alert("Payment cancelled.");
+      toast.error("Payment cancelled.");
       window.history.replaceState({}, "", "/my-bookings");
     }
   }, [searchParams]);
@@ -32,7 +33,6 @@ const MyBookings = () => {
         credentials: "include",
       });
       setBookings(data);
-      console.log(data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -48,7 +48,6 @@ const MyBookings = () => {
         body: { bookingId },
         credentials: "include",
       });
-      console.log(url);
       window.location.href = url;
     } catch (err) {
       alert("Failed to start payment");
@@ -116,7 +115,7 @@ const MyBookings = () => {
           </h1>
 
           {bookings.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-lg p-12 text-center">
+            <div className="text-center">
               <p className="text-xl text-gray-500">No bookings yet.</p>
               <Button
                 onClick={() => (window.location.href = "/")}

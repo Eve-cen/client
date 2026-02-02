@@ -1,5 +1,5 @@
 // src/components/TagList.jsx
-export default function TagList({ tags, onToggle, activeTags = [] }) {
+export default function TagList({ tags, type, onToggle, activeTags = [] }) {
   return (
     <div className="flex flex-wrap gap-2">
       {tags.map((t) => {
@@ -8,11 +8,14 @@ export default function TagList({ tags, onToggle, activeTags = [] }) {
           <button
             key={t}
             onClick={() => onToggle(t)}
-            className={`px-2 py-1 text-xs rounded ${
+            className={`px-2 py-1 ${
+              type === "cat" ? "text-normal" : "text-xs"
+            } rounded cursor-pointer ${
               active ? "bg-primary text-white" : "bg-gray-100 text-gray-700"
             }`}
           >
-            #{t}
+            {type === "cat" ? null : "#"}
+            {t}
           </button>
         );
       })}

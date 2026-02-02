@@ -3,11 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { apiFetch } from "../utils/api";
 import Card from "../components/EvenCard";
 import VencomeLoader from "../components/Loader";
+import TagList from "../components/TagList";
 
 const CategoryPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [category, setCategory] = useState(null);
+  const [subCategory, setSubCategory] = useState(null);
+  const [activeTags, setActiveTags] = useState([]);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -18,6 +21,7 @@ const CategoryPage = () => {
         setLoading(true);
         const catData = await apiFetch({ endpoint: `/categories/${id}` });
         setCategory(catData.category);
+        setSubCategory(catData.category.subcategory);
         setProperties(catData.properties);
         setError("");
       } catch (err) {
@@ -29,17 +33,33 @@ const CategoryPage = () => {
     };
     fetchData();
   }, [id]);
+
+  const toggleTag = (tagName) => {
+    setActiveTags((prev) =>
+      prev.includes(tagName)
+        ? prev.filter((t) => t !== tagName)
+        : [...prev, tagName]
+    );
+  };
+
+  const filteredProperties =
+    activeTags.length === 0
+      ? properties
+      : properties.filter((property) =>
+          activeTags.includes(property.subcategory)
+        );
+
   if (loading) {
     return <VencomeLoader />;
   }
 
-  if (error || !category) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-red-500">{error || "Category not found"}</div>
-      </div>
-    );
-  }
+  // if (error || !category) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center">
+  //       <div className="text-red-500">{error || "Category not found"}</div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -53,6 +73,19 @@ const CategoryPage = () => {
             <p className="text-lg text-gray-600 max-w-3xl">
               {category.description}
             </p>
+          )}
+          {subCategory?.length > 0 && (
+            <div className="flex gap-3 items-center mt-4">
+              <h3 className="text-sm font-semibold">Subcategories:</h3>
+              {subCategory?.length > 0 && (
+                <TagList
+                  tags={subCategory.map((s) => s.name)}
+                  type="cat"
+                  onToggle={toggleTag}
+                  activeTags={activeTags}
+                />
+              )}
+            </div>
           )}
         </div>
 
@@ -71,7 +104,7 @@ const CategoryPage = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {properties.map((property) => (
+            {filteredProperties.map((property) => (
               <Card key={property._id} id={property._id} data={property} />
             ))}
           </div>

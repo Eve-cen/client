@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { apiFetch } from "../utils/api";
 
-const Sidebar = ({ onLinkClick }) => {
+const Sidebar = ({ user, onLinkClick }) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -10,8 +10,11 @@ const Sidebar = ({ onLinkClick }) => {
     { name: "Personal Information", path: "/settings/personal" },
     { name: "Privacy", path: "/settings/privacy" },
     { name: "Payments", path: "/settings/payments" },
-    { name: "Payout", path: "/settings/payout" },
   ];
+
+  if (!user?.isHost) {
+    sections.push({ name: "Payout", path: "/settings/payout" });
+  }
 
   const handleLogout = async () => {
     try {

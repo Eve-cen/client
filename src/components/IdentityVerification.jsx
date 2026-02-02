@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, useStripe, useElements } from "@stripe/react-stripe-js";
 import { apiFetch } from "../utils/api";
-
+import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 const stripePromise = loadStripe(
   "pk_test_51ST9SoJwnD1dhW6Y6zRqMUFNpArDlWof5HESYLISi8ARb06omu1OnChvpfQ6OYDOi7OX6goFEOgnxnIK6xaUZ5KI00ZT6AsPUn"
 ); // Your publishable key
@@ -46,11 +46,10 @@ const VerificationButton = () => {
 const IdentityVerification = ({ user }) => {
   if (user.isVerified) {
     return (
-      <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 text-center">
-        <p className="text-6xl mb-4">Checkmark</p>
-        <p className="text-2xl font-bold text-green-800">Identity Verified</p>
-        <p className="text-green-600">
-          Verified on {new Date(user.verifiedAt).toLocaleDateString()}
+      <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 text-center flex flex-col items-center">
+        <IoIosCheckmarkCircleOutline size={100} color="green" />
+        <p className="text-2xl font-bold text-green-800 mt-2">
+          Identity Verified
         </p>
       </div>
     );
