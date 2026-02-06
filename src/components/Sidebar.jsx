@@ -12,7 +12,7 @@ const Sidebar = ({ user, onLinkClick }) => {
     { name: "Payments", path: "/settings/payments" },
   ];
 
-  if (!user?.isHost) {
+  if (user?.isHost) {
     sections.push({ name: "Payout", path: "/settings/payout" });
   }
 

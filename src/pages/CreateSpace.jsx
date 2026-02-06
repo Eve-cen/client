@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { apiFetch } from "../utils/api";
 import ProgressBar from "../components/ProgressBar";
 import Input from "../components/Input";
@@ -294,8 +294,6 @@ const CreateSpace = () => {
         body: formData,
         credentials: "include",
       });
-
-      console.log(res);
 
       const data = await res.json();
 
@@ -683,7 +681,6 @@ const CreateSpace = () => {
         navigate("/login");
         return;
       }
-
       if (res.status === 403) {
         toast.error("Please complete your profile before creating a property");
         saveDraft();
@@ -840,6 +837,9 @@ const CreateSpace = () => {
 
   return (
     <div className="min-h-[calc(100vh-65px)] flex flex-col justify-between bg-gray-50 p-4 sm:p-8">
+      <div className="absolute">
+        <ToastContainer />
+      </div>
       {showDraftPrompt && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-8 max-w-md w-full">

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import Button from "./Button";
 
 const OTPInput = ({ email, onVerify }) => {
@@ -30,7 +30,7 @@ const OTPInput = ({ email, onVerify }) => {
     e.preventDefault();
     const otpValue = otp.join("");
     if (otpValue.length !== 4) {
-      setError("Please enter a 4-digit OTP");
+      setError("Please enter the 4-digit OTP");
       return;
     }
 
@@ -45,10 +45,11 @@ const OTPInput = ({ email, onVerify }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-6 text-center">Enter OTP</h2>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      <div className="flex gap-5 mx-auto mb-6">
+    <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-8">
+      {error && (
+        <p className="text-red-500 mb-4 text-center font-medium">{error}</p>
+      )}
+      <div className="flex justify-center gap-4 mb-6">
         {otp.map((digit, index) => (
           <input
             key={index}
@@ -58,13 +59,38 @@ const OTPInput = ({ email, onVerify }) => {
             onChange={(e) => handleChange(e, index)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             ref={(el) => (inputs.current[index] = el)}
-            className="w-14 h-14 text-center text-lg border rounded-lg focus:ring-primary focus:border-primary"
+            className="w-16 h-16 text-center text-2xl border-2 border-gray-300 rounded-xl focus:border-[#305CDE] focus:ring-2 focus:ring-[#305CDE] outline-none transition"
           />
         ))}
       </div>
-      <Button type="submit" disabled={loading}>
-        {loading ? "Verifying..." : "Verify OTP"}
+      <Button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-[#305CDE] hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition"
+      >
+        {loading ? (
+          <span className="flex items-center justify-center gap-2">
+            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+                fill="none"
+              />
+              <path fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            </svg>
+            Verifying...
+          </span>
+        ) : (
+          "Verify OTP"
+        )}
       </Button>
+      <p className="mt-4 text-center text-gray-500 text-sm">
+        Didn’t receive the code?{" "}
+        <button className="text-[#305CDE] underline">Resend</button>
+      </p>
     </form>
   );
 };

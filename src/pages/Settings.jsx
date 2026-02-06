@@ -43,7 +43,7 @@ const Settings = () => {
           method: "GET",
           cacheable: true,
         });
-        // setUser(data);
+        setUser(data);
         setError("");
         setPageLoading(false);
       } catch (err) {
@@ -263,9 +263,11 @@ const Settings = () => {
       if (error) {
         onError(error.message);
         setProcessing(false);
+        setShowModal(false);
       } else {
         onSuccess(token);
         setProcessing(false);
+        setShowModal(false);
       }
     };
 
@@ -307,7 +309,6 @@ const Settings = () => {
   }
 
   const handleAddPayout = async (token) => {
-    console.log("running");
     const payload =
       payoutType === "card"
         ? {
@@ -315,28 +316,23 @@ const Settings = () => {
             tokenId: token.id,
             last4: token.card.last4,
             brand: token.card.brand,
+            clientIp: token.client_ip,
           }
         : {
             type: "bank_account",
-            bankAccount: {
-              bankName: "Chase Bank",
-              accountNumber: "1234567890",
-              routingNumber: "110000000",
-              country: "US",
-              currency: "USD",
-            },
+            tokenId: token.id,
+            clientIp: token.client_ip,
+            country: "IT",
+            currency: "eur",
+            ibanLast4: token.bank_account.last4,
+            // bankAccount: {
+            //   bankName: "Chase Bank",
+            //   accountNumber: "1234567890",
+            //   routingNumber: "110000000",
+            //   country: "US",
+            //   currency: "USD",
+            // },
           };
-
-    // : {
-    //     type: "bank_account",
-    //     bankAccount: {
-    //       accountNumber: user?.bankAccount?.accountNumber,
-    //       routingNumber: user?.bankAccount?.routingNumber,
-    //       bankName: user?.bankAccount?.bankName,
-    //       country: user?.bankAccount?.country,
-    //       currency: user?.bankAccount?.currency,
-    //     },
-    //   };
 
     try {
       // Send token.id to your backend
@@ -364,6 +360,7 @@ const Settings = () => {
       }
     } catch (err) {
       setError("An error occurred");
+      setShowModal(false);
     }
   };
 
@@ -425,13 +422,28 @@ const Settings = () => {
         if (error) {
           onError(error.message);
           setProcessing(false);
+          setShowModal(false);
         } else {
           onSuccess(token);
           setProcessing(false);
+          setShowModal(false);
         }
       } else {
-        onSuccess();
-        setProcessing(false);
+        const ibanElement = elements.getElement(IbanElement);
+
+        const { token, error } = await stripe.createToken(ibanElement, {
+          name: `${user?.firstName} ${user?.lastName}`,
+          currency: "eur",
+        });
+        if (error) {
+          onError(error.message);
+          setProcessing(false);
+          setShowModal(false);
+        } else {
+          onSuccess(token);
+          setProcessing(false);
+          setShowModal(false);
+        }
       }
     };
 
@@ -492,7 +504,7 @@ const Settings = () => {
 
         {payoutType === "bank_account" && (
           <>
-            {/* <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               IBAN
             </label>
             <div className="p-4 border rounded-lg">
@@ -502,8 +514,8 @@ const Settings = () => {
                   style: { base: { fontSize: "16px" } },
                 }}
               />
-            </div> */}
-            <Input
+            </div>
+            {/* <Input
               label="Account Number"
               placeholder="Account Number"
               name="accountNumber"
@@ -542,7 +554,7 @@ const Settings = () => {
               <option value={user?.bankAccount?.currency}>
                 {user?.bankAccount?.currency}
               </option>
-            </select>
+            </select> */}
           </>
         )}
 
