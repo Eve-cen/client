@@ -200,7 +200,7 @@ const Profile = () => {
                 <h2 className="text-4xl">About</h2>
                 <p className="mb-6">
                   Hosts and guests can see your profile and it may appear across
-                  Airbnb to help us build trust in our community.
+                  VenCome to help us build trust in our community.
                 </p>
                 <Input
                   label="Display Name"

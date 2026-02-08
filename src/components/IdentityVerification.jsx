@@ -44,7 +44,7 @@ const VerificationButton = () => {
 };
 
 const IdentityVerification = ({ user }) => {
-  if (user.isVerified) {
+  if (user.isIdentityVerified) {
     return (
       <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 text-center flex flex-col items-center">
         <IoIosCheckmarkCircleOutline size={100} color="green" />

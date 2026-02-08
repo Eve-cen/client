@@ -22,6 +22,7 @@ const Button = ({
 
   return (
     <button
+      type="submit"
       onClick={onClick}
       disabled={loading}
       className={`${baseStyles} ${variants[variant]} ${className}`}

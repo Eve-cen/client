@@ -27,9 +27,9 @@ import SearchPage from "./pages/SearchPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import ChatWindow from "./components/ChatWindow";
 import ChatPage from "./pages/ChatPage";
 import Conversation from "./pages/Conversation";
+import ScrollToTop from "./components/scrollToTop";
 
 function AppContent() {
   const location = useLocation();
@@ -42,6 +42,7 @@ function AppContent() {
     <>
       {!hideNavbar && <Navbar />}
       <ToastContainer />
+      <ScrollToTop />
       <QueryClientProvider client={queryClient}>
         <div>
           <Routes>

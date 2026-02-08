@@ -4,10 +4,11 @@ import { apiFetch } from "../utils/api";
 import Input from "./Input";
 import Button from "./Button";
 import Navbar from "./Navbar";
+import DateSelector from "./DateSelector";
+import { MapPin, Building2, Globe, TowerControlIcon } from "lucide-react"; // pick suitable icons
 
 const Hero = ({ onExplore }) => {
   const navigate = useNavigate();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     location: "",
@@ -20,7 +21,36 @@ const Hero = ({ onExplore }) => {
   const [error, setError] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const locations = ["Nearby", "London, UK", "New York, US", "Dubai, UAE"];
+  const locations = [
+    {
+      label: "Nearby",
+      sublabel: "Find what's around you",
+      icon: MapPin,
+      bgClass: "bg-blue-200",
+      textClass: "text-blue-600",
+    },
+    {
+      label: "Paris, France",
+      sublabel: "For sights like Eiffel Tower",
+      icon: TowerControlIcon, // Eiffel Tower-like icon
+      bgClass: "bg-red-200",
+      textClass: "text-red-600",
+    },
+    {
+      label: "Barcelona, Spain",
+      sublabel: "Popular beach destination",
+      icon: Building2, // Barcelona-style building icon
+      bgClass: "bg-yellow-200",
+      textClass: "text-yellow-600",
+    },
+    {
+      label: "Lisbon, Portugal",
+      sublabel: "For its bustling nightlife",
+      icon: Globe, // general globe icon
+      bgClass: "bg-green-200",
+      textClass: "text-green-600",
+    },
+  ];
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -104,34 +134,57 @@ const Hero = ({ onExplore }) => {
               />
 
               {showSuggestions && (
-                <div className="absolute z-50 mt-2 w-full bg-white border rounded-lg shadow-md">
-                  {locations.map((loc) => (
-                    <button
-                      key={loc}
-                      type="button"
-                      onClick={() => {
-                        setFormData((prev) => ({
-                          ...prev,
-                          location: loc,
-                        }));
-                        setShowSuggestions(false);
-                      }}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                    >
-                      {loc}
-                    </button>
-                  ))}
+                <div className="absolute z-50 min-w-lg w-full bg-white border border-gray-200 rounded-lg shadow-md p-3">
+                  <p className="text-xs font-semibold mb-2">
+                    Suggested destinations
+                  </p>
+                  {locations.map(
+                    ({ label, sublabel, icon: Icon, bgClass, textClass }) => (
+                      <button
+                        key={label}
+                        type="button"
+                        onClick={() => {
+                          setFormData((prev) => ({ ...prev, location: label }));
+                          setShowSuggestions(false);
+                        }}
+                        className="w-full flex items-center gap-3 text-left py-3 px-2 hover:bg-gray-50 rounded-lg transition"
+                      >
+                        {/* Icon with tinted background */}
+                        <div
+                          className={`rounded-lg p-2 flex items-center justify-center ${bgClass}`}
+                        >
+                          <Icon size={20} className={textClass} />
+                        </div>
+
+                        {/* Label + Sublabel */}
+                        <div className="flex flex-col">
+                          <span className="text-gray-900 font-medium">
+                            {label}
+                          </span>
+                          <span className="text-gray-500 text-sm">
+                            {sublabel}
+                          </span>
+                        </div>
+                      </button>
+                    )
+                  )}
                 </div>
               )}
             </div>
-
-            <Input
+            <DateSelector
               label="Date"
-              type="date"
               name="date"
               value={formData.date}
               onChange={handleChange}
               placeholder="16/03/2026"
+              minDate={new Date().toISOString().split("T")[0]}
+            />
+            <Input
+              label="Event Type"
+              name="event-type"
+              value={formData.eventType}
+              onChange={handleChange}
+              placeholder="Wedding"
             />
             <Input
               label="Capacity"
@@ -141,16 +194,8 @@ const Hero = ({ onExplore }) => {
               onChange={handleChange}
               placeholder="20"
             />
-            <Input
-              label="Event Type"
-              name="event-type"
-              value={formData.eventType}
-              onChange={handleChange}
-              placeholder="Wedding"
-            />
-            <div className="flex justify-center">
-              <Button children="Search" />
-            </div>
+
+            <Button children="Search" className="py-1" />
           </form>
           {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
         </div>
