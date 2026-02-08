@@ -52,7 +52,7 @@ const CategoryPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Category Header */}
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">
@@ -71,12 +71,6 @@ const CategoryPage = () => {
                   categories={subCategory}
                   onSelect={handleCategorySelect}
                 />
-                // <TagList
-                //   tags={subCategory.map((s) => s.name)}
-                //   type="cat"
-                //   onToggle={toggleTag}
-                //   activeTags={activeTags}
-                // />
               )}
             </div>
           )}

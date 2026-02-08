@@ -134,7 +134,7 @@ const Hero = ({ onExplore }) => {
               />
 
               {showSuggestions && (
-                <div className="absolute z-50 min-w-lg w-full bg-white border border-gray-200 rounded-lg shadow-md p-3">
+                <div className="absolute z-50 md:min-w-lg w-full bg-white border border-gray-200 rounded-lg shadow-md p-3">
                   <p className="text-xs font-semibold mb-2">
                     Suggested destinations
                   </p>
