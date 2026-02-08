@@ -7,13 +7,11 @@ import "swiper/css/pagination";
 
 import CategoryCard from "./CategoryCard";
 
-const CategoryList = ({ categories = [], onSelect }) => {
+const CategoryList = ({ type = "category", categories = [], onSelect }) => {
   const hasCategories = Array.isArray(categories) && categories.length > 0;
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h2 className="text-3xl text-gray-900 mb-8">Popular Categories</h2>
-
+    <>
       {hasCategories ? (
         <Swiper
           modules={[Navigation, Pagination, Autoplay]}
@@ -32,6 +30,7 @@ const CategoryList = ({ categories = [], onSelect }) => {
             <SwiperSlide key={card._id}>
               <CategoryCard
                 id={card._id}
+                type={type}
                 imageUrl={card.image}
                 title={card.name}
                 buttonText={card.buttonText}
@@ -46,7 +45,7 @@ const CategoryList = ({ categories = [], onSelect }) => {
           No categories available at the moment.
         </p>
       )}
-    </div>
+    </>
   );
 };
 

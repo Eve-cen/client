@@ -1,17 +1,29 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const CategoryCard = ({ id, imageUrl, title, description, buttonText }) => {
+const CategoryCard = ({
+  id,
+  type,
+  imageUrl,
+  title,
+  description,
+  buttonText,
+}) => {
   const navigate = useNavigate();
-
   const handleClick = () => {
     navigate(`/category/${id}`);
   };
   return (
-    <div className="min-h-[500px] relative w-full rounded-[16px] overflow-hidden shadow-lg bg-white">
+    <div
+      className={`${
+        type === "subcategory" ? "min-h-[300px]" : "min-h-[500px]"
+      } relative w-full rounded-[16px] overflow-hidden shadow-lg bg-white`}
+    >
       {/* Image with overlay gradient */}
       <div
-        className="relative h-[500px] bg-cover bg-center"
+        className={`relative ${
+          type === "subcategory" ? "min-h-[300px]" : "min-h-[500px]"
+        } bg-cover bg-center`}
         style={{ backgroundImage: `url(${imageUrl})` }}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>

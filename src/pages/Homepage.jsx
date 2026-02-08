@@ -99,12 +99,14 @@ const Home = () => {
         <VencomeLoader />
       ) : (
         <>
-          <div className="bg-[#F2F2F2]">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <h2 className="text-3xl text-gray-900 mb-8">Popular Categories</h2>
             <CategoryList
               categories={categories}
               onSelect={handleCategorySelect}
             />
           </div>
+
           <PropertyList
             properties={filteredProperties}
             onUpdate={handleUpdate}

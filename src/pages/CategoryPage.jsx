@@ -4,6 +4,7 @@ import { apiFetch } from "../utils/api";
 import Card from "../components/EvenCard";
 import VencomeLoader from "../components/Loader";
 import TagList from "../components/TagList";
+import CategoryList from "../components/CategoryList";
 
 const CategoryPage = () => {
   const { id } = useParams();
@@ -34,12 +35,8 @@ const CategoryPage = () => {
     fetchData();
   }, [id]);
 
-  const toggleTag = (tagName) => {
-    setActiveTags((prev) =>
-      prev.includes(tagName)
-        ? prev.filter((t) => t !== tagName)
-        : [...prev, tagName]
-    );
+  const handleCategorySelect = (categoryId) => {
+    setSelectedCategory(categoryId); // Filter properties by category
   };
 
   const filteredProperties =
@@ -53,17 +50,9 @@ const CategoryPage = () => {
     return <VencomeLoader />;
   }
 
-  // if (error || !category) {
-  //   return (
-  //     <div className="min-h-screen flex items-center justify-center">
-  //       <div className="text-red-500">{error || "Category not found"}</div>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Category Header */}
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">
@@ -75,15 +64,19 @@ const CategoryPage = () => {
             </p>
           )}
           {subCategory?.length > 0 && (
-            <div className="flex gap-3 items-center mt-4">
-              <h3 className="text-sm font-semibold">Subcategories:</h3>
+            <div className="container flex gap-3 items-center mt-4">
               {subCategory?.length > 0 && (
-                <TagList
-                  tags={subCategory.map((s) => s.name)}
-                  type="cat"
-                  onToggle={toggleTag}
-                  activeTags={activeTags}
+                <CategoryList
+                  type="subcategory"
+                  categories={subCategory}
+                  onSelect={handleCategorySelect}
                 />
+                // <TagList
+                //   tags={subCategory.map((s) => s.name)}
+                //   type="cat"
+                //   onToggle={toggleTag}
+                //   activeTags={activeTags}
+                // />
               )}
             </div>
           )}
