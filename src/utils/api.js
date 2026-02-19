@@ -55,6 +55,10 @@ const apiFetch = async ({
 
     clearTimeout(timeoutId);
 
+    if (response.status === 204) {
+      return null;
+    }
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       toast.error(errorData.error);

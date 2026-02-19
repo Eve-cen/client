@@ -87,7 +87,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center border-t border-gray-200 mt-8 pt-6 text-gray-400 text-sm">
-        <span>© 2025 Vencome. All rights reserved.</span>
+        <span>© 2025 VenCome. All rights reserved.</span>
         <div className="space-x-6">
           <a href="#">Privacy</a>
           <a href="#">Terms</a>

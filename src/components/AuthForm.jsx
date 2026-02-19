@@ -262,11 +262,11 @@ const AuthForm = ({ onForgotPassword, onSuccess }) => {
           <>
             {pathname === "/login" ? (
               <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">
-                Welcome back to Vencome
+                Welcome back to VenCome
               </h2>
             ) : (
               <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">
-                Welcome to Vencome
+                Welcome to VenCome
               </h2>
             )}
 

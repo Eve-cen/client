@@ -14,6 +14,9 @@ const MyListings = () => {
   const [editingProperty, setEditingProperty] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -71,17 +74,35 @@ const MyListings = () => {
     );
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this listing?"))
-      return;
+  const openDeleteModal = (id) => {
+    setDeleteId(id);
+    setCountdown(5);
+    setShowDeleteModal(true);
+  };
+
+  useEffect(() => {
+    if (!showDeleteModal) return;
+
+    if (countdown === 0) return;
+
+    const timer = setTimeout(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [showDeleteModal, countdown]);
+
+  const handleDelete = async () => {
     try {
       await apiFetch({
-        endpoint: `/properties/${id}`,
+        endpoint: `/properties/${deleteId}`,
         method: "DELETE",
         credentials: "include",
       });
       setProperties((prev) => prev.filter((p) => p._id !== id));
+      window.location.reload();
     } catch (err) {
+      console.log(err);
       alert("Failed to delete");
     }
   };
@@ -126,12 +147,54 @@ const MyListings = () => {
                 key={property._id}
                 property={property}
                 onEdit={handleEdit}
-                onDelete={handleDelete}
+                onDelete={() => openDeleteModal(property._id)}
               />
             ))}
           </div>
         )}
       </div>
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md text-center">
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">
+              Delete listing
+            </h2>
+
+            <p className="text-sm text-gray-600 mb-4">
+              This action is permanent. The property will be deleted and cannot
+              be recovered.
+            </p>
+
+            <p className="text-gray-600 mb-4">
+              {countdown > 0
+                ? `You can delete in (${countdown}s)`
+                : "You can now delete this property"}
+            </p>
+
+            <div className="flex justify-center gap-3 mt-6">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 rounded border cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleDelete}
+                disabled={countdown > 0}
+                className={`px-4 py-2 rounded text-white ${
+                  countdown > 0
+                    ? "bg-red-300 cursor-not-allowed"
+                    : "bg-red-600 hover:bg-red-700 cursor-pointer"
+                }`}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showModal && editingProperty && (
         <EditPropertyModal
