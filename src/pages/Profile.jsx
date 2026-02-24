@@ -17,6 +17,7 @@ const Profile = () => {
   const [pastTrips, setPastTrips] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const { pathname } = useLocation();
   const [filters, setFilters] = useState({ location: "", date: "", price: "" });
@@ -62,6 +63,7 @@ const Profile = () => {
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     setError("");
     try {
       const data = await apiFetch({
@@ -75,8 +77,10 @@ const Profile = () => {
         credentials: "include",
       });
       setUser(data);
+      setSubmitting(false);
     } catch (err) {
       setError(err.message || "Update failed.");
+      setSubmitting(false);
     }
   };
 
@@ -219,7 +223,32 @@ const Profile = () => {
                   }`}
                 ></textarea>
                 <IdentityVerification user={user} />
-                <Button type="submit" children="Save Changes" />
+                <Button
+                  type="submit"
+                  children={
+                    submitting ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg
+                          className="animate-spin h-5 w-5"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                          />
+                          <path fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                        </svg>
+                        Saving...
+                      </span>
+                    ) : (
+                      "Save Changes"
+                    )
+                  }
+                />
               </div>
             </form>
           </div>

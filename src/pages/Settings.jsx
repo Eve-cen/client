@@ -21,6 +21,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import DateSelector from "../components/DateSelector";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -806,10 +807,7 @@ const Settings = () => {
                   onChange={handleChange}
                 />
                 <div>
-                  <label className="block mb-1 font-medium">
-                    Date of Birth
-                  </label>
-                  <input
+                  {/* <input
                     type="date"
                     name="dob"
                     value={
@@ -824,6 +822,21 @@ const Settings = () => {
                     max={maxDate} // ensures user is at least 18
                     className="w-full border rounded px-3 py-2"
                     required
+                  /> */}
+                  <DateSelector
+                    label="Date of Bzirth"
+                    name="date"
+                    value={
+                      user?.dob
+                        ? `${user.dob.year}-${String(user.dob.month).padStart(
+                            2,
+                            "0"
+                          )}-${String(user.dob.day).padStart(2, "0")}`
+                        : ""
+                    }
+                    onChange={handleDobChange}
+                    placeholder="16/03/2026"
+                    // minDate={maxDate}
                   />
                 </div>
                 <h4 className="font-semibold mt-6 mb-2">Residential Address</h4>
