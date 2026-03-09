@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import Button from "../components/Button";
 import Footer from "../components/Footer";
+import ContactForm from "../components/ContactForm";
 
 const HelpSupport = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -231,7 +232,6 @@ const HelpSupport = () => {
           </div>
         </div>
       </div>
-
       {/* Quick Actions */}
       <div className="max-w-5xl mx-auto px-4 -mt-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -269,7 +269,6 @@ const HelpSupport = () => {
           </div>
         </div>
       </div>
-
       {/* Articles */}
       <div className="max-w-5xl mx-auto px-4 py-16">
         {filteredArticles.length === 0 ? (
@@ -323,29 +322,83 @@ const HelpSupport = () => {
           ))
         )}
       </div>
-
       {/* Final CTA */}
-      <div className="bg-white border-t border-gray-200 py-16">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Still need help?
-          </h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Our support team is available 24/7 to assist you with bookings,
-            hosting, payments, or anything else.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button>
-              <MessageCircle size={20} />
-              Start Live Chat
-            </Button>
-            <a
-              href="mailto:support@vencome.com"
-              className="bg-white border-2 border-primary text-primary px-6 py-2 rounded-full text-normal flex items-center justify-center gap-2"
-            >
-              <Mail size={20} />
-              Email Support
-            </a>
+      <div className="bg-gradient-to-br from-gray-50 to-white py-16">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Still need help?
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Our support team is available 24/7. Send us a message or start a
+              live chat.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-10">
+            {/* Contact Form */}
+            <ContactForm />
+
+            {/* Live Chat & Other Options */}
+            <div className="space-y-8">
+              <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="bg-blue-100 p-4 rounded-full">
+                    <MessageCircle className="h-8 w-8 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">
+                      Live Chat
+                    </h3>
+                    <p className="text-gray-600 mt-1">
+                      Instant help from our team
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => window.Tawk_API?.toggle?.()}
+                  className="w-full bg-primary text-white py-4 rounded-xl font-medium transition"
+                >
+                  Start Live Chat
+                </button>
+              </div>
+
+              <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  Other ways to reach us
+                </h3>
+                <div className="space-y-6">
+                  <div className="flex items-start gap-4">
+                    <Mail className="h-6 w-6 text-primary mt-1" />
+                    <div>
+                      <p className="font-medium">Email Support</p>
+                      <a
+                        href="mailto:support@evecen.com"
+                        className="text-primary hover:underline"
+                      >
+                        support@evecen.com
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <Phone className="h-6 w-6 text-primary mt-1" />
+                    <div>
+                      <p className="font-medium">Phone</p>
+                      <a
+                        href="tel:+971501234567"
+                        className="text-primary hover:underline"
+                      >
+                        +441 50 123 4567
+                      </a>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Mon–Fri, 9 AM – 6 PM GST
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
