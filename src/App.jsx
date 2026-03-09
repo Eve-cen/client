@@ -30,6 +30,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ChatPage from "./pages/ChatPage";
 import Conversation from "./pages/Conversation";
 import ScrollToTop from "./components/ScrollToTop";
+import FAQ from "./pages/FAQ";
+import TermsAndConditions from "./pages/TermsAndCondition";
+import HelpSupport from "./pages/HelpSupport";
 
 function AppContent() {
   const location = useLocation();
@@ -68,6 +71,12 @@ function AppContent() {
             <Route path="/host/:id" element={<HostProfile />} />
             <Route path="/host/bookings" element={<HostBookings />} />
             <Route path="/my-bookings" element={<MyBookings />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route
+              path="/terms-and-conditions"
+              element={<TermsAndConditions />}
+            />
+            <Route path="/help-support" element={<HelpSupport />} />
             <Route path="/blogs" element={<BlogList />} />
             <Route path="/blog/:slug" element={<BlogDetails />} />
             <Route path="/search" element={<SearchPage />} />

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Footer() {
   return (
     <footer className="bg-gray-50 py-8">
@@ -68,10 +70,10 @@ export default function Footer() {
             <div className="font-semibold mb-2">Support</div>
             <ul className="text-gray-500 text-sm space-y-1">
               <li>
-                <a href="#">Help Center</a>
+                <a href="/help-support">Help Center</a>
               </li>
               <li>
-                <a href="#">Safety Information</a>
+                <Link to="/faq">FAQs</Link>
               </li>
               <li>
                 <a href="#">Cancellation Options</a>
@@ -90,7 +92,7 @@ export default function Footer() {
         <span>© 2025 VenCome. All rights reserved.</span>
         <div className="space-x-6">
           <a href="#">Privacy</a>
-          <a href="#">Terms</a>
+          <a href="/terms-and-conditions">Terms</a>
           <a href="#">Sitemap</a>
         </div>
       </div>

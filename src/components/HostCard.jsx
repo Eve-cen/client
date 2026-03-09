@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import VerifiedName from "./VerifiedName";
 
 const HostCard = ({ host }) => {
   const joinDate = new Date(host.createdAt).toLocaleDateString("en-US", {
@@ -7,16 +8,18 @@ const HostCard = ({ host }) => {
     month: "long",
   });
 
+  console.log(host);
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <div className="flex items-center space-x-4 mb-4">
         <img
           src={host.profileImage || "https://via.placeholder.com/80"}
-          alt={host.name}
+          alt={host.displayName}
           className="w-16 h-16 rounded-full object-cover"
         />
         <div>
-          <h3 className="text-xl font-bold text-gray-800">{host.name}</h3>
+          <VerifiedName name={host.displayName} />
           <p className="text-sm text-gray-500">Host since {joinDate}</p>
         </div>
       </div>

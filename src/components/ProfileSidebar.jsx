@@ -9,6 +9,7 @@ const Sidebar = ({ onLinkClick }) => {
     { name: "Past Trips", path: "/profile/past-trips" },
     // { name: "Reviews", path: "/profile/reviews" },
     { name: "My Bookings", path: "/my-bookings" },
+    { name: "Business Verification", path: "/profile/business-verification" },
   ];
   return (
     <div className="w-64 h-screen border-r fixed top-0 bg-white left-0 p-4 sm:flex flex-col justify-between pb-[100px]">

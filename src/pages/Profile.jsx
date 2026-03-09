@@ -9,6 +9,7 @@ import ReviewCard from "../components/ReviewCard";
 import IdentityVerification from "../components/IdentityVerification";
 import { Menu, X } from "lucide-react";
 import VencomeLoader from "../components/Loader";
+import BusinessVerification from "../components/BusinessVerification";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const Profile = () => {
   const [filters, setFilters] = useState({ location: "", date: "", price: "" });
   const [sort, setSort] = useState("recent");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,23 +67,31 @@ const Profile = () => {
     e.preventDefault();
     setSubmitting(true);
     setError("");
+
     try {
-      const data = await apiFetch({
-        endpoint: "/profile",
+      const formData = new FormData();
+
+      formData.append("displayName", user.displayName);
+      formData.append("bio", user.bio);
+
+      if (imageFile) {
+        formData.append("profileImage", imageFile);
+      }
+
+      const res = await fetch("/api/profile", {
         method: "PUT",
-        body: {
-          profileImage: user.profileImage,
-          displayName: user.displayName,
-          bio: user.bio,
-        },
+        body: formData,
         credentials: "include",
       });
+
+      const data = await res.json();
+
       setUser(data);
-      setSubmitting(false);
     } catch (err) {
-      setError(err.message || "Update failed.");
-      setSubmitting(false);
+      setError("Update failed");
     }
+
+    setSubmitting(false);
   };
 
   const handleWriteReview = async (tripId) => {
@@ -99,6 +109,20 @@ const Profile = () => {
 
   const handleBookAgain = (propertyId) => {
     navigate(`/property/${propertyId}`);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setImageFile(file);
+
+    const preview = URL.createObjectURL(file);
+
+    setUser((prev) => ({
+      ...prev,
+      profileImage: preview,
+    }));
   };
 
   const handleFilterChange = (e) => {
@@ -196,10 +220,20 @@ const Profile = () => {
               onSubmit={handleProfileUpdate}
               className="w-full flex flex-col md:flex-row gap-10"
             >
-              <img
-                src={user.profileImage}
-                className="w-32 lg:w-64 h-32 lg:h-64 object-cover rounded-full"
-              />
+              <div className="flex flex-col items-center gap-4">
+                <div className="flex flex-col items-center gap-3">
+                  <img
+                    src={user.profileImage}
+                    className="w-32 lg:w-64 h-32 lg:h-64 object-cover rounded-full"
+                  />
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                  />
+                </div>
+              </div>
               <div className="flex-1">
                 <h2 className="text-4xl">About</h2>
                 <p className="mb-6">
@@ -252,6 +286,9 @@ const Profile = () => {
               </div>
             </form>
           </div>
+        )}
+        {pathname === "/profile/business-verification" && (
+          <BusinessVerification />
         )}
         {pathname === "/profile/past-trips" && (
           <>

@@ -31,10 +31,10 @@ const PropertyDetails = () => {
           cacheable: true,
         });
         setProperty(data.property);
-        console.log(data.property);
         const hostData = await apiFetch({
           endpoint: `/hosts/${data.property.host._id}`,
         });
+        console.log(hostData);
         setHost(hostData);
         setError("");
       } catch (err) {

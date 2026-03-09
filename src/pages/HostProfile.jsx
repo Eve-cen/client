@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "../utils/api";
 import VencomeLoader from "../components/Loader";
+import VerifiedName from "../components/VerifiedName";
 
 const HostProfile = () => {
   const { id } = useParams();
@@ -41,15 +42,13 @@ const HostProfile = () => {
             <div className="flex items-center space-x-4 mb-4">
               <img
                 src={host.profileImage || "https://via.placeholder.com/80"}
-                alt={host.name}
+                alt={host.displayName}
                 className="w-16 h-16 rounded-full object-cover"
               />
               <div>
-                <h3 className="text-xl font-bold text-gray-800">{host.name}</h3>
-                {/* <p className="text-sm text-gray-500">Host since {joinDate}</p> */}
+                <VerifiedName name={host.displayName} />
               </div>
             </div>
-
             {host.bio && <p className="text-gray-700 mb-4">{host.bio}</p>}
 
             <div className="grid grid-cols-2 gap-4 text-sm">
