@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Search,
   ChevronDown,
@@ -14,6 +14,23 @@ import ContactForm from "../components/ContactForm";
 const HelpSupport = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [openArticle, setOpenArticle] = useState(null);
+
+  useEffect(() => {
+    // Load Tawk.to script only on this page
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://embed.tawk.to/69aebdf320c1d71c37343446/1jj99c05n"; // ← replace with your real ID
+    script.charset = "UTF-8";
+    script.setAttribute("crossorigin", "*");
+
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+      delete window.Tawk_API;
+      delete window.Tawk_LoadStart;
+    };
+  }, []);
 
   const helpArticles = [
     {
