@@ -9,9 +9,10 @@ const BusinessVerification = ({ onSuccess }) => {
     websiteURL: "",
     vat: "",
   });
+  const [status, setStatus] = useState(null);
+  const [idFile, setIdFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [isVerified, setIsVerified] = useState(false);
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -21,7 +22,7 @@ const BusinessVerification = ({ onSuccess }) => {
           method: "GET",
           credentials: "include",
         });
-        setIsVerified(data.businessVerified);
+        setStatus(data.status);
       } catch (err) {
         console.error(err);
       }
@@ -34,19 +35,42 @@ const BusinessVerification = ({ onSuccess }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e) => {
+    setIdFile(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     try {
-      const response = await apiFetch({
-        endpoint: "/verification/business",
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
-      if (response.success) {
-        setIsVerified(true);
+      const payload = new FormData();
+      payload.append("companyName", formData.companyName);
+      payload.append("websiteURL", formData.websiteURL);
+      payload.append("vat", formData.vat);
+
+      if (idFile) {
+        payload.append("idDocument", idFile);
+      }
+
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/verification/business`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: payload,
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || "Submission failed");
+
+      if (data.success) {
+        setStatus("under_review");
         if (onSuccess) onSuccess();
       }
     } catch (err) {
@@ -56,7 +80,7 @@ const BusinessVerification = ({ onSuccess }) => {
     }
   };
 
-  if (isVerified) {
+  if (status === "verified") {
     return (
       <div className="p-6 bg-green-100 rounded-lg text-center">
         <h3 className="text-xl font-bold text-green-800 mb-2">
@@ -64,6 +88,20 @@ const BusinessVerification = ({ onSuccess }) => {
         </h3>
         <p className="text-green-600">
           Your business has been successfully verified.
+        </p>
+      </div>
+    );
+  }
+
+  if (status === "under_review") {
+    return (
+      <div className="p-6 bg-yellow-100 rounded-lg text-center">
+        <h3 className="text-xl font-bold text-yellow-800 mb-2">
+          Verification Under Review
+        </h3>
+        <p className="text-yellow-700">
+          Your business verification is currently under review. This usually
+          takes 24–48 hours.
         </p>
       </div>
     );
@@ -97,6 +135,18 @@ const BusinessVerification = ({ onSuccess }) => {
           onChange={handleChange}
           required
         />
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            Upload ID Document
+          </label>
+          <input
+            type="file"
+            accept="image/*,application/pdf"
+            onChange={handleFileChange}
+            required
+            className="w-full border rounded-md p-2"
+          />
+        </div>
         <Button
           type="submit"
           disabled={loading}

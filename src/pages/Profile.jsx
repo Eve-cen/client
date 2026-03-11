@@ -227,11 +227,11 @@ const Profile = () => {
                     className="w-32 lg:w-64 h-32 lg:h-64 object-cover rounded-full"
                   />
 
-                  <input
+                  {/* <input
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
-                  />
+                  /> */}
                 </div>
               </div>
               <div className="flex-1">

@@ -824,7 +824,7 @@ const Settings = () => {
                     required
                   /> */}
                   <DateSelector
-                    label="Date of Bzirth"
+                    label="Date of Birth"
                     name="date"
                     value={
                       user?.dob
