@@ -15,10 +15,11 @@ import Notification from "../components/Notification";
 import { Autocomplete, useLoadScript } from "@react-google-maps/api";
 import { Home, Bell, Compass, Save, FileText } from "lucide-react";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
+import CountrySelect from "../components/CountrySelect";
 
 const CreateSpace = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(3);
   const totalSteps = 10;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
@@ -42,8 +43,8 @@ const CreateSpace = () => {
     features: {
       wifi: true,
       restrooms: 1,
-      sizeSQM: 0,
-      seatCapacity: 0,
+      sizeSQM: null,
+      seatCapacity: null,
       plug: false,
       sound: false,
       lockable: false,
@@ -74,15 +75,12 @@ const CreateSpace = () => {
     removedImages: [],
     coverImage: null,
     category: "",
-    price: 0,
+    price: null,
     pricing: {
       pricingType: "DAILY", // "DAILY" | "HOURLY"
-
-      weekdayPrice: 0, // used when DAILY
-      hourlyPrice: 0, // used when HOURLY
-
-      preTaxPrice: 0,
-
+      weekdayPrice: null, // used when DAILY
+      hourlyPrice: null, // used when HOURLY
+      preTaxPrice: null,
       discounts: {
         newListing: true,
         lastMinute: false,
@@ -140,7 +138,7 @@ const CreateSpace = () => {
       }
 
       if (types.includes("country")) {
-        country = component.long_name;
+        country = component.short_name;
       }
     });
 
@@ -1017,9 +1015,7 @@ const CreateSpace = () => {
               </p>
             )}
 
-            <Input
-              placeholder="Country"
-              name="location.country"
+            <CountrySelect
               value={spaceData.location.country}
               onChange={handleChange}
               required
@@ -1364,7 +1360,7 @@ const CreateSpace = () => {
                     pricing: {
                       ...prev.pricing,
                       pricingType: "DAILY",
-                      hourlyPrice: 0,
+                      hourlyPrice: null,
                     },
                   }))
                 }
@@ -1385,7 +1381,7 @@ const CreateSpace = () => {
                     pricing: {
                       ...prev.pricing,
                       pricingType: "HOURLY",
-                      weekdayPrice: 0,
+                      weekdayPrice: null,
                     },
                   }))
                 }
@@ -1417,6 +1413,7 @@ const CreateSpace = () => {
                     min="0"
                     value={spaceData.pricing.weekdayPrice}
                     onChange={handleChange}
+                    autoFocus={true}
                     required
                     className="border-none bg-transparent text-center text-4xl font-semibold text-primary focus:ring-0 focus:outline-none no-spinner dynamic-width"
                   />
@@ -1428,12 +1425,12 @@ const CreateSpace = () => {
                   </p>
                 )}
 
-                <p className="text-gray-500 mt-2">
+                {/* <p className="text-gray-500 mt-2">
                   Price before tax:{" "}
                   <span className="font-medium text-gray-700">
                     £{spaceData.pricing.weekdayPrice + 5 || 0}
                   </span>
-                </p>
+                </p> */}
               </>
             )}
 
@@ -1455,6 +1452,7 @@ const CreateSpace = () => {
                     min="0"
                     value={spaceData.pricing.hourlyPrice}
                     onChange={handleChange}
+                    autoFocus={true}
                     required
                     className="border-none bg-transparent text-center text-4xl font-semibold text-primary focus:ring-0 focus:outline-none no-spinner dynamic-width"
                   />
@@ -1466,12 +1464,12 @@ const CreateSpace = () => {
                   </p>
                 )}
 
-                <p className="text-gray-500 mt-2">
+                {/* <p className="text-gray-500 mt-2">
                   Price before tax:{" "}
                   <span className="font-medium text-gray-700">
                     £{spaceData.pricing.hourlyPrice + 5 || 0}
                   </span>
-                </p>
+                </p> */}
               </>
             )}
           </div>

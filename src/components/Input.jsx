@@ -4,6 +4,7 @@ const Input = ({
   label,
   type = "text",
   error,
+  autoFocus = false,
   disabled,
   shake = false, // New prop to trigger shake
   classes = "",
@@ -20,6 +21,7 @@ const Input = ({
       <div className="relative">
         <input
           type={type}
+          autoFocus={autoFocus}
           className={`
             mt-1 block w-full px-4 py-3 rounded-lg border transition-all duration-200
             focus:outline-none focus:ring-2 focus:ring-primary
