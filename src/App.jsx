@@ -33,6 +33,8 @@ import ScrollToTop from "./components/ScrollToTop";
 import FAQ from "./pages/FAQ";
 import TermsAndConditions from "./pages/TermsAndCondition";
 import HelpSupport from "./pages/HelpSupport";
+import PropertyAvailability from "./pages/PropertyAvailability";
+import NotFound from "./pages/NotFound";
 
 function AppContent() {
   const location = useLocation();
@@ -68,6 +70,14 @@ function AppContent() {
             <Route path="/chat/:conversationId" element={<Conversation />} />
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/my-listings" element={<MyListings />} />
+            <Route
+              path="/property-availability"
+              element={<PropertyAvailability />}
+            />
+            <Route
+              path="/availability/:id/availability"
+              element={<PropertyAvailability />}
+            />
             <Route path="/host/:id" element={<HostProfile />} />
             <Route path="/host/bookings" element={<HostBookings />} />
             <Route path="/my-bookings" element={<MyBookings />} />
@@ -81,7 +91,7 @@ function AppContent() {
             <Route path="/blog/:slug" element={<BlogDetails />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/" element={<Homepage />} />
-            <Route path="*" element={<h1>404 - Page Not Found</h1>} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
       </QueryClientProvider>

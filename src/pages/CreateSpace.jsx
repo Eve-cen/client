@@ -19,7 +19,7 @@ import CountrySelect from "../components/CountrySelect";
 
 const CreateSpace = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(3);
+  const [step, setStep] = useState(1);
   const totalSteps = 10;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
@@ -207,20 +207,160 @@ const CreateSpace = () => {
     }
   };
 
-  const loadDraft = async () => {
+  // ─── Save Draft ───────────────────────────────────────────────────────────────
+  const saveDraft = async (overrideData = null, overrideStep = null) => {
+    setIsSavingDraft(true);
+
+    const data = overrideData || spaceData;
+    const currentStep = overrideStep ?? step;
+
     try {
-      const response = await apiFetch({
-        endpoint: "/drafts",
-        method: "GET",
+      const token = localStorage.getItem("token");
+
+      // ── Unauthenticated: save to localStorage ─────────────────────────────────
+      if (!token) {
+        const localDraft = {
+          title: data.title,
+          description: data.description,
+          location: data.location,
+          coordinates: data.coordinates,
+          features: data.features,
+          extras: data.extras,
+          category: data.category || null,
+          pricing: data.pricing,
+          bookingSettings: data.bookingSettings,
+          currentStep,
+          imagePreviews: data.imagePreviews || [],
+          savedAt: new Date().toISOString(),
+        };
+
+        localStorage.setItem("vencome_draft", JSON.stringify(localDraft));
+        setHasDraft(true);
+        toast.success(
+          "Draft saved locally. Sign in to save images and publish."
+        );
+        return;
+      }
+
+      // ── Authenticated: save to server ─────────────────────────────────────────
+      const formData = new FormData();
+
+      formData.append(
+        "data",
+        JSON.stringify({
+          title: data.title,
+          description: data.description,
+          location: data.location,
+          coordinates: data.coordinates,
+          features: data.features,
+          extras: data.extras,
+          category: data.category || null,
+          pricing: data.pricing,
+          bookingSettings: data.bookingSettings,
+          currentStep,
+        })
+      );
+
+      data.imageFiles?.forEach((file) => formData.append("images", file));
+
+      if (data.removedImages?.length) {
+        formData.append("removedImages", JSON.stringify(data.removedImages));
+      }
+
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/drafts/save`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+        credentials: "include",
       });
 
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.message || "Failed to save draft");
+
+      if (resData.draft.images) {
+        const serverImagePreviews = resData.draft.images.map(
+          (img) => `${import.meta.env.VITE_API_URL}/${img.url}`
+        );
+
+        setSpaceData((prev) => ({
+          ...prev,
+          serverImages: resData.draft.images,
+          imagePreviews: serverImagePreviews,
+          imageFiles: [],
+          removedImages: [],
+        }));
+      }
+
+      // Clear stale local draft now that it's on the server
+      localStorage.removeItem("vencome_draft");
+
+      setHasDraft(true);
+      setDraftId(resData.draft._id);
+      toast.success("Draft saved successfully!");
+    } catch (err) {
+      console.error("Save draft error:", err);
+      toast.error(err.message || "Failed to save draft");
+    } finally {
+      setIsSavingDraft(false);
+    }
+  };
+
+  // ─── Load Draft ───────────────────────────────────────────────────────────────
+  const loadDraft = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      // ── Unauthenticated: load from localStorage ───────────────────────────────
+      if (!token) {
+        const raw = localStorage.getItem("vencome_draft");
+        if (!raw) {
+          toast.info("No local draft found.");
+          return;
+        }
+
+        const draft = JSON.parse(raw);
+        setSpaceData((prev) => ({
+          ...prev,
+          title: draft.title || "",
+          description: draft.description || "",
+          location: draft.location || { address: "", city: "", country: "" },
+          coordinates: draft.coordinates || { latitude: null, longitude: null },
+          features: { ...prev.features, ...draft.features },
+          extras: draft.extras || [],
+          category: draft.category || "",
+          pricing: { ...prev.pricing, ...draft.pricing },
+          bookingSettings: {
+            ...prev.bookingSettings,
+            ...draft.bookingSettings,
+          },
+          imagePreviews: draft.imagePreviews || [],
+          imageFiles: [],
+          serverImages: [],
+          removedImages: [],
+        }));
+        setStep(draft.currentStep || 1);
+        setSelected(draft.category || "");
+        setShowDraftPrompt(false);
+        toast.success("Local draft loaded. Sign in to restore images.");
+        return;
+      }
+
+      // ── Authenticated: check localStorage first, migrate if found ─────────────
+      const raw = localStorage.getItem("vencome_draft");
+      if (raw) {
+        await migrateLocalDraft();
+        setShowDraftPrompt(false);
+        return;
+      }
+
+      // ── Authenticated + no local draft: load from server ─────────────────────
+      const response = await apiFetch({ endpoint: "/drafts", method: "GET" });
       if (response.success && response.draft) {
         const draft = response.draft;
-
         const serverImages =
           draft.images?.map((img) => ({
             filename: img.filename,
-            url: `${img.url}`,
+            url: img.url,
           })) || [];
 
         setSpaceData({
@@ -230,9 +370,9 @@ const CreateSpace = () => {
           coordinates: draft.coordinates || { latitude: null, longitude: null },
           features: { ...spaceData.features, ...draft.features },
           extras: draft.extras || [],
-          imageFiles: [], // New files selected by the user
-          serverImages: serverImages, // Array of objects {url, filename} from the server
-          removedImages: [], // Filenames the user wants to delete
+          imageFiles: [],
+          serverImages,
+          removedImages: [],
           coverImage: serverImages[0] || null,
           category: draft.category?._id || draft.category || "",
           pricing: { ...spaceData.pricing, ...draft.pricing },
@@ -253,104 +393,50 @@ const CreateSpace = () => {
     }
   };
 
-  const saveDraft = async () => {
-    setIsSavingDraft(true);
+  // ─── On login: migrate local draft to server ──────────────────────────────────
+  // Call this after a successful login/signup if you want to auto-migrate
+  const migrateLocalDraft = async () => {
+    const raw = localStorage.getItem("vencome_draft");
+    if (!raw) return;
+
     try {
-      const formData = new FormData();
+      const draft = JSON.parse(raw);
 
-      // Draft info
-      formData.append(
-        "data",
-        JSON.stringify({
-          title: spaceData.title,
-          description: spaceData.description,
-          location: spaceData.location,
-          coordinates: spaceData.coordinates,
-          features: spaceData.features,
-          extras: spaceData.extras,
-          category: spaceData.category,
-          pricing: spaceData.pricing,
-          bookingSettings: spaceData.bookingSettings,
-          currentStep: step,
-        })
-      );
+      // Build the payload directly so we don't race with React state updates
+      const migratedData = {
+        title: draft.title || "",
+        description: draft.description || "",
+        location: draft.location || { address: "", city: "", country: "" },
+        coordinates: draft.coordinates || { latitude: null, longitude: null },
+        features: { ...spaceData.features, ...draft.features },
+        extras: draft.extras || [],
+        category: draft.category || null,
+        pricing: { ...spaceData.pricing, ...draft.pricing },
+        bookingSettings: {
+          ...spaceData.bookingSettings,
+          ...draft.bookingSettings,
+        },
+        imageFiles: [],
+        serverImages: [],
+        removedImages: [],
+        imagePreviews: draft.imagePreviews || [],
+      };
 
-      // New images
-      spaceData.imageFiles.forEach((file) => {
-        formData.append("images", file);
-      });
+      // Update the UI state
+      setSpaceData((prev) => ({ ...prev, ...migratedData }));
+      setStep(draft.currentStep || 1);
+      setSelected(draft.category || "");
 
-      // Removed images
-      if (spaceData.removedImages?.length) {
-        formData.append(
-          "removedImages",
-          JSON.stringify(spaceData.removedImages)
-        );
-      }
+      // Push to server using the payload directly — bypasses stale spaceData
+      await saveDraft(migratedData, draft.currentStep || 1);
 
-      // Append removed images
-      // if (spaceData.removedImages.length > 0) {
-      //   formData.append(
-      //     "removedImages",
-      //     JSON.stringify(spaceData.removedImages)
-      //   );
-      // }
+      // saveDraft clears localStorage on success, but belt-and-braces
+      localStorage.removeItem("vencome_draft");
 
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/drafts/save`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-        credentials: "include",
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.message || "Failed to save draft");
-
-      // Update serverImages with the response
-      if (data.draft.images) {
-        const serverImagePreviews = data.draft.images.map(
-          (img) => `${import.meta.env.VITE_API_URL}/${img.url}`
-        );
-
-        setSpaceData((prev) => ({
-          ...prev,
-          serverImages: data.draft.images,
-          imagePreviews: serverImagePreviews,
-          imageFiles: [], // Clear new files since they're now on server
-          removedImages: [], // Clear removed list
-        }));
-      }
-
-      setHasDraft(true);
-      setDraftId(data.draft._id);
-      toast.success("Draft saved successfully!");
+      toast.success("Your draft has been restored!");
     } catch (err) {
-      console.error("Save draft error:", err);
-      toast.error(err.message || "Failed to save draft");
-    } finally {
-      setIsSavingDraft(false);
-    }
-  };
-
-  const deleteDraft = async () => {
-    try {
-      await apiFetch({
-        endpoint: "/drafts",
-        method: "DELETE",
-      });
-
-      setHasDraft(false);
-      setDraftId(null);
-      toast.success("Draft deleted");
-    } catch (err) {
-      console.error("Delete draft error:", err);
+      console.error("Failed to migrate local draft:", err);
+      toast.error("Failed to restore your draft. Please try again.");
     }
   };
 
@@ -380,6 +466,11 @@ const CreateSpace = () => {
     };
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    if (!hasDraft) return;
+    migrateLocalDraft();
+  }, [hasDraft]);
 
   // Generic change handler
   const handleChange = (e) => {
@@ -1496,6 +1587,7 @@ const CreateSpace = () => {
                     bookingSettings: {
                       approveFirstFive: true,
                       instantBook: false,
+                      approveAllBookings: false,
                     },
                   }))
                 }
@@ -1542,6 +1634,7 @@ const CreateSpace = () => {
                     bookingSettings: {
                       approveFirstFive: false,
                       instantBook: true,
+                      approveAllBookings: false,
                     },
                   }))
                 }
@@ -1564,6 +1657,47 @@ const CreateSpace = () => {
                   }`}
                 >
                   {spaceData.bookingSettings.instantBook && (
+                    <div className="w-3 h-3 bg-primary rounded-full" />
+                  )}
+                </div>
+              </label>
+
+              <label
+                className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+                  spaceData.bookingSettings.approveAllBookings
+                    ? "border-primary bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
+                onClick={() =>
+                  setSpaceData((prev) => ({
+                    ...prev,
+                    bookingSettings: {
+                      approveFirstFive: false,
+                      instantBook: false,
+                      approveAllBookings: true,
+                    },
+                  }))
+                }
+              >
+                <div className="w-[90%] flex flex-col items-start">
+                  <span className="font-medium text-gray-800">
+                    Approve All Bookings
+                  </span>
+                  <p className="text-sm text-gray-500 mt-1 text-left">
+                    You’ll manually approve your all your bookings. You can not
+                    received all booking unless you approve it
+                  </p>
+                </div>
+
+                {/* Custom radio */}
+                <div
+                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                    spaceData.bookingSettings.approveAllBookings
+                      ? "border-primary"
+                      : "border-gray-300"
+                  }`}
+                >
+                  {spaceData.bookingSettings.approveAllBookings && (
                     <div className="w-3 h-3 bg-primary rounded-full" />
                   )}
                 </div>
