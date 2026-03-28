@@ -4512,7 +4512,12 @@ const CreateSpace = () => {
         return;
       }
       if (res.status === 403) {
-        toast.error("Please complete your profile before creating a property");
+        // Parse the response body
+        const data = await res.json();
+        toast.error(
+          data.message ||
+            "Please complete your profile before creating a property"
+        );
         saveDraft();
         return;
       }
