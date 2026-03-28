@@ -35,6 +35,7 @@ import TermsAndConditions from "./pages/TermsAndCondition";
 import HelpSupport from "./pages/HelpSupport";
 import PropertyAvailability from "./pages/PropertyAvailability";
 import NotFound from "./pages/NotFound";
+import Notifications from "./pages/Notifications";
 
 function AppContent() {
   const location = useLocation();
@@ -91,6 +92,7 @@ function AppContent() {
             <Route path="/blog/:slug" element={<BlogDetails />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/" element={<Homepage />} />
+            <Route path="/notifications" element={<Notifications />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

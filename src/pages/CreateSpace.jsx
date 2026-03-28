@@ -1,5 +1,3782 @@
+// // import React, { useState, useEffect, useRef } from "react";
+// // import { Link, useNavigate } from "react-router-dom";
+// // import { toast, ToastContainer } from "react-toastify";
+// // import { apiFetch } from "../utils/api";
+// // import ProgressBar from "../components/ProgressBar";
+// // import Input from "../components/Input";
+// // import Button from "../components/Button";
+// // import ExtraInput from "../components/ExtraInput";
+// // import ImageUploadPopup from "../components/ImageUploadPopup";
+// // import ImageReorder from "../components/ImageReorder";
+// // import YesNoToggle from "../components/YesNoToggle";
+// // import Counter from "../components/Counter";
+// // import MapComponent from "../components/MapComponent";
+// // import Notification from "../components/Notification";
+// // import { Autocomplete, useLoadScript } from "@react-google-maps/api";
+// // import { Home, Bell, Compass, Save, FileText } from "lucide-react";
+// // import { IoIosCheckmarkCircleOutline } from "react-icons/io";
+// // import CountrySelect from "../components/CountrySelect";
+
+// // const CreateSpace = () => {
+// //   const navigate = useNavigate();
+// //   const [step, setStep] = useState(1);
+// //   const totalSteps = 10;
+// //   const [isSubmitting, setIsSubmitting] = useState(false);
+// //   const [isSavingDraft, setIsSavingDraft] = useState(false);
+// //   const [selected, setSelected] = useState("");
+// //   const [errors, setErrors] = useState({});
+// //   const [apiKey] = useState(import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ""); // set your key in .env
+// //   const [categories, setCategories] = useState([]);
+// //   const [showModal, setShowModal] = useState(false);
+// //   const [countdown, setCountdown] = useState(3);
+// //   const [currentUser, setCurrentUser] = useState("");
+// //   const [hasDraft, setHasDraft] = useState(false);
+// //   const [showDraftPrompt, setShowDraftPrompt] = useState(false);
+// //   const [draftId, setDraftId] = useState("");
+// //   const libraries = ["places"];
+
+// //   const [spaceData, setSpaceData] = useState({
+// //     title: "",
+// //     description: "",
+// //     location: { address: "", city: "", country: "" },
+// //     coordinates: { latitude: null, longitude: null },
+// //     features: {
+// //       wifi: true,
+// //       restrooms: 1,
+// //       sizeSQM: null,
+// //       seatCapacity: null,
+// //       plug: false,
+// //       sound: false,
+// //       lockable: false,
+// //       washbasin: false,
+// //       clinicalSurface: false,
+// //       wasteBin: false,
+// //       meetCQCStandards: false,
+// //       electricBed: false,
+// //       adjustableStool: false,
+// //       trolley: false,
+// //       magnifyingLamp: false,
+// //       storage: false,
+// //       mirror: false,
+// //       bathroom: 1,
+// //       consultationArea: false,
+// //       examinationCouch: false,
+// //       sinkCounter: false,
+// //       adjustableEnvironment: false,
+// //       sharpsBin: false,
+// //       naturalLight: false,
+// //       dirtyTowelShoot: false,
+// //       cqcCompliance: false,
+// //     },
+// //     extras: [],
+// //     imageFiles: [],
+// //     imagePreviews: [],
+// //     serverImages: [], // important: initialize as empty array
+// //     removedImages: [],
+// //     coverImage: null,
+// //     category: "",
+// //     price: null,
+// //     pricing: {
+// //       pricingType: "DAILY", // "DAILY" | "HOURLY"
+// //       weekdayPrice: null, // used when DAILY
+// //       hourlyPrice: null, // used when HOURLY
+// //       preTaxPrice: null,
+// //       discounts: {
+// //         newListing: true,
+// //         lastMinute: false,
+// //         weekly: false,
+// //         monthly: false,
+// //       },
+// //     },
+// //     bookingSettings: {
+// //       approveFirstFive: false,
+// //       instantBook: true,
+// //     },
+// //   });
+
+// //   const [showPopup, setShowPopup] = useState(false);
+
+// //   const { isLoaded } = useLoadScript({
+// //     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+// //     libraries,
+// //   });
+
+// //   const autocompleteRef = useRef(null);
+
+// //   const onLoad = (autocomplete) => {
+// //     autocompleteRef.current = autocomplete;
+// //   };
+
+// //   const onPlaceChanged = () => {
+// //     if (!autocompleteRef.current) return;
+
+// //     const place = autocompleteRef.current.getPlace();
+// //     if (!place.address_components) return;
+
+// //     let streetNumber = "";
+// //     let route = "";
+// //     let city = "";
+// //     let country = "";
+
+// //     place.address_components.forEach((component) => {
+// //       const types = component.types;
+
+// //       if (types.includes("street_number")) {
+// //         streetNumber = component.long_name;
+// //       }
+
+// //       if (types.includes("route")) {
+// //         route = component.long_name;
+// //       }
+
+// //       if (
+// //         types.includes("locality") ||
+// //         types.includes("postal_town") ||
+// //         types.includes("administrative_area_level_2")
+// //       ) {
+// //         if (!city) city = component.long_name;
+// //       }
+
+// //       if (types.includes("country")) {
+// //         country = component.short_name;
+// //       }
+// //     });
+
+// //     const address = [streetNumber, route].filter(Boolean).join(" ");
+
+// //     setSpaceData((prev) => ({
+// //       ...prev,
+// //       location: {
+// //         ...prev.location,
+// //         address,
+// //         city,
+// //         country,
+// //       },
+// //     }));
+// //   };
+
+// //   useEffect(() => {
+// //     if (step > totalSteps) {
+// //       handleSubmit();
+// //     }
+// //     if (
+// //       step === 4 &&
+// //       !spaceData.coordinates.latitude &&
+// //       !spaceData.coordinates.longitude
+// //     ) {
+// //       fetchCoordinates();
+// //     }
+// //   }, [step]);
+
+// //   useEffect(() => {
+// //     const fetchUser = async () => {
+// //       try {
+// //         const user = await apiFetch({
+// //           endpoint: "/auth/me",
+// //           method: "GET",
+// //           credentials: "include",
+// //         });
+// //         if (!user) {
+// //           navigate("/login");
+// //           return;
+// //         }
+// //         setCurrentUser(user._id);
+// //       } catch (err) {
+// //         console.error("Failed to fetch user:", err);
+// //       }
+// //     };
+// //     fetchUser();
+// //     checkForDraft();
+// //   }, []);
+
+// //   const checkForDraft = async () => {
+// //     try {
+// //       const response = await apiFetch({
+// //         endpoint: "/drafts",
+// //         method: "GET",
+// //       });
+
+// //       if (response.success && response.draft) {
+// //         setHasDraft(true);
+// //         setDraftId(response.draft._id);
+// //         setShowDraftPrompt(true);
+// //       }
+// //     } catch (err) {
+// //       // No draft found, that's okay
+// //       console.log("No draft found");
+// //     }
+// //   };
+
+// //   // ─── Save Draft ───────────────────────────────────────────────────────────────
+// //   const saveDraft = async (overrideData = null, overrideStep = null) => {
+// //     setIsSavingDraft(true);
+
+// //     const data = overrideData || spaceData;
+// //     const currentStep = overrideStep ?? step;
+
+// //     try {
+// //       const token = localStorage.getItem("token");
+
+// //       // ── Unauthenticated: save to localStorage ─────────────────────────────────
+// //       if (!token) {
+// //         const localDraft = {
+// //           title: data.title,
+// //           description: data.description,
+// //           location: data.location,
+// //           coordinates: data.coordinates,
+// //           features: data.features,
+// //           extras: data.extras,
+// //           category: data.category || null,
+// //           pricing: data.pricing,
+// //           bookingSettings: data.bookingSettings,
+// //           currentStep,
+// //           imagePreviews: data.imagePreviews || [],
+// //           savedAt: new Date().toISOString(),
+// //         };
+
+// //         localStorage.setItem("vencome_draft", JSON.stringify(localDraft));
+// //         setHasDraft(true);
+// //         toast.success(
+// //           "Draft saved locally. Sign in to save images and publish."
+// //         );
+// //         return;
+// //       }
+
+// //       // ── Authenticated: save to server ─────────────────────────────────────────
+// //       const formData = new FormData();
+
+// //       formData.append(
+// //         "data",
+// //         JSON.stringify({
+// //           title: data.title,
+// //           description: data.description,
+// //           location: data.location,
+// //           coordinates: data.coordinates,
+// //           features: data.features,
+// //           extras: data.extras,
+// //           category: data.category || null,
+// //           pricing: data.pricing,
+// //           bookingSettings: data.bookingSettings,
+// //           currentStep,
+// //         })
+// //       );
+
+// //       data.imageFiles?.forEach((file) => formData.append("images", file));
+
+// //       if (data.removedImages?.length) {
+// //         formData.append("removedImages", JSON.stringify(data.removedImages));
+// //       }
+
+// //       const res = await fetch(`${import.meta.env.VITE_API_URL}/drafts/save`, {
+// //         method: "POST",
+// //         headers: { Authorization: `Bearer ${token}` },
+// //         body: formData,
+// //         credentials: "include",
+// //       });
+
+// //       const resData = await res.json();
+// //       if (!res.ok) throw new Error(resData.message || "Failed to save draft");
+
+// //       if (resData.draft.images) {
+// //         const serverImagePreviews = resData.draft.images.map(
+// //           (img) => `${import.meta.env.VITE_API_URL}/${img.url}`
+// //         );
+
+// //         setSpaceData((prev) => ({
+// //           ...prev,
+// //           serverImages: resData.draft.images,
+// //           imagePreviews: serverImagePreviews,
+// //           imageFiles: [],
+// //           removedImages: [],
+// //         }));
+// //       }
+
+// //       // Clear stale local draft now that it's on the server
+// //       localStorage.removeItem("vencome_draft");
+
+// //       setHasDraft(true);
+// //       setDraftId(resData.draft._id);
+// //       toast.success("Draft saved successfully!");
+// //     } catch (err) {
+// //       console.error("Save draft error:", err);
+// //       toast.error(err.message || "Failed to save draft");
+// //     } finally {
+// //       setIsSavingDraft(false);
+// //     }
+// //   };
+
+// //   // ─── Load Draft ───────────────────────────────────────────────────────────────
+// //   const loadDraft = async () => {
+// //     try {
+// //       const token = localStorage.getItem("token");
+
+// //       // ── Unauthenticated: load from localStorage ───────────────────────────────
+// //       if (!token) {
+// //         const raw = localStorage.getItem("vencome_draft");
+// //         if (!raw) {
+// //           toast.info("No local draft found.");
+// //           return;
+// //         }
+
+// //         const draft = JSON.parse(raw);
+// //         setSpaceData((prev) => ({
+// //           ...prev,
+// //           title: draft.title || "",
+// //           description: draft.description || "",
+// //           location: draft.location || { address: "", city: "", country: "" },
+// //           coordinates: draft.coordinates || { latitude: null, longitude: null },
+// //           features: { ...prev.features, ...draft.features },
+// //           extras: draft.extras || [],
+// //           category: draft.category || "",
+// //           pricing: { ...prev.pricing, ...draft.pricing },
+// //           bookingSettings: {
+// //             ...prev.bookingSettings,
+// //             ...draft.bookingSettings,
+// //           },
+// //           imagePreviews: draft.imagePreviews || [],
+// //           imageFiles: [],
+// //           serverImages: [],
+// //           removedImages: [],
+// //         }));
+// //         setStep(draft.currentStep || 1);
+// //         setSelected(draft.category || "");
+// //         setShowDraftPrompt(false);
+// //         toast.success("Local draft loaded. Sign in to restore images.");
+// //         return;
+// //       }
+
+// //       // ── Authenticated: check localStorage first, migrate if found ─────────────
+// //       const raw = localStorage.getItem("vencome_draft");
+// //       if (raw) {
+// //         await migrateLocalDraft();
+// //         setShowDraftPrompt(false);
+// //         return;
+// //       }
+
+// //       // ── Authenticated + no local draft: load from server ─────────────────────
+// //       const response = await apiFetch({ endpoint: "/drafts", method: "GET" });
+// //       if (response.success && response.draft) {
+// //         const draft = response.draft;
+// //         const serverImages =
+// //           draft.images?.map((img) => ({
+// //             filename: img.filename,
+// //             url: img.url,
+// //           })) || [];
+
+// //         setSpaceData({
+// //           title: draft.title || "",
+// //           description: draft.description || "",
+// //           location: draft.location || { address: "", city: "", country: "" },
+// //           coordinates: draft.coordinates || { latitude: null, longitude: null },
+// //           features: { ...spaceData.features, ...draft.features },
+// //           extras: draft.extras || [],
+// //           imageFiles: [],
+// //           serverImages,
+// //           removedImages: [],
+// //           coverImage: serverImages[0] || null,
+// //           category: draft.category?._id || draft.category || "",
+// //           pricing: { ...spaceData.pricing, ...draft.pricing },
+// //           bookingSettings: {
+// //             ...spaceData.bookingSettings,
+// //             ...draft.bookingSettings,
+// //           },
+// //         });
+
+// //         setStep(draft.currentStep || 1);
+// //         setSelected(draft.categories || "");
+// //         setShowDraftPrompt(false);
+// //         toast.success("Draft loaded successfully!");
+// //       }
+// //     } catch (err) {
+// //       console.error("Failed to load draft:", err);
+// //       toast.error("Failed to load draft");
+// //     }
+// //   };
+
+// //   // ─── On login: migrate local draft to server ──────────────────────────────────
+// //   // Call this after a successful login/signup if you want to auto-migrate
+// //   const migrateLocalDraft = async () => {
+// //     const raw = localStorage.getItem("vencome_draft");
+// //     if (!raw) return;
+
+// //     try {
+// //       const draft = JSON.parse(raw);
+
+// //       // Build the payload directly so we don't race with React state updates
+// //       const migratedData = {
+// //         title: draft.title || "",
+// //         description: draft.description || "",
+// //         location: draft.location || { address: "", city: "", country: "" },
+// //         coordinates: draft.coordinates || { latitude: null, longitude: null },
+// //         features: { ...spaceData.features, ...draft.features },
+// //         extras: draft.extras || [],
+// //         category: draft.category || null,
+// //         pricing: { ...spaceData.pricing, ...draft.pricing },
+// //         bookingSettings: {
+// //           ...spaceData.bookingSettings,
+// //           ...draft.bookingSettings,
+// //         },
+// //         imageFiles: [],
+// //         serverImages: [],
+// //         removedImages: [],
+// //         imagePreviews: draft.imagePreviews || [],
+// //       };
+
+// //       // Update the UI state
+// //       setSpaceData((prev) => ({ ...prev, ...migratedData }));
+// //       setStep(draft.currentStep || 1);
+// //       setSelected(draft.category || "");
+
+// //       // Push to server using the payload directly — bypasses stale spaceData
+// //       await saveDraft(migratedData, draft.currentStep || 1);
+
+// //       // saveDraft clears localStorage on success, but belt-and-braces
+// //       localStorage.removeItem("vencome_draft");
+
+// //       toast.success("Your draft has been restored!");
+// //     } catch (err) {
+// //       console.error("Failed to migrate local draft:", err);
+// //       toast.error("Failed to restore your draft. Please try again.");
+// //     }
+// //   };
+
+// //   // Cleanup blob URLs on unmount
+// //   useEffect(() => {
+// //     return () => {
+// //       spaceData.imagePreviews.forEach((url) => {
+// //         if (url.startsWith("blob:")) {
+// //           URL.revokeObjectURL(url);
+// //         }
+// //       });
+// //     };
+// //   }, []);
+
+// //   // Fetch categories
+// //   useEffect(() => {
+// //     const fetchCategories = async () => {
+// //       try {
+// //         const response = await apiFetch({
+// //           endpoint: "/categories",
+// //           method: "GET",
+// //         });
+// //         setCategories(response);
+// //       } catch (err) {
+// //         toast.error("Failed to load categories");
+// //       }
+// //     };
+// //     fetchCategories();
+// //   }, []);
+
+// //   useEffect(() => {
+// //     if (!hasDraft) return;
+// //     migrateLocalDraft();
+// //   }, [hasDraft]);
+
+// //   // Generic change handler
+// //   const handleChange = (e) => {
+// //     const { name, value, type, checked } = e.target;
+// //     setErrors((prev) => ({ ...prev, [name]: "" }));
+
+// //     const val =
+// //       type === "checkbox" ? checked : type === "number" ? Number(value) : value;
+
+// //     if (name.includes(".")) {
+// //       const [parent, child] = name.split(".");
+// //       setSpaceData((prev) => ({
+// //         ...prev,
+// //         [parent]: { ...prev[parent], [child]: val },
+// //       }));
+// //     } else {
+// //       setSpaceData((prev) => ({ ...prev, [name]: val }));
+// //     }
+// //   };
+
+// //   const handleFeatureChange = (e) => {
+// //     const { name, value } = e.target;
+// //     const keys = name.split(".");
+// //     setSpaceData((prev) => {
+// //       const updated = { ...prev };
+// //       let ref = updated;
+// //       for (let i = 0; i < keys.length - 1; i++) {
+// //         ref = ref[keys[i]];
+// //       }
+// //       ref[keys[keys.length - 1]] = value;
+// //       return updated;
+// //     });
+// //   };
+
+// //   const handleExtraChange = (index, updatedExtra) => {
+// //     setSpaceData((prev) => ({
+// //       ...prev,
+// //       extras: prev.extras.map((extra, i) =>
+// //         i === index ? updatedExtra : extra
+// //       ),
+// //     }));
+// //   };
+
+// //   const handleAddExtra = () => {
+// //     setSpaceData((prev) => ({
+// //       ...prev,
+// //       extras: [...prev.extras, { name: "", price: 0 }],
+// //     }));
+// //   };
+
+// //   const handleRemoveExtra = (index) => {
+// //     setSpaceData((prev) => ({
+// //       ...prev,
+// //       extras: prev.extras.filter((_, i) => i !== index),
+// //     }));
+// //   };
+
+// //   const handleImageUpload = (newImages) => {
+// //     setErrors((prev) => ({ ...prev, images: "" }));
+// //     console.log(newImages);
+
+// //     // Create preview URLs for the new images
+// //     const newPreviews = newImages.map((file) => URL.createObjectURL(file));
+
+// //     setSpaceData((prev) => ({
+// //       ...prev,
+// //       imageFiles: [...(prev.imageFiles || []), ...newImages], // Store File objects
+// //       imagePreviews: [...(prev.imagePreviews || []), ...newPreviews], // Store preview URLs
+// //       coverImage: prev.coverImage || newPreviews[0] || null, // Keep existing cover or use first new image
+// //     }));
+// //   };
+
+// //   const handleImageReorder = (reorderedPreviews) => {
+// //     setSpaceData((prev) => {
+// //       const oldPreviews = prev.imagePreviews;
+// //       const serverImages = prev.serverImages || [];
+// //       const imageFiles = prev.imageFiles || [];
+
+// //       // Build a lookup: preview URL -> source info
+// //       // Server images start at index 0, new file images follow
+// //       const serverPreviews = oldPreviews.slice(0, serverImages.length);
+// //       const filePreviews = oldPreviews.slice(serverImages.length);
+
+// //       const reorderedServerImages = [];
+// //       const reorderedFiles = [];
+
+// //       reorderedPreviews.forEach((preview) => {
+// //         const serverIdx = serverPreviews.indexOf(preview);
+// //         if (serverIdx !== -1) {
+// //           reorderedServerImages.push(serverImages[serverIdx]);
+// //         } else {
+// //           const fileIdx = filePreviews.indexOf(preview);
+// //           if (fileIdx !== -1) {
+// //             reorderedFiles.push(imageFiles[fileIdx]);
+// //           }
+// //         }
+// //       });
+
+// //       return {
+// //         ...prev,
+// //         serverImages: reorderedServerImages,
+// //         imageFiles: reorderedFiles,
+// //         imagePreviews: reorderedPreviews,
+// //         coverImage: reorderedPreviews[0] || null,
+// //       };
+// //     });
+// //   };
+
+// //   const handleDiscountChange = (e) => {
+// //     const { name, checked } = e.target;
+// //     setSpaceData((prev) => ({
+// //       ...prev,
+// //       pricing: {
+// //         ...prev.pricing,
+// //         discounts: { ...prev.pricing.discounts, [name]: checked },
+// //       },
+// //     }));
+// //   };
+
+// //   // Validate current step
+// //   const validateStep = () => {
+// //     const newErrors = {};
+
+// //     switch (step) {
+// //       case 1:
+// //         if (!spaceData.category)
+// //           newErrors.category = "Please select a category";
+// //         break;
+
+// //       case 2:
+// //         if (!spaceData.title.trim()) {
+// //           newErrors.title = "Space name is required";
+// //         } else if (spaceData.title.trim().length < 5) {
+// //           newErrors.title = "Title must be at least 5 characters long";
+// //         }
+
+// //         if (!spaceData.description.trim()) {
+// //           newErrors.description = "Description is required";
+// //         } else if (spaceData.description.trim().length < 50) {
+// //           newErrors.description =
+// //             "Description must be at least 50 characters long";
+// //         }
+// //         break;
+
+// //       case 3:
+// //         if (!spaceData.location.address.trim())
+// //           newErrors["location.address"] = "Address is required";
+// //         if (!spaceData.location.city.trim())
+// //           newErrors["location.city"] = "City is required";
+// //         if (!spaceData.location.country.trim())
+// //           newErrors["location.country"] = "Country is required";
+// //         break;
+
+// //       case 4:
+// //         if (!spaceData.coordinates.latitude || !spaceData.coordinates.longitude)
+// //           newErrors.coordinates = "Please pin a location on the map";
+// //         break;
+
+// //       case 5:
+// //         if (!spaceData.features.sizeSQM || spaceData.features.sizeSQM <= 5)
+// //           newErrors["features.sizeSQM"] = "Size must be greater than 5";
+
+// //         if (
+// //           !spaceData.features.seatCapacity ||
+// //           spaceData.features.seatCapacity <= 0
+// //         )
+// //           newErrors["features.seatCapacity"] =
+// //             "Seat capacity must be greater than 0";
+
+// //         if (spaceData.features.restrooms < 0)
+// //           newErrors["features.restrooms"] = "Restrooms cannot be negative";
+
+// //         // Extras validation
+// //         spaceData.extras.forEach((extra, index) => {
+// //           if (!extra.name || !extra.name.trim()) {
+// //             newErrors[`extras.${index}.name`] = "Extra name is required";
+// //           }
+// //           if (extra.price != null && extra.price < 0) {
+// //             newErrors[`extras.${index}.price`] = "Price cannot be negative";
+// //           }
+// //         });
+// //         break;
+
+// //       case 6:
+// //         if (
+// //           spaceData.imageFiles.length === 0 &&
+// //           (!spaceData.serverImages || spaceData.serverImages.length === 0)
+// //         )
+// //           newErrors.images = "At least one photo is required";
+// //         break;
+
+// //       case 8:
+// //         if (spaceData.pricing.pricingType === "DAILY") {
+// //           if (
+// //             !spaceData.pricing.weekdayPrice ||
+// //             spaceData.pricing.weekdayPrice <= 0
+// //           )
+// //             newErrors.weekdayPrice = "Enter a valid daily price";
+// //         } else if (spaceData.pricing.pricingType === "HOURLY") {
+// //           if (
+// //             !spaceData.pricing.hourlyPrice ||
+// //             spaceData.pricing.hourlyPrice <= 0
+// //           )
+// //             newErrors.hourlyPrice = "Enter a valid hourly price";
+// //         }
+// //         break;
+
+// //       default:
+// //         break;
+// //     }
+
+// //     setErrors(newErrors);
+// //     if (Object.keys(newErrors).length > 0) {
+// //       toast.error("Please fix the errors before continuing");
+// //     }
+// //     return Object.keys(newErrors).length === 0;
+// //   };
+
+// //   const fetchCoordinates = async () => {
+// //     try {
+// //       const params = new URLSearchParams({
+// //         address: spaceData.location.address,
+// //         city: spaceData.location.city,
+// //         country: spaceData.location.country,
+// //       });
+
+// //       const response = await fetch(
+// //         `${import.meta.env.VITE_API_URL}/geocode?${params.toString()}`
+// //       );
+
+// //       if (!response.ok) {
+// //         throw new Error("Failed to fetch coordinates");
+// //       }
+
+// //       const data = await response.json();
+
+// //       setSpaceData((prev) => ({
+// //         ...prev,
+// //         coordinates: {
+// //           latitude: data.latitude,
+// //           longitude: data.longitude,
+// //         },
+// //       }));
+// //     } catch (err) {
+// //       console.error("Failed to fetch coordinates:", err);
+// //       setErrors((prev) => ({
+// //         ...prev,
+// //         coordinates: "Unable to locate this address on the map",
+// //       }));
+// //     }
+// //   };
+
+// //   const handleNext = () => {
+// //     if (validateStep()) {
+// //       setErrors({});
+
+// //       setStep((prev) => {
+// //         return prev + 1;
+// //       });
+// //     }
+// //   };
+
+// //   const handleBack = () => {
+// //     setErrors({});
+
+// //     setStep((prev) => {
+// //       const prevStep = prev - 1;
+
+// //       return Math.max(1, prevStep);
+// //     });
+// //   };
+
+// //   // Final submit
+// //   const handleSubmit = async () => {
+// //     if (!validateStep()) return;
+
+// //     setIsSubmitting(true);
+// //     try {
+// //       const formData = new FormData();
+// //       formData.append("title", spaceData.title);
+// //       formData.append("description", spaceData.description);
+// //       formData.append("category", spaceData.category);
+// //       formData.append("pricing", JSON.stringify(spaceData.pricing));
+// //       formData.append("features", JSON.stringify(spaceData.features));
+// //       formData.append(
+// //         "bookingSettings",
+// //         JSON.stringify(spaceData.bookingSettings)
+// //       );
+// //       formData.append("location", JSON.stringify(spaceData.location));
+// //       formData.append("coordinates", JSON.stringify(spaceData.coordinates));
+// //       formData.append("extras", JSON.stringify(spaceData.extras || []));
+// //       formData.append("draftId", draftId);
+
+// //       // Append new files only
+// //       spaceData.imageFiles.forEach((file) => formData.append("images", file));
+
+// //       // Append removed images (server images the user deleted)
+// //       formData.append("removedImages", JSON.stringify(spaceData.removedImages));
+// //       const token = localStorage.getItem("token");
+// //       if (!token) {
+// //         navigate("/login");
+// //         saveDraft();
+// //         return;
+// //       }
+// //       const res = await fetch(`${import.meta.env.VITE_API_URL}/properties`, {
+// //         method: "POST",
+// //         headers: { Authorization: `Bearer ${token}` },
+// //         body: formData,
+// //         credentials: "include",
+// //       });
+
+// //       if (res.status === 401) {
+// //         localStorage.removeItem("token");
+// //         saveDraft();
+// //         navigate("/login");
+// //         return;
+// //       }
+// //       if (res.status === 403) {
+// //         toast.error("Please complete your profile before creating a property");
+// //         saveDraft();
+// //         return;
+// //       }
+
+// //       const data = await res.json();
+
+// //       if (!res.ok) throw new Error(data.message || "Failed to create space");
+
+// //       toast.success("Your space has been published successfully!");
+
+// //       setShowModal(true);
+// //       const timer = setInterval(() => {
+// //         setCountdown((c) => {
+// //           if (c <= 1) {
+// //             clearInterval(timer);
+// //             // Reload the home page
+// //             window.location.href = "/";
+// //             // or: window.location.replace("/"); to replace history
+// //           }
+// //           return c - 1;
+// //         });
+// //       }, 1000);
+// //     } catch (err) {
+// //       console.error(err);
+// //       toast.error(err.message || "Something went wrong. Please try again.");
+// //     } finally {
+// //       setIsSubmitting(false);
+// //     }
+// //   };
+
+// //   const treatmentRoomFeatures = [
+// //     {
+// //       key: "plug",
+// //       title: "Plug sockets",
+// //       description: "Guests have access to electrical power outlets",
+// //     },
+// //     {
+// //       key: "sound",
+// //       title: "Sound Insulation",
+// //       description: "Designed to minimize external and internal noise",
+// //     },
+// //     {
+// //       key: "lockable",
+// //       title: "Lockable door/storage",
+// //       description: "Provides secure lockable storage or doors",
+// //     },
+// //     {
+// //       key: "washbasin",
+// //       title: "Washbasin",
+// //       description: "Dedicated basin for washing and daily use",
+// //     },
+// //     {
+// //       key: "clinicalSurface",
+// //       title: "Clinical grade, wipeable surfaces",
+// //       description:
+// //         "Durable, non-porous surfaces designed for effective cleaning",
+// //     },
+// //     {
+// //       key: "wasteBin",
+// //       title: "Sharp bin & clinical waste",
+// //       description:
+// //         "Designated containers for sharps and medical waste disposal",
+// //     },
+// //     {
+// //       key: "meetCQCStandards",
+// //       title: "Meet CQC / local health authority standards",
+// //       description:
+// //         "Meets all required standards set by CQC and local health authorities",
+// //     },
+// //     {
+// //       key: "electricBed",
+// //       title: "Electric or hydraulic treatment bed",
+// //       description:
+// //         "Treatment bed that can be raised, lowered, and tilted electronically or hydraulically",
+// //     },
+// //     {
+// //       key: "adjustableStool",
+// //       title: "Adjustable stool for practitioners",
+// //       description: "Ergonomic stool that can be adjusted for practitioner use",
+// //     },
+// //     {
+// //       key: "trolley",
+// //       title: "Clinical trolley",
+// //       description:
+// //         "Trolley designed to store and transport clinical instruments",
+// //     },
+// //     {
+// //       key: "magnifyingLamp",
+// //       title: "Magnifying lamp or ring",
+// //       description:
+// //         "Magnifying lamp or ring to enhance visibility during treatments",
+// //     },
+// //     {
+// //       key: "storage",
+// //       title: "Built-in storage cabinets or drawers",
+// //       description:
+// //         "Built-in storage solutions to keep supplies neatly arranged",
+// //     },
+// //     {
+// //       key: "mirror",
+// //       title: "Mirror for good facial lighting",
+// //       description:
+// //         "Well-lit mirror designed to enhance visibility for facial care",
+// //     },
+// //   ];
+
+// //   const medicalFeatures = [
+// //     {
+// //       key: "consultationArea",
+// //       title: "Consultation area with desk and chairs",
+// //       description:
+// //         "Providing exceptional comfort for patient evaluations and discussions with healthcare professionals.",
+// //     },
+// //     {
+// //       key: "examinationCouch",
+// //       title: "Examination couch with draw around curtain",
+// //       description: "For added privacy during patient consultations.",
+// //     },
+// //     {
+// //       key: "sinkCounter",
+// //       title: "Sink & counter space",
+// //       description: "To ensure hygienic and efficient medical procedures.",
+// //     },
+// //     {
+// //       key: "adjustableEnvironment",
+// //       title: "Adjustable room environment",
+// //       description: "Air filtration, temperature control and lighting.",
+// //     },
+// //     {
+// //       key: "sharpsBin",
+// //       title: "Sharps disposable bin",
+// //       description:
+// //         "Providing a secure and hygienic solution for the proper disposal of medical sharps.",
+// //     },
+// //     {
+// //       key: "naturalLight",
+// //       title: "Natural light",
+// //       description:
+// //         "Enhances the overall ambiance and promotes a healing, calming environment for patients.",
+// //     },
+// //     {
+// //       key: "dirtyTowelShoot",
+// //       title: "In-built dirty towel disposal chute",
+// //       description:
+// //         "Promoting a clean and sterile environment for patients and staff.",
+// //     },
+// //     {
+// //       key: "cqcCompliance",
+// //       title: "Fully CQC compliant",
+// //       description:
+// //         "We are not CQC registered, but the space is fully compliant so basic procedures can be carried out by practitioners with their own CQC approval.",
+// //     },
+// //   ];
+
+// //   const allPreviews = [
+// //     ...(spaceData.serverImages || [])
+// //       .filter((img) => !(spaceData.removedImages || []).includes(img.filename))
+// //       .map((img) => img.url),
+// //     ...(spaceData.imageFiles || []).map((file) => URL.createObjectURL(file)),
+// //   ];
+
+// //   return (
+// //     <div className="min-h-[calc(100vh-65px)] flex flex-col justify-between bg-gray-50 p-4 sm:p-8">
+// //       <div className="absolute">
+// //         <ToastContainer />
+// //       </div>
+// //       {showDraftPrompt && (
+// //         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+// //           <div className="bg-white rounded-2xl p-8 max-w-md w-full">
+// //             <div className="flex items-center justify-center mb-4">
+// //               <FileText size={48} className="text-primary" />
+// //             </div>
+// //             <h2 className="text-2xl font-bold mb-2 text-center">
+// //               Draft Found!
+// //             </h2>
+// //             <p className="text-gray-600 mb-6 text-center">
+// //               You have an unfinished listing. Would you like to continue from
+// //               where you left off?
+// //             </p>
+// //             <div className="flex gap-3">
+// //               <button
+// //                 onClick={() => setShowDraftPrompt(false)}
+// //                 className="flex-1 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50"
+// //               >
+// //                 Start Fresh
+// //               </button>
+// //               <button
+// //                 onClick={loadDraft}
+// //                 className="flex-1 px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/80"
+// //               >
+// //                 Use Draft
+// //               </button>
+// //             </div>
+// //           </div>
+// //         </div>
+// //       )}
+
+// //       <div className="container mx-auto">
+// //         {/* Save Draft Button - Always visible */}
+// //         <div className="absolute right-18 flex justify-end mb-4">
+// //           <button
+// //             onClick={saveDraft}
+// //             disabled={isSavingDraft}
+// //             className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg disabled:opacity-50"
+// //           >
+// //             <Save size={18} />
+// //             {isSavingDraft ? "Saving..." : "Save Draft"}
+// //           </button>
+// //         </div>
+
+// //         {step === 1 && (
+// //           <div>
+// //             {errors.category && (
+// //               <div className="mt-6">
+// //                 <Notification message={errors.category} type="danger" />
+// //               </div>
+// //             )}
+// //             <h2 className="text-4xl my-4">Category</h2>
+// //             <p className="text-gray-600 mb-4">What type of space is this?</p>
+// //             <div className="grid grid-cols-2 gap-4">
+// //               {categories.map((cat) => (
+// //                 <label
+// //                   key={cat._id}
+// //                   className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+// //                     spaceData.category === cat._id
+// //                       ? "border-primary bg-blue-50"
+// //                       : "border-gray-200 hover:border-gray-300"
+// //                   }`}
+// //                   onClick={() => {
+// //                     setSpaceData((prev) => ({ ...prev, category: cat._id }));
+// //                     setErrors((prev) => ({ ...prev, category: "" }));
+// //                   }}
+// //                 >
+// //                   <span className="font-medium text-gray-800">{cat.name}</span>
+// //                   <div
+// //                     className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+// //                       spaceData.category === cat._id
+// //                         ? "border-primary"
+// //                         : "border-gray-300"
+// //                     }`}
+// //                   >
+// //                     {spaceData.category === cat._id && (
+// //                       <div className="w-3 h-3 bg-primary rounded-full" />
+// //                     )}
+// //                   </div>
+// //                 </label>
+// //               ))}
+// //             </div>
+// //           </div>
+// //         )}
+
+// //         {step === 2 && (
+// //           <div>
+// //             <h2 className="text-4xl my-4">Publish your space</h2>
+// //             <Input
+// //               label="Event space name"
+// //               name="title"
+// //               value={spaceData.title}
+// //               onChange={handleChange}
+// //               error={errors.title}
+// //               required
+// //             />
+// //             <label className="block text-sm font-medium text-gray-700 mt-4">
+// //               Description
+// //             </label>
+// //             <textarea
+// //               label="Description"
+// //               name="description"
+// //               value={spaceData.description || ""}
+// //               onChange={handleChange}
+// //               className={`mt-1 p-2 w-full h-48 border rounded-lg focus:ring-primary focus:border-primary ${
+// //                 errors.description ? "border-red-500" : "border-gray-300"
+// //               }`}
+// //             ></textarea>
+// //             {errors.description && (
+// //               <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+// //             )}
+// //           </div>
+// //         )}
+// //         {step === 3 && isLoaded && (
+// //           <div>
+// //             <h2 className="text-4xl my-4">Location</h2>
+// //             <Autocomplete
+// //               onLoad={onLoad}
+// //               onPlaceChanged={onPlaceChanged}
+// //               options={{
+// //                 fields: ["address_components", "geometry", "formatted_address"],
+// //                 types: ["address"],
+// //               }}
+// //             >
+// //               <Input
+// //                 placeholder="Address"
+// //                 defaultValue={spaceData.location.address}
+// //                 required
+// //               />
+// //             </Autocomplete>
+
+// //             {errors["location.address"] && (
+// //               <p className="text-red-500 text-sm mt-1">
+// //                 {errors["location.address"]}
+// //               </p>
+// //             )}
+
+// //             <Input
+// //               placeholder="City"
+// //               name="location.city"
+// //               value={spaceData.location.city}
+// //               onChange={handleChange}
+// //               required
+// //             />
+// //             {errors["location.city"] && (
+// //               <p className="text-red-500 text-sm mt-1">
+// //                 {errors["location.city"]}
+// //               </p>
+// //             )}
+
+// //             <CountrySelect
+// //               value={spaceData.location.country}
+// //               onChange={handleChange}
+// //               required
+// //             />
+// //             {errors["location.country"] && (
+// //               <p className="text-red-500 text-sm mt-1">
+// //                 {errors["location.country"]}
+// //               </p>
+// //             )}
+// //           </div>
+// //         )}
+
+// //         {step === 4 && (
+// //           <div>
+// //             <h2 className="text-4xl my-4">Confirm Location</h2>
+// //             <p className="mb-4">
+// //               Pin your location on the map or adjust the marker below
+// //             </p>
+
+// //             <div className="flex gap-4">
+// //               {/* Latitude */}
+// //               <div className="mb-4">
+// //                 <input
+// //                   type="number"
+// //                   step="0.000001"
+// //                   name="coordinates.latitude"
+// //                   value={spaceData.coordinates.latitude || ""}
+// //                   onChange={handleChange}
+// //                   placeholder="Latitude"
+// //                   className={`mt-1 p-2 w-full border rounded-lg focus:ring-primary focus:border-primary ${
+// //                     errors.latitude ? "border-red-500" : "border-gray-300"
+// //                   }`}
+// //                 />
+// //                 {errors.latitude && (
+// //                   <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>
+// //                 )}
+// //               </div>
+
+// //               {/* Longitude */}
+// //               <div className="mb-4">
+// //                 <input
+// //                   type="number"
+// //                   step="0.000001"
+// //                   name="coordinates.longitude"
+// //                   value={spaceData.coordinates.longitude || ""}
+// //                   onChange={handleChange}
+// //                   placeholder="Longitude"
+// //                   className={`mt-1 p-2 w-full border rounded-lg focus:ring-primary focus:border-primary ${
+// //                     errors.longitude ? "border-red-500" : "border-gray-300"
+// //                   }`}
+// //                 />
+// //                 {errors.longitude && (
+// //                   <p className="text-red-500 text-sm mt-1">
+// //                     {errors.longitude}
+// //                   </p>
+// //                 )}
+// //               </div>
+// //             </div>
+
+// //             {/* Google Map */}
+// //             <div className="w-full h-[350px] md:h-[400px] border border-gray-200 rounded-lg mt-4">
+// //               <MapComponent
+// //                 coordinates={spaceData.coordinates}
+// //                 onCoordinatesChange={(lat, lng) =>
+// //                   setSpaceData((prev) => ({
+// //                     ...prev,
+// //                     coordinates: { latitude: lat, longitude: lng },
+// //                   }))
+// //                 }
+// //               />
+// //             </div>
+// //           </div>
+// //         )}
+
+// //         {step === 5 && (
+// //           <div className="h-[500px] md:h-[600px] overflow-y-scroll">
+// //             <h2 className="text-4xl my-4">Features & Extras</h2>
+// //             <div className="mb-4">
+// //               <YesNoToggle
+// //                 label="WiFi access"
+// //                 subtitle="Guests get access to free internet connection"
+// //                 name="features.wifi"
+// //                 value={spaceData.features.wifi}
+// //                 onChange={handleFeatureChange}
+// //               />
+// //               {errors["features.wifi"] && (
+// //                 <p className="text-red-500 text-sm mt-1">
+// //                   {errors["features.wifi"]}
+// //                 </p>
+// //               )}
+// //               <Counter
+// //                 label="Restrooms"
+// //                 subtitle="Numbers of restrooms guests can use"
+// //                 name="features.restrooms"
+// //                 value={spaceData.features.restrooms}
+// //                 onChange={handleFeatureChange}
+// //               />
+// //               {errors["features.restrooms"] && (
+// //                 <p className="text-red-500 text-sm mt-1">
+// //                   {errors["features.restrooms"]}
+// //                 </p>
+// //               )}
+// //               {spaceData.category === "6915bd724f4f95223e555e57" && (
+// //                 <>
+// //                   <h2 className="text-xl font-semibold my-4">
+// //                     Treatment Room Features
+// //                   </h2>
+// //                   {treatmentRoomFeatures.map(({ key, title, description }) => {
+// //                     const isChecked = spaceData.features[key]; // <-- corrected
+
+// //                     return (
+// //                       <label
+// //                         key={key}
+// //                         className={`flex items-center justify-between p-4 mt-4 border rounded-xl cursor-pointer transition-all ${
+// //                           isChecked
+// //                             ? "border-primary bg-blue-50"
+// //                             : "border-gray-200 hover:border-gray-300"
+// //                         }`}
+// //                         onClick={() =>
+// //                           setSpaceData((prev) => ({
+// //                             ...prev,
+// //                             features: {
+// //                               ...prev.features,
+// //                               [key]: !prev.features[key], // toggle only this one
+// //                             },
+// //                           }))
+// //                         }
+// //                       >
+// //                         <div className="flex flex-col items-start">
+// //                           <span className="font-medium text-gray-800">
+// //                             {title}
+// //                           </span>
+// //                           <p className="text-sm text-gray-500 mt-1 text-left">
+// //                             {description}
+// //                           </p>
+// //                         </div>
+
+// //                         {/* Custom checkbox */}
+// //                         <div
+// //                           className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+// //                             isChecked
+// //                               ? "border-primary bg-primary"
+// //                               : "border-gray-300"
+// //                           }`}
+// //                         >
+// //                           {isChecked && (
+// //                             <svg
+// //                               xmlns="http://www.w3.org/2000/svg"
+// //                               className="w-3 h-3 text-white"
+// //                               fill="none"
+// //                               viewBox="0 0 24 24"
+// //                               stroke="currentColor"
+// //                               strokeWidth={3}
+// //                             >
+// //                               <path
+// //                                 strokeLinecap="round"
+// //                                 strokeLinejoin="round"
+// //                                 d="M5 13l4 4L19 7"
+// //                               />
+// //                             </svg>
+// //                           )}
+// //                         </div>
+// //                       </label>
+// //                     );
+// //                   })}
+// //                 </>
+// //               )}
+// //               {spaceData.category === "6915bd724f4f95223e555e5b" && (
+// //                 <>
+// //                   <h2 className="text-xl font-semibold my-4">
+// //                     Medical Room Features
+// //                   </h2>
+// //                   {medicalFeatures.map(({ key, title, description }) => {
+// //                     const isChecked = spaceData.features[key]; // <-- corrected
+
+// //                     return (
+// //                       <label
+// //                         key={key}
+// //                         className={`flex items-center justify-between p-4 mt-4 border rounded-xl cursor-pointer transition-all ${
+// //                           isChecked
+// //                             ? "border-primary bg-blue-50"
+// //                             : "border-gray-200 hover:border-gray-300"
+// //                         }`}
+// //                         onClick={() =>
+// //                           setSpaceData((prev) => ({
+// //                             ...prev,
+// //                             features: {
+// //                               ...prev.features,
+// //                               [key]: !prev.features[key], // toggle only this one
+// //                             },
+// //                           }))
+// //                         }
+// //                       >
+// //                         <div className="flex flex-col items-start">
+// //                           <span className="font-medium text-gray-800">
+// //                             {title}
+// //                           </span>
+// //                           <p className="text-sm text-gray-500 mt-1 text-left">
+// //                             {description}
+// //                           </p>
+// //                         </div>
+
+// //                         {/* Custom checkbox */}
+// //                         <div
+// //                           className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+// //                             isChecked
+// //                               ? "border-primary bg-primary"
+// //                               : "border-gray-300"
+// //                           }`}
+// //                         >
+// //                           {isChecked && (
+// //                             <svg
+// //                               xmlns="http://www.w3.org/2000/svg"
+// //                               className="w-3 h-3 text-white"
+// //                               fill="none"
+// //                               viewBox="0 0 24 24"
+// //                               stroke="currentColor"
+// //                               strokeWidth={3}
+// //                             >
+// //                               <path
+// //                                 strokeLinecap="round"
+// //                                 strokeLinejoin="round"
+// //                                 d="M5 13l4 4L19 7"
+// //                               />
+// //                             </svg>
+// //                           )}
+// //                         </div>
+// //                       </label>
+// //                     );
+// //                   })}
+// //                 </>
+// //               )}
+// //               <div className="mt-5 flex gap-6 items-center">
+// //                 <Input
+// //                   label="Size (SQM)"
+// //                   name="features.sizeSQM"
+// //                   type="number"
+// //                   value={spaceData.features.sizeSQM}
+// //                   onChange={handleFeatureChange}
+// //                   classes="w-full"
+// //                   error={errors["features.sizeSQM"]}
+// //                 />
+// //                 <Input
+// //                   label="Seat Capacity"
+// //                   name="features.seatCapacity"
+// //                   type="number"
+// //                   value={spaceData.features.seatCapacity}
+// //                   onChange={handleFeatureChange}
+// //                   classes="w-full"
+// //                   error={errors["features.seatCapacity"]}
+// //                 />
+// //               </div>
+// //             </div>
+// //             <div>
+// //               <h3 className="font-semibold mb-2">Extras</h3>
+// //               {spaceData.extras.map((extra, index) => (
+// //                 <ExtraInput
+// //                   key={index}
+// //                   extra={extra}
+// //                   onChange={(updated) => handleExtraChange(index, updated)}
+// //                   onRemove={() => handleRemoveExtra(index)}
+// //                 />
+// //               ))}
+// //               <Button
+// //                 onClick={handleAddExtra}
+// //                 className="mt-2 bg-primary text-white px-4 py-2 rounded-lg"
+// //               >
+// //                 Add More
+// //               </Button>
+// //             </div>
+// //           </div>
+// //         )}
+// //         {step === 6 && (
+// //           <div>
+// //             <h2 className="text-4xl my-4">Add Photos</h2>
+
+// //             <Button
+// //               onClick={() => setShowPopup(true)}
+// //               className="mb-4 bg-primary text-white px-4 py-2 rounded-lg"
+// //             >
+// //               Add Photos
+// //             </Button>
+
+// //             {errors.images && (
+// //               <Notification message={errors.images} type="danger" />
+// //             )}
+
+// //             {allPreviews.length > 0 && (
+// //               <div className="mt-4">
+// //                 <div className="grid grid-cols-2 gap-3 pb-10 h-[450px] md:h-[510px] overflow-scroll">
+// //                   {allPreviews.map((img, index) => (
+// //                     <div
+// //                       key={index}
+// //                       className={`relative w-full overflow-hidden rounded-lg border border-gray-200 ${
+// //                         index === 0 ? "col-span-2 h-80" : "h-64"
+// //                       }`}
+// //                     >
+// //                       <img
+// //                         src={
+// //                           typeof img === "string"
+// //                             ? img
+// //                             : URL.createObjectURL(img)
+// //                         }
+// //                         alt={`Uploaded ${index + 1}`}
+// //                         className="w-full h-full object-cover"
+// //                       />
+// //                     </div>
+// //                   ))}
+// //                 </div>
+// //               </div>
+// //             )}
+
+// //             {showPopup && (
+// //               <ImageUploadPopup
+// //                 onClose={() => setShowPopup(false)}
+// //                 onUpload={handleImageUpload}
+// //               />
+// //             )}
+// //           </div>
+// //         )}
+
+// //         {step === 7 && (
+// //           <div>
+// //             <h2 className="text-4xl my-4">Rearrange Images</h2>
+// //             <ImageReorder
+// //               images={allPreviews} // ✅ Use allPreviews here too
+// //               onReorder={handleImageReorder}
+// //               onAddMore={() => setShowPopup(true)}
+// //             />
+// //           </div>
+// //         )}
+
+// //         {step === 8 && (
+// //           <div className="text-center flex flex-col items-center p-6">
+// //             {/* Pricing Type Toggle */}
+// //             <div className="flex items-center gap-6 mb-8">
+// //               <button
+// //                 type="button"
+// //                 onClick={() =>
+// //                   setSpaceData((prev) => ({
+// //                     ...prev,
+// //                     pricing: {
+// //                       ...prev.pricing,
+// //                       pricingType: "DAILY",
+// //                       hourlyPrice: null,
+// //                     },
+// //                   }))
+// //                 }
+// //                 className={`px-5 py-2 rounded-full font-medium transition ${
+// //                   spaceData.pricing.pricingType === "DAILY"
+// //                     ? "bg-primary text-white"
+// //                     : "bg-gray-200 text-gray-700"
+// //                 }`}
+// //               >
+// //                 Daily
+// //               </button>
+
+// //               <button
+// //                 type="button"
+// //                 onClick={() =>
+// //                   setSpaceData((prev) => ({
+// //                     ...prev,
+// //                     pricing: {
+// //                       ...prev.pricing,
+// //                       pricingType: "HOURLY",
+// //                       weekdayPrice: null,
+// //                     },
+// //                   }))
+// //                 }
+// //                 className={`px-5 py-2 rounded-full font-medium transition ${
+// //                   spaceData.pricing.pricingType === "HOURLY"
+// //                     ? "bg-primary text-white"
+// //                     : "bg-gray-200 text-gray-700"
+// //                 }`}
+// //               >
+// //                 Hourly
+// //               </button>
+// //             </div>
+
+// //             {/* DAILY PRICING */}
+// //             {spaceData.pricing.pricingType === "DAILY" && (
+// //               <>
+// //                 <h3 className="text-3xl font-semibold mb-2">
+// //                   Set a Weekday Price
+// //                 </h3>
+// //                 <p className="text-gray-600 mb-6">You can change it anytime.</p>
+
+// //                 <div className="flex items-center justify-center px-6 pt-4 mb-3">
+// //                   <span className="text-4xl font-bold text-primary mr-1 mb-4">
+// //                     £
+// //                   </span>
+// //                   <Input
+// //                     name="pricing.weekdayPrice"
+// //                     type="number"
+// //                     min="0"
+// //                     value={spaceData.pricing.weekdayPrice}
+// //                     onChange={handleChange}
+// //                     autoFocus={true}
+// //                     required
+// //                     className="border-none bg-transparent text-center text-4xl font-semibold text-primary focus:ring-0 focus:outline-none no-spinner dynamic-width"
+// //                   />
+// //                 </div>
+
+// //                 {errors.weekdayPrice && (
+// //                   <p className="text-red-500 text-sm mt-1">
+// //                     {errors.weekdayPrice}
+// //                   </p>
+// //                 )}
+
+// //                 {/* <p className="text-gray-500 mt-2">
+// //                   Price before tax:{" "}
+// //                   <span className="font-medium text-gray-700">
+// //                     £{spaceData.pricing.weekdayPrice + 5 || 0}
+// //                   </span>
+// //                 </p> */}
+// //               </>
+// //             )}
+
+// //             {/* HOURLY PRICING */}
+// //             {spaceData.pricing.pricingType === "HOURLY" && (
+// //               <>
+// //                 <h3 className="text-3xl font-semibold mb-2">
+// //                   Set an Hourly Price
+// //                 </h3>
+// //                 <p className="text-gray-600 mb-6">You can change it anytime.</p>
+
+// //                 <div className="flex items-center justify-center px-6 pt-4 mb-3">
+// //                   <span className="text-4xl font-bold text-primary mr-1 mb-4">
+// //                     £
+// //                   </span>
+// //                   <Input
+// //                     name="pricing.hourlyPrice"
+// //                     type="number"
+// //                     min="0"
+// //                     value={spaceData.pricing.hourlyPrice}
+// //                     onChange={handleChange}
+// //                     autoFocus={true}
+// //                     required
+// //                     className="border-none bg-transparent text-center text-4xl font-semibold text-primary focus:ring-0 focus:outline-none no-spinner dynamic-width"
+// //                   />
+// //                 </div>
+
+// //                 {errors.hourlyPrice && (
+// //                   <p className="text-red-500 text-sm mt-1">
+// //                     {errors.hourlyPrice}
+// //                   </p>
+// //                 )}
+
+// //                 {/* <p className="text-gray-500 mt-2">
+// //                   Price before tax:{" "}
+// //                   <span className="font-medium text-gray-700">
+// //                     £{spaceData.pricing.hourlyPrice + 5 || 0}
+// //                   </span>
+// //                 </p> */}
+// //               </>
+// //             )}
+// //           </div>
+// //         )}
+
+// //         {step === 9 && (
+// //           <div>
+// //             <h2 className="text-4xl font-semibold mb-2">
+// //               Price your booking settings
+// //             </h2>
+// //             <p className="text-gray-600 mb-6">You can change it anytime.</p>
+
+// //             <div className="space-y-4">
+// //               {/* Option 1 - Approve first 5 bookings */}
+// //               <label
+// //                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+// //                   spaceData.bookingSettings.approveFirstFive
+// //                     ? "border-primary bg-blue-50"
+// //                     : "border-gray-200 hover:border-gray-300"
+// //                 }`}
+// //                 onClick={() =>
+// //                   setSpaceData((prev) => ({
+// //                     ...prev,
+// //                     bookingSettings: {
+// //                       approveFirstFive: true,
+// //                       instantBook: false,
+// //                       approveAllBookings: false,
+// //                     },
+// //                   }))
+// //                 }
+// //               >
+// //                 <div className="w-[90%] flex flex-col items-start gap-2">
+// //                   <div className="flex items-center gap-2">
+// //                     <span className="font-medium text-gray-800">
+// //                       Approve first 5 bookings
+// //                     </span>
+// //                     <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full">
+// //                       Recommended
+// //                     </span>
+// //                   </div>
+// //                   <p className="text-sm text-gray-500 mt-1 text-left">
+// //                     You’ll manually approve your first 5 bookings. After that,
+// //                     bookings can be automatic.
+// //                   </p>
+// //                 </div>
+
+// //                 {/* Custom radio */}
+// //                 <div
+// //                   className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+// //                     spaceData.bookingSettings.approveFirstFive
+// //                       ? "border-primary"
+// //                       : "border-gray-300"
+// //                   }`}
+// //                 >
+// //                   {spaceData.bookingSettings.approveFirstFive && (
+// //                     <div className="w-3 h-3 bg-primary rounded-full" />
+// //                   )}
+// //                 </div>
+// //               </label>
+
+// //               {/* Option 2 - Instant Book */}
+// //               <label
+// //                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+// //                   spaceData.bookingSettings.instantBook
+// //                     ? "border-primary bg-blue-50"
+// //                     : "border-gray-200 hover:border-gray-300"
+// //                 }`}
+// //                 onClick={() =>
+// //                   setSpaceData((prev) => ({
+// //                     ...prev,
+// //                     bookingSettings: {
+// //                       approveFirstFive: false,
+// //                       instantBook: true,
+// //                       approveAllBookings: false,
+// //                     },
+// //                   }))
+// //                 }
+// //               >
+// //                 <div className="w-[90%] flex flex-col items-start">
+// //                   <span className="font-medium text-gray-800">
+// //                     Instant Book
+// //                   </span>
+// //                   <p className="text-sm text-gray-500 mt-1 text-left">
+// //                     Guests can book instantly without needing your approval.
+// //                   </p>
+// //                 </div>
+
+// //                 {/* Custom radio */}
+// //                 <div
+// //                   className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+// //                     spaceData.bookingSettings.instantBook
+// //                       ? "border-primary"
+// //                       : "border-gray-300"
+// //                   }`}
+// //                 >
+// //                   {spaceData.bookingSettings.instantBook && (
+// //                     <div className="w-3 h-3 bg-primary rounded-full" />
+// //                   )}
+// //                 </div>
+// //               </label>
+
+// //               <label
+// //                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+// //                   spaceData.bookingSettings.approveAllBookings
+// //                     ? "border-primary bg-blue-50"
+// //                     : "border-gray-200 hover:border-gray-300"
+// //                 }`}
+// //                 onClick={() =>
+// //                   setSpaceData((prev) => ({
+// //                     ...prev,
+// //                     bookingSettings: {
+// //                       approveFirstFive: false,
+// //                       instantBook: false,
+// //                       approveAllBookings: true,
+// //                     },
+// //                   }))
+// //                 }
+// //               >
+// //                 <div className="w-[90%] flex flex-col items-start">
+// //                   <span className="font-medium text-gray-800">
+// //                     Approve All Bookings
+// //                   </span>
+// //                   <p className="text-sm text-gray-500 mt-1 text-left">
+// //                     You’ll manually approve your all your bookings. You can not
+// //                     received all booking unless you approve it
+// //                   </p>
+// //                 </div>
+
+// //                 {/* Custom radio */}
+// //                 <div
+// //                   className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+// //                     spaceData.bookingSettings.approveAllBookings
+// //                       ? "border-primary"
+// //                       : "border-gray-300"
+// //                   }`}
+// //                 >
+// //                   {spaceData.bookingSettings.approveAllBookings && (
+// //                     <div className="w-3 h-3 bg-primary rounded-full" />
+// //                   )}
+// //                 </div>
+// //               </label>
+// //             </div>
+// //           </div>
+// //         )}
+
+// //         {step === 10 && (
+// //           <div>
+// //             <h2 className="text-4xl font-semibold mb-2">
+// //               Set up your discounts
+// //             </h2>
+// //             <p className="text-gray-600 mb-6">
+// //               Encourage more bookings with discounts.
+// //             </p>
+
+// //             <div className="space-y-4">
+// //               {/* New Listing Promotion */}
+// //               <label
+// //                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+// //                   spaceData.pricing.discounts.newListing
+// //                     ? "border-primary bg-blue-50"
+// //                     : "border-gray-200 hover:border-gray-300"
+// //                 }`}
+// //                 onClick={() =>
+// //                   handleDiscountChange({
+// //                     target: {
+// //                       name: "newListing",
+// //                       checked: !spaceData.pricing.discounts.newListing,
+// //                     },
+// //                   })
+// //                 }
+// //               >
+// //                 <div className="w-[90%] flex flex-col items-start">
+// //                   <span className="font-medium text-gray-800">
+// //                     New Listing Promotion (20%)
+// //                   </span>
+// //                   <p className="text-sm text-gray-500 mt-1 text-left">
+// //                     Get noticed faster with an automatic 20% discount on your
+// //                     first few bookings.
+// //                   </p>
+// //                 </div>
+
+// //                 {/* Custom checkbox */}
+// //                 <div
+// //                   className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+// //                     spaceData.pricing.discounts.newListing
+// //                       ? "border-primary bg-primary"
+// //                       : "border-gray-300"
+// //                   }`}
+// //                 >
+// //                   {spaceData.pricing.discounts.newListing && (
+// //                     <svg
+// //                       xmlns="http://www.w3.org/2000/svg"
+// //                       className="w-3 h-3 text-white"
+// //                       fill="none"
+// //                       viewBox="0 0 24 24"
+// //                       stroke="currentColor"
+// //                       strokeWidth={3}
+// //                     >
+// //                       <path
+// //                         strokeLinecap="round"
+// //                         strokeLinejoin="round"
+// //                         d="M5 13l4 4L19 7"
+// //                       />
+// //                     </svg>
+// //                   )}
+// //                 </div>
+// //               </label>
+
+// //               {/* Last Minute Discount */}
+// //               <label
+// //                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+// //                   spaceData.pricing.discounts.lastMinute
+// //                     ? "border-primary bg-blue-50"
+// //                     : "border-gray-200 hover:border-gray-300"
+// //                 }`}
+// //                 onClick={() =>
+// //                   handleDiscountChange({
+// //                     target: {
+// //                       name: "lastMinute",
+// //                       checked: !spaceData.pricing.discounts.lastMinute,
+// //                     },
+// //                   })
+// //                 }
+// //               >
+// //                 <div className="w-[90%] flex flex-col items-start">
+// //                   <span className="font-medium text-gray-800">
+// //                     Last Minute Discount (1%)
+// //                   </span>
+// //                   <p className="text-sm text-gray-500 mt-1 text-left">
+// //                     Offer small savings for guests booking within a few days of
+// //                     arrival.
+// //                   </p>
+// //                 </div>
+
+// //                 <div
+// //                   className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+// //                     spaceData.pricing.discounts.lastMinute
+// //                       ? "border-primary bg-primary"
+// //                       : "border-gray-300"
+// //                   }`}
+// //                 >
+// //                   {spaceData.pricing.discounts.lastMinute && (
+// //                     <svg
+// //                       xmlns="http://www.w3.org/2000/svg"
+// //                       className="w-3 h-3 text-white"
+// //                       fill="none"
+// //                       viewBox="0 0 24 24"
+// //                       stroke="currentColor"
+// //                       strokeWidth={3}
+// //                     >
+// //                       <path
+// //                         strokeLinecap="round"
+// //                         strokeLinejoin="round"
+// //                         d="M5 13l4 4L19 7"
+// //                       />
+// //                     </svg>
+// //                   )}
+// //                 </div>
+// //               </label>
+
+// //               {/* Weekly Discount */}
+// //               <label
+// //                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+// //                   spaceData.pricing.discounts.weekly
+// //                     ? "border-primary bg-blue-50"
+// //                     : "border-gray-200 hover:border-gray-300"
+// //                 }`}
+// //                 onClick={() =>
+// //                   handleDiscountChange({
+// //                     target: {
+// //                       name: "weekly",
+// //                       checked: !spaceData.pricing.discounts.weekly,
+// //                     },
+// //                   })
+// //                 }
+// //               >
+// //                 <div className="w-[90%] flex flex-col items-start">
+// //                   <span className="font-medium text-gray-800">
+// //                     Weekly Discount (10%)
+// //                   </span>
+// //                   <p className="text-sm text-gray-500 mt-1 text-left">
+// //                     Reward guests who stay for 7 nights or more.
+// //                   </p>
+// //                 </div>
+
+// //                 <div
+// //                   className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+// //                     spaceData.pricing.discounts.weekly
+// //                       ? "border-primary bg-primary"
+// //                       : "border-gray-300"
+// //                   }`}
+// //                 >
+// //                   {spaceData.pricing.discounts.weekly && (
+// //                     <svg
+// //                       xmlns="http://www.w3.org/2000/svg"
+// //                       className="w-3 h-3 text-white"
+// //                       fill="none"
+// //                       viewBox="0 0 24 24"
+// //                       stroke="currentColor"
+// //                       strokeWidth={3}
+// //                     >
+// //                       <path
+// //                         strokeLinecap="round"
+// //                         strokeLinejoin="round"
+// //                         d="M5 13l4 4L19 7"
+// //                       />
+// //                     </svg>
+// //                   )}
+// //                 </div>
+// //               </label>
+
+// //               {/* Monthly Discount */}
+// //               <label
+// //                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+// //                   spaceData.pricing.discounts.monthly
+// //                     ? "border-primary bg-blue-50"
+// //                     : "border-gray-200 hover:border-gray-300"
+// //                 }`}
+// //                 onClick={() =>
+// //                   handleDiscountChange({
+// //                     target: {
+// //                       name: "monthly",
+// //                       checked: !spaceData.pricing.discounts.monthly,
+// //                     },
+// //                   })
+// //                 }
+// //               >
+// //                 <div className="w-[90%] flex flex-col items-start">
+// //                   <span className="font-medium text-gray-800">
+// //                     Monthly Discount (20%)
+// //                   </span>
+// //                   <p className="text-sm text-gray-500 mt-1 text-left">
+// //                     Attract long-term stays with generous monthly savings.
+// //                   </p>
+// //                 </div>
+
+// //                 <div
+// //                   className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+// //                     spaceData.pricing.discounts.monthly
+// //                       ? "border-primary bg-primary"
+// //                       : "border-gray-300"
+// //                   }`}
+// //                 >
+// //                   {spaceData.pricing.discounts.monthly && (
+// //                     <svg
+// //                       xmlns="http://www.w3.org/2000/svg"
+// //                       className="w-3 h-3 text-white"
+// //                       fill="none"
+// //                       viewBox="0 0 24 24"
+// //                       stroke="currentColor"
+// //                       strokeWidth={3}
+// //                     >
+// //                       <path
+// //                         strokeLinecap="round"
+// //                         strokeLinejoin="round"
+// //                         d="M5 13l4 4L19 7"
+// //                       />
+// //                     </svg>
+// //                   )}
+// //                 </div>
+// //               </label>
+// //             </div>
+// //           </div>
+// //         )}
+// //       </div>
+// //       {showModal && (
+// //         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+// //           <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center flex flex-col items-center">
+// //             <IoIosCheckmarkCircleOutline size={100} color="green" />
+// //             <h2 className="text-2xl font-bold mt-4 mb-2">Property Created!</h2>
+// //             <p className="text-gray-600">
+// //               Redirecting in {countdown} second{countdown > 1 ? "s" : ""}...
+// //             </p>
+// //           </div>
+// //         </div>
+// //       )}
+
+// //       {/* Progress + Navigation */}
+// //       <div>
+// //         <ProgressBar step={step} totalSteps={totalSteps} />
+// //         <div className="mt-6 flex justify-between">
+// //           <button
+// //             onClick={handleBack}
+// //             disabled={step === 1}
+// //             className="text-gray-600 hover:text-gray-900 disabled:opacity-50 cursor-pointer"
+// //           >
+// //             Back
+// //           </button>
+
+// //           <Button
+// //             onClick={step === totalSteps ? handleSubmit : handleNext}
+// //             disabled={isSubmitting}
+// //             className="px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary/80 disabled:opacity-70"
+// //           >
+// //             {isSubmitting
+// //               ? "Publishing..."
+// //               : step === totalSteps
+// //               ? "Publish Space"
+// //               : "Next"}
+// //           </Button>
+// //         </div>
+// //       </div>
+// //     </div>
+// //   );
+// // };
+
+// // export default CreateSpace;
+
+// import React, { useState, useEffect, useRef } from "react";
+// import { Link, useNavigate } from "react-router-dom";
+// import { toast, ToastContainer } from "react-toastify";
+// import { apiFetch } from "../utils/api";
+// import ProgressBar from "../components/ProgressBar";
+// import Input from "../components/Input";
+// import Button from "../components/Button";
+// import ExtraInput from "../components/ExtraInput";
+// import ImageUploadPopup from "../components/ImageUploadPopup";
+// import ImageReorder from "../components/ImageReorder";
+// import YesNoToggle from "../components/YesNoToggle";
+// import Counter from "../components/Counter";
+// import MapComponent from "../components/MapComponent";
+// import Notification from "../components/Notification";
+// import { Autocomplete, useLoadScript } from "@react-google-maps/api";
+// import { Home, Bell, Compass, Save, FileText } from "lucide-react";
+// import { IoIosCheckmarkCircleOutline } from "react-icons/io";
+// import CountrySelect from "../components/CountrySelect";
+
+// const CreateSpace = () => {
+//   const navigate = useNavigate();
+//   const [step, setStep] = useState(1);
+//   const totalSteps = 11; // +1 for subcategory step
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+//   const [isSavingDraft, setIsSavingDraft] = useState(false);
+//   const [selected, setSelected] = useState("");
+//   const [errors, setErrors] = useState({});
+//   const [apiKey] = useState(import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "");
+//   const [categories, setCategories] = useState([]);
+//   const [showModal, setShowModal] = useState(false);
+//   const [countdown, setCountdown] = useState(3);
+//   const [currentUser, setCurrentUser] = useState("");
+//   const [hasDraft, setHasDraft] = useState(false);
+//   const [showDraftPrompt, setShowDraftPrompt] = useState(false);
+//   const [draftId, setDraftId] = useState("");
+//   const libraries = ["places"];
+
+//   const [spaceData, setSpaceData] = useState({
+//     title: "",
+//     description: "",
+//     location: { address: "", city: "", country: "" },
+//     coordinates: { latitude: null, longitude: null },
+//     features: {
+//       wifi: true,
+//       restrooms: 1,
+//       sizeSQM: null,
+//       seatCapacity: null,
+//       plug: false,
+//       sound: false,
+//       lockable: false,
+//       washbasin: false,
+//       clinicalSurface: false,
+//       wasteBin: false,
+//       meetCQCStandards: false,
+//       electricBed: false,
+//       adjustableStool: false,
+//       trolley: false,
+//       magnifyingLamp: false,
+//       storage: false,
+//       mirror: false,
+//       bathroom: 1,
+//       consultationArea: false,
+//       examinationCouch: false,
+//       sinkCounter: false,
+//       adjustableEnvironment: false,
+//       sharpsBin: false,
+//       naturalLight: false,
+//       dirtyTowelShoot: false,
+//       cqcCompliance: false,
+//     },
+//     extras: [],
+//     imageFiles: [],
+//     imagePreviews: [],
+//     serverImages: [],
+//     removedImages: [],
+//     coverImage: null,
+//     category: "",
+//     subcategory: "", // ← NEW
+//     price: null,
+//     pricing: {
+//       pricingType: "DAILY",
+//       weekdayPrice: null,
+//       hourlyPrice: null,
+//       preTaxPrice: null,
+//       discounts: {
+//         newListing: true,
+//         lastMinute: false,
+//         weekly: false,
+//         monthly: false,
+//       },
+//     },
+//     bookingSettings: {
+//       approveFirstFive: false,
+//       instantBook: true,
+//     },
+//   });
+
+//   const [showPopup, setShowPopup] = useState(false);
+
+//   const { isLoaded } = useLoadScript({
+//     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+//     libraries,
+//   });
+
+//   const autocompleteRef = useRef(null);
+
+//   const onLoad = (autocomplete) => {
+//     autocompleteRef.current = autocomplete;
+//   };
+
+//   const onPlaceChanged = () => {
+//     if (!autocompleteRef.current) return;
+
+//     const place = autocompleteRef.current.getPlace();
+//     if (!place.address_components) return;
+
+//     let streetNumber = "";
+//     let route = "";
+//     let city = "";
+//     let country = "";
+
+//     place.address_components.forEach((component) => {
+//       const types = component.types;
+//       if (types.includes("street_number")) streetNumber = component.long_name;
+//       if (types.includes("route")) route = component.long_name;
+//       if (
+//         types.includes("locality") ||
+//         types.includes("postal_town") ||
+//         types.includes("administrative_area_level_2")
+//       ) {
+//         if (!city) city = component.long_name;
+//       }
+//       if (types.includes("country")) country = component.short_name;
+//     });
+
+//     const address = [streetNumber, route].filter(Boolean).join(" ");
+
+//     setSpaceData((prev) => ({
+//       ...prev,
+//       location: { ...prev.location, address, city, country },
+//     }));
+//   };
+
+//   // ─── Helper: does the currently selected category have subcategories? ─────────
+//   const selectedCategoryHasSubcategories = () => {
+//     const cat = categories.find((c) => c._id === spaceData.category);
+//     return Array.isArray(cat?.subcategory) && cat.subcategory.length > 0;
+//   };
+
+//   useEffect(() => {
+//     if (step > totalSteps) {
+//       handleSubmit();
+//     }
+//     if (
+//       step === 4 &&
+//       !spaceData.coordinates.latitude &&
+//       !spaceData.coordinates.longitude
+//     ) {
+//       fetchCoordinates();
+//     }
+//   }, [step]);
+
+//   useEffect(() => {
+//     const fetchUser = async () => {
+//       try {
+//         const user = await apiFetch({
+//           endpoint: "/auth/me",
+//           method: "GET",
+//           credentials: "include",
+//         });
+//         if (!user) {
+//           navigate("/login");
+//           return;
+//         }
+//         setCurrentUser(user._id);
+//       } catch (err) {
+//         console.error("Failed to fetch user:", err);
+//       }
+//     };
+//     fetchUser();
+//     checkForDraft();
+//   }, []);
+
+//   const checkForDraft = async () => {
+//     try {
+//       const response = await apiFetch({ endpoint: "/drafts", method: "GET" });
+//       if (response.success && response.draft) {
+//         setHasDraft(true);
+//         setDraftId(response.draft._id);
+//         setShowDraftPrompt(true);
+//       }
+//     } catch (err) {
+//       console.log("No draft found");
+//     }
+//   };
+
+//   // ─── Save Draft ───────────────────────────────────────────────────────────────
+//   const saveDraft = async (overrideData = null, overrideStep = null) => {
+//     setIsSavingDraft(true);
+
+//     const data = overrideData || spaceData;
+//     const currentStep = overrideStep ?? step;
+
+//     try {
+//       const token = localStorage.getItem("token");
+
+//       if (!token) {
+//         const localDraft = {
+//           title: data.title,
+//           description: data.description,
+//           location: data.location,
+//           coordinates: data.coordinates,
+//           features: data.features,
+//           extras: data.extras,
+//           category: data.category || null,
+//           subcategory: data.subcategory || null, // ← NEW
+//           pricing: data.pricing,
+//           bookingSettings: data.bookingSettings,
+//           currentStep,
+//           imagePreviews: data.imagePreviews || [],
+//           savedAt: new Date().toISOString(),
+//         };
+//         localStorage.setItem("vencome_draft", JSON.stringify(localDraft));
+//         setHasDraft(true);
+//         toast.success(
+//           "Draft saved locally. Sign in to save images and publish."
+//         );
+//         return;
+//       }
+
+//       const formData = new FormData();
+//       formData.append(
+//         "data",
+//         JSON.stringify({
+//           title: data.title,
+//           description: data.description,
+//           location: data.location,
+//           coordinates: data.coordinates,
+//           features: data.features,
+//           extras: data.extras,
+//           category: data.category || null,
+//           subcategory: data.subcategory || null, // ← NEW
+//           pricing: data.pricing,
+//           bookingSettings: data.bookingSettings,
+//           currentStep,
+//         })
+//       );
+
+//       data.imageFiles?.forEach((file) => formData.append("images", file));
+//       if (data.removedImages?.length)
+//         formData.append("removedImages", JSON.stringify(data.removedImages));
+
+//       const res = await fetch(`${import.meta.env.VITE_API_URL}/drafts/save`, {
+//         method: "POST",
+//         headers: { Authorization: `Bearer ${token}` },
+//         body: formData,
+//         credentials: "include",
+//       });
+
+//       const resData = await res.json();
+//       if (!res.ok) throw new Error(resData.message || "Failed to save draft");
+
+//       if (resData.draft.images) {
+//         const serverImagePreviews = resData.draft.images.map(
+//           (img) => `${import.meta.env.VITE_API_URL}/${img.url}`
+//         );
+//         setSpaceData((prev) => ({
+//           ...prev,
+//           serverImages: resData.draft.images,
+//           imagePreviews: serverImagePreviews,
+//           imageFiles: [],
+//           removedImages: [],
+//         }));
+//       }
+
+//       localStorage.removeItem("vencome_draft");
+//       setHasDraft(true);
+//       setDraftId(resData.draft._id);
+//       toast.success("Draft saved successfully!");
+//     } catch (err) {
+//       console.error("Save draft error:", err);
+//       toast.error(err.message || "Failed to save draft");
+//     } finally {
+//       setIsSavingDraft(false);
+//     }
+//   };
+
+//   // ─── Load Draft ───────────────────────────────────────────────────────────────
+//   const loadDraft = async () => {
+//     try {
+//       const token = localStorage.getItem("token");
+
+//       if (!token) {
+//         const raw = localStorage.getItem("vencome_draft");
+//         if (!raw) {
+//           toast.info("No local draft found.");
+//           return;
+//         }
+//         const draft = JSON.parse(raw);
+//         setSpaceData((prev) => ({
+//           ...prev,
+//           title: draft.title || "",
+//           description: draft.description || "",
+//           location: draft.location || { address: "", city: "", country: "" },
+//           coordinates: draft.coordinates || { latitude: null, longitude: null },
+//           features: { ...prev.features, ...draft.features },
+//           extras: draft.extras || [],
+//           category: draft.category || "",
+//           subcategory: draft.subcategory || "", // ← NEW
+//           pricing: { ...prev.pricing, ...draft.pricing },
+//           bookingSettings: {
+//             ...prev.bookingSettings,
+//             ...draft.bookingSettings,
+//           },
+//           imagePreviews: draft.imagePreviews || [],
+//           imageFiles: [],
+//           serverImages: [],
+//           removedImages: [],
+//         }));
+//         setStep(draft.currentStep || 1);
+//         setSelected(draft.category || "");
+//         setShowDraftPrompt(false);
+//         toast.success("Local draft loaded. Sign in to restore images.");
+//         return;
+//       }
+
+//       const raw = localStorage.getItem("vencome_draft");
+//       if (raw) {
+//         await migrateLocalDraft();
+//         setShowDraftPrompt(false);
+//         return;
+//       }
+
+//       const response = await apiFetch({ endpoint: "/drafts", method: "GET" });
+//       if (response.success && response.draft) {
+//         const draft = response.draft;
+//         const serverImages =
+//           draft.images?.map((img) => ({
+//             filename: img.filename,
+//             url: img.url,
+//           })) || [];
+
+//         setSpaceData({
+//           title: draft.title || "",
+//           description: draft.description || "",
+//           location: draft.location || { address: "", city: "", country: "" },
+//           coordinates: draft.coordinates || { latitude: null, longitude: null },
+//           features: { ...spaceData.features, ...draft.features },
+//           extras: draft.extras || [],
+//           imageFiles: [],
+//           serverImages,
+//           removedImages: [],
+//           coverImage: serverImages[0] || null,
+//           category: draft.category?._id || draft.category || "",
+//           subcategory: draft.subcategory?._id || draft.subcategory || "", // ← NEW
+//           pricing: { ...spaceData.pricing, ...draft.pricing },
+//           bookingSettings: {
+//             ...spaceData.bookingSettings,
+//             ...draft.bookingSettings,
+//           },
+//         });
+
+//         setStep(draft.currentStep || 1);
+//         setSelected(draft.categories || "");
+//         setShowDraftPrompt(false);
+//         toast.success("Draft loaded successfully!");
+//       }
+//     } catch (err) {
+//       console.error("Failed to load draft:", err);
+//       toast.error("Failed to load draft");
+//     }
+//   };
+
+//   const migrateLocalDraft = async () => {
+//     const raw = localStorage.getItem("vencome_draft");
+//     if (!raw) return;
+
+//     try {
+//       const draft = JSON.parse(raw);
+//       const migratedData = {
+//         title: draft.title || "",
+//         description: draft.description || "",
+//         location: draft.location || { address: "", city: "", country: "" },
+//         coordinates: draft.coordinates || { latitude: null, longitude: null },
+//         features: { ...spaceData.features, ...draft.features },
+//         extras: draft.extras || [],
+//         category: draft.category || null,
+//         subcategory: draft.subcategory || null, // ← NEW
+//         pricing: { ...spaceData.pricing, ...draft.pricing },
+//         bookingSettings: {
+//           ...spaceData.bookingSettings,
+//           ...draft.bookingSettings,
+//         },
+//         imageFiles: [],
+//         serverImages: [],
+//         removedImages: [],
+//         imagePreviews: draft.imagePreviews || [],
+//       };
+
+//       setSpaceData((prev) => ({ ...prev, ...migratedData }));
+//       setStep(draft.currentStep || 1);
+//       setSelected(draft.category || "");
+
+//       await saveDraft(migratedData, draft.currentStep || 1);
+//       localStorage.removeItem("vencome_draft");
+//       toast.success("Your draft has been restored!");
+//     } catch (err) {
+//       console.error("Failed to migrate local draft:", err);
+//       toast.error("Failed to restore your draft. Please try again.");
+//     }
+//   };
+
+//   useEffect(() => {
+//     return () => {
+//       spaceData.imagePreviews.forEach((url) => {
+//         if (url.startsWith("blob:")) URL.revokeObjectURL(url);
+//       });
+//     };
+//   }, []);
+
+//   useEffect(() => {
+//     const fetchCategories = async () => {
+//       try {
+//         const response = await apiFetch({
+//           endpoint: "/categories",
+//           method: "GET",
+//         });
+//         setCategories(response);
+//       } catch (err) {
+//         toast.error("Failed to load categories");
+//       }
+//     };
+//     fetchCategories();
+//   }, []);
+
+//   useEffect(() => {
+//     if (!hasDraft) return;
+//     migrateLocalDraft();
+//   }, [hasDraft]);
+
+//   // Generic change handler
+//   const handleChange = (e) => {
+//     const { name, value, type, checked } = e.target;
+//     setErrors((prev) => ({ ...prev, [name]: "" }));
+//     const val =
+//       type === "checkbox" ? checked : type === "number" ? Number(value) : value;
+
+//     if (name.includes(".")) {
+//       const [parent, child] = name.split(".");
+//       setSpaceData((prev) => ({
+//         ...prev,
+//         [parent]: { ...prev[parent], [child]: val },
+//       }));
+//     } else {
+//       setSpaceData((prev) => ({ ...prev, [name]: val }));
+//     }
+//   };
+
+//   const handleFeatureChange = (e) => {
+//     const { name, value } = e.target;
+//     const keys = name.split(".");
+//     setSpaceData((prev) => {
+//       const updated = { ...prev };
+//       let ref = updated;
+//       for (let i = 0; i < keys.length - 1; i++) ref = ref[keys[i]];
+//       ref[keys[keys.length - 1]] = value;
+//       return updated;
+//     });
+//   };
+
+//   const handleExtraChange = (index, updatedExtra) => {
+//     setSpaceData((prev) => ({
+//       ...prev,
+//       extras: prev.extras.map((extra, i) =>
+//         i === index ? updatedExtra : extra
+//       ),
+//     }));
+//   };
+
+//   const handleAddExtra = () => {
+//     setSpaceData((prev) => ({
+//       ...prev,
+//       extras: [...prev.extras, { name: "", price: 0 }],
+//     }));
+//   };
+
+//   const handleRemoveExtra = (index) => {
+//     setSpaceData((prev) => ({
+//       ...prev,
+//       extras: prev.extras.filter((_, i) => i !== index),
+//     }));
+//   };
+
+//   const handleImageUpload = (newImages) => {
+//     setErrors((prev) => ({ ...prev, images: "" }));
+//     const newPreviews = newImages.map((file) => URL.createObjectURL(file));
+//     setSpaceData((prev) => ({
+//       ...prev,
+//       imageFiles: [...(prev.imageFiles || []), ...newImages],
+//       imagePreviews: [...(prev.imagePreviews || []), ...newPreviews],
+//       coverImage: prev.coverImage || newPreviews[0] || null,
+//     }));
+//   };
+
+//   const handleImageReorder = (reorderedPreviews) => {
+//     setSpaceData((prev) => {
+//       const oldPreviews = prev.imagePreviews;
+//       const serverImages = prev.serverImages || [];
+//       const imageFiles = prev.imageFiles || [];
+//       const serverPreviews = oldPreviews.slice(0, serverImages.length);
+//       const filePreviews = oldPreviews.slice(serverImages.length);
+//       const reorderedServerImages = [];
+//       const reorderedFiles = [];
+
+//       reorderedPreviews.forEach((preview) => {
+//         const serverIdx = serverPreviews.indexOf(preview);
+//         if (serverIdx !== -1) {
+//           reorderedServerImages.push(serverImages[serverIdx]);
+//         } else {
+//           const fileIdx = filePreviews.indexOf(preview);
+//           if (fileIdx !== -1) reorderedFiles.push(imageFiles[fileIdx]);
+//         }
+//       });
+
+//       return {
+//         ...prev,
+//         serverImages: reorderedServerImages,
+//         imageFiles: reorderedFiles,
+//         imagePreviews: reorderedPreviews,
+//         coverImage: reorderedPreviews[0] || null,
+//       };
+//     });
+//   };
+
+//   const handleDiscountChange = (e) => {
+//     const { name, checked } = e.target;
+//     setSpaceData((prev) => ({
+//       ...prev,
+//       pricing: {
+//         ...prev.pricing,
+//         discounts: { ...prev.pricing.discounts, [name]: checked },
+//       },
+//     }));
+//   };
+
+//   // ─── Validate current step ────────────────────────────────────────────────────
+//   const validateStep = () => {
+//     const newErrors = {};
+
+//     switch (step) {
+//       case 1:
+//         if (!spaceData.category)
+//           newErrors.category = "Please select a category";
+//         break;
+
+//       case 2:
+//         if (!spaceData.title.trim()) {
+//           newErrors.title = "Space name is required";
+//         } else if (spaceData.title.trim().length < 5) {
+//           newErrors.title = "Title must be at least 5 characters long";
+//         }
+//         if (!spaceData.description.trim()) {
+//           newErrors.description = "Description is required";
+//         } else if (spaceData.description.trim().length < 50) {
+//           newErrors.description =
+//             "Description must be at least 50 characters long";
+//         }
+//         break;
+
+//       case 3:
+//         if (!spaceData.location.address.trim())
+//           newErrors["location.address"] = "Address is required";
+//         if (!spaceData.location.city.trim())
+//           newErrors["location.city"] = "City is required";
+//         if (!spaceData.location.country.trim())
+//           newErrors["location.country"] = "Country is required";
+//         break;
+
+//       case 4:
+//         if (!spaceData.coordinates.latitude || !spaceData.coordinates.longitude)
+//           newErrors.coordinates = "Please pin a location on the map";
+//         break;
+
+//       // ── Step 5: Subcategory (only reached when category has subcategories) ──
+//       case 5:
+//         if (!spaceData.subcategory)
+//           newErrors.subcategory = "Please select a subcategory";
+//         break;
+
+//       // ── Step 6: Features & Extras (was step 5) ───────────────────────────────
+//       case 6:
+//         if (!spaceData.features.sizeSQM || spaceData.features.sizeSQM <= 5)
+//           newErrors["features.sizeSQM"] = "Size must be greater than 5";
+//         if (
+//           !spaceData.features.seatCapacity ||
+//           spaceData.features.seatCapacity <= 0
+//         )
+//           newErrors["features.seatCapacity"] =
+//             "Seat capacity must be greater than 0";
+//         if (spaceData.features.restrooms < 0)
+//           newErrors["features.restrooms"] = "Restrooms cannot be negative";
+//         spaceData.extras.forEach((extra, index) => {
+//           if (!extra.name || !extra.name.trim())
+//             newErrors[`extras.${index}.name`] = "Extra name is required";
+//           if (extra.price != null && extra.price < 0)
+//             newErrors[`extras.${index}.price`] = "Price cannot be negative";
+//         });
+//         break;
+
+//       // ── Step 7: Photos (was step 6) ──────────────────────────────────────────
+//       case 7:
+//         if (
+//           spaceData.imageFiles.length === 0 &&
+//           (!spaceData.serverImages || spaceData.serverImages.length === 0)
+//         )
+//           newErrors.images = "At least one photo is required";
+//         break;
+
+//       // ── Step 9: Pricing (was step 8) ─────────────────────────────────────────
+//       case 9:
+//         if (spaceData.pricing.pricingType === "DAILY") {
+//           if (
+//             !spaceData.pricing.weekdayPrice ||
+//             spaceData.pricing.weekdayPrice <= 0
+//           )
+//             newErrors.weekdayPrice = "Enter a valid daily price";
+//         } else if (spaceData.pricing.pricingType === "HOURLY") {
+//           if (
+//             !spaceData.pricing.hourlyPrice ||
+//             spaceData.pricing.hourlyPrice <= 0
+//           )
+//             newErrors.hourlyPrice = "Enter a valid hourly price";
+//         }
+//         break;
+
+//       default:
+//         break;
+//     }
+
+//     setErrors(newErrors);
+//     if (Object.keys(newErrors).length > 0)
+//       toast.error("Please fix the errors before continuing");
+//     return Object.keys(newErrors).length === 0;
+//   };
+
+//   const fetchCoordinates = async () => {
+//     try {
+//       const params = new URLSearchParams({
+//         address: spaceData.location.address,
+//         city: spaceData.location.city,
+//         country: spaceData.location.country,
+//       });
+//       const response = await fetch(
+//         `${import.meta.env.VITE_API_URL}/geocode?${params.toString()}`
+//       );
+//       if (!response.ok) throw new Error("Failed to fetch coordinates");
+//       const data = await response.json();
+//       setSpaceData((prev) => ({
+//         ...prev,
+//         coordinates: { latitude: data.latitude, longitude: data.longitude },
+//       }));
+//     } catch (err) {
+//       console.error("Failed to fetch coordinates:", err);
+//       setErrors((prev) => ({
+//         ...prev,
+//         coordinates: "Unable to locate this address on the map",
+//       }));
+//     }
+//   };
+
+//   // ─── Next: skip step 5 when no subcategories ─────────────────────────────────
+//   const handleNext = () => {
+//     if (validateStep()) {
+//       setErrors({});
+//       setStep((prev) => {
+//         const next = prev + 1;
+//         // Skip subcategory step if category has none
+//         if (next === 5 && !selectedCategoryHasSubcategories()) return next + 1;
+//         return next;
+//       });
+//     }
+//   };
+
+//   // ─── Back: mirror the skip ────────────────────────────────────────────────────
+//   const handleBack = () => {
+//     setErrors({});
+//     setStep((prev) => {
+//       const prevStep = prev - 1;
+//       // Skip subcategory step going backwards if category has none
+//       if (prevStep === 5 && !selectedCategoryHasSubcategories())
+//         return Math.max(1, prevStep - 1);
+//       return Math.max(1, prevStep);
+//     });
+//   };
+
+//   // ─── Submit ───────────────────────────────────────────────────────────────────
+//   const handleSubmit = async () => {
+//     if (!validateStep()) return;
+
+//     setIsSubmitting(true);
+//     try {
+//       const formData = new FormData();
+//       formData.append("title", spaceData.title);
+//       formData.append("description", spaceData.description);
+//       formData.append("category", spaceData.category);
+//       formData.append("subcategory", spaceData.subcategory || ""); // ← NEW
+//       formData.append("pricing", JSON.stringify(spaceData.pricing));
+//       formData.append("features", JSON.stringify(spaceData.features));
+//       formData.append(
+//         "bookingSettings",
+//         JSON.stringify(spaceData.bookingSettings)
+//       );
+//       formData.append("location", JSON.stringify(spaceData.location));
+//       formData.append("coordinates", JSON.stringify(spaceData.coordinates));
+//       formData.append("extras", JSON.stringify(spaceData.extras || []));
+//       formData.append("draftId", draftId);
+
+//       spaceData.imageFiles.forEach((file) => formData.append("images", file));
+//       formData.append("removedImages", JSON.stringify(spaceData.removedImages));
+
+//       const token = localStorage.getItem("token");
+//       if (!token) {
+//         navigate("/login");
+//         saveDraft();
+//         return;
+//       }
+
+//       const res = await fetch(`${import.meta.env.VITE_API_URL}/properties`, {
+//         method: "POST",
+//         headers: { Authorization: `Bearer ${token}` },
+//         body: formData,
+//         credentials: "include",
+//       });
+
+//       if (res.status === 401) {
+//         localStorage.removeItem("token");
+//         saveDraft();
+//         navigate("/login");
+//         return;
+//       }
+//       if (res.status === 403) {
+//         toast.error("Please complete your profile before creating a property");
+//         saveDraft();
+//         return;
+//       }
+
+//       const data = await res.json();
+//       if (!res.ok) throw new Error(data.message || "Failed to create space");
+
+//       toast.success("Your space has been published successfully!");
+//       setShowModal(true);
+//       const timer = setInterval(() => {
+//         setCountdown((c) => {
+//           if (c <= 1) {
+//             clearInterval(timer);
+//             window.location.href = "/";
+//           }
+//           return c - 1;
+//         });
+//       }, 1000);
+//     } catch (err) {
+//       console.error(err);
+//       toast.error(err.message || "Something went wrong. Please try again.");
+//     } finally {
+//       setIsSubmitting(false);
+//     }
+//   };
+
+//   const treatmentRoomFeatures = [
+//     {
+//       key: "plug",
+//       title: "Plug sockets",
+//       description: "Guests have access to electrical power outlets",
+//     },
+//     {
+//       key: "sound",
+//       title: "Sound Insulation",
+//       description: "Designed to minimize external and internal noise",
+//     },
+//     {
+//       key: "lockable",
+//       title: "Lockable door/storage",
+//       description: "Provides secure lockable storage or doors",
+//     },
+//     {
+//       key: "washbasin",
+//       title: "Washbasin",
+//       description: "Dedicated basin for washing and daily use",
+//     },
+//     {
+//       key: "clinicalSurface",
+//       title: "Clinical grade, wipeable surfaces",
+//       description:
+//         "Durable, non-porous surfaces designed for effective cleaning",
+//     },
+//     {
+//       key: "wasteBin",
+//       title: "Sharp bin & clinical waste",
+//       description:
+//         "Designated containers for sharps and medical waste disposal",
+//     },
+//     {
+//       key: "meetCQCStandards",
+//       title: "Meet CQC / local health authority standards",
+//       description:
+//         "Meets all required standards set by CQC and local health authorities",
+//     },
+//     {
+//       key: "electricBed",
+//       title: "Electric or hydraulic treatment bed",
+//       description:
+//         "Treatment bed that can be raised, lowered, and tilted electronically or hydraulically",
+//     },
+//     {
+//       key: "adjustableStool",
+//       title: "Adjustable stool for practitioners",
+//       description: "Ergonomic stool that can be adjusted for practitioner use",
+//     },
+//     {
+//       key: "trolley",
+//       title: "Clinical trolley",
+//       description:
+//         "Trolley designed to store and transport clinical instruments",
+//     },
+//     {
+//       key: "magnifyingLamp",
+//       title: "Magnifying lamp or ring",
+//       description:
+//         "Magnifying lamp or ring to enhance visibility during treatments",
+//     },
+//     {
+//       key: "storage",
+//       title: "Built-in storage cabinets or drawers",
+//       description:
+//         "Built-in storage solutions to keep supplies neatly arranged",
+//     },
+//     {
+//       key: "mirror",
+//       title: "Mirror for good facial lighting",
+//       description:
+//         "Well-lit mirror designed to enhance visibility for facial care",
+//     },
+//   ];
+
+//   const medicalFeatures = [
+//     {
+//       key: "consultationArea",
+//       title: "Consultation area with desk and chairs",
+//       description:
+//         "Providing exceptional comfort for patient evaluations and discussions with healthcare professionals.",
+//     },
+//     {
+//       key: "examinationCouch",
+//       title: "Examination couch with draw around curtain",
+//       description: "For added privacy during patient consultations.",
+//     },
+//     {
+//       key: "sinkCounter",
+//       title: "Sink & counter space",
+//       description: "To ensure hygienic and efficient medical procedures.",
+//     },
+//     {
+//       key: "adjustableEnvironment",
+//       title: "Adjustable room environment",
+//       description: "Air filtration, temperature control and lighting.",
+//     },
+//     {
+//       key: "sharpsBin",
+//       title: "Sharps disposable bin",
+//       description:
+//         "Providing a secure and hygienic solution for the proper disposal of medical sharps.",
+//     },
+//     {
+//       key: "naturalLight",
+//       title: "Natural light",
+//       description:
+//         "Enhances the overall ambiance and promotes a healing, calming environment for patients.",
+//     },
+//     {
+//       key: "dirtyTowelShoot",
+//       title: "In-built dirty towel disposal chute",
+//       description:
+//         "Promoting a clean and sterile environment for patients and staff.",
+//     },
+//     {
+//       key: "cqcCompliance",
+//       title: "Fully CQC compliant",
+//       description:
+//         "We are not CQC registered, but the space is fully compliant so basic procedures can be carried out by practitioners with their own CQC approval.",
+//     },
+//   ];
+
+//   const allPreviews = [
+//     ...(spaceData.serverImages || [])
+//       .filter((img) => !(spaceData.removedImages || []).includes(img.filename))
+//       .map((img) => img.url),
+//     ...(spaceData.imageFiles || []).map((file) => URL.createObjectURL(file)),
+//   ];
+
+//   // ─── Derived data for subcategory step ───────────────────────────────────────
+//   const selectedCategory = categories.find((c) => c._id === spaceData.category);
+//   const subcategories = selectedCategory?.subcategory || [];
+
+//   return (
+//     <div className="min-h-[calc(100vh-65px)] flex flex-col justify-between bg-gray-50 p-4 sm:p-8">
+//       <div className="absolute">
+//         <ToastContainer />
+//       </div>
+
+//       {showDraftPrompt && (
+//         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+//           <div className="bg-white rounded-2xl p-8 max-w-md w-full">
+//             <div className="flex items-center justify-center mb-4">
+//               <FileText size={48} className="text-primary" />
+//             </div>
+//             <h2 className="text-2xl font-bold mb-2 text-center">
+//               Draft Found!
+//             </h2>
+//             <p className="text-gray-600 mb-6 text-center">
+//               You have an unfinished listing. Would you like to continue from
+//               where you left off?
+//             </p>
+//             <div className="flex gap-3">
+//               <button
+//                 onClick={() => setShowDraftPrompt(false)}
+//                 className="flex-1 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50"
+//               >
+//                 Start Fresh
+//               </button>
+//               <button
+//                 onClick={loadDraft}
+//                 className="flex-1 px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/80"
+//               >
+//                 Use Draft
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <div className="container mx-auto">
+//         {/* Save Draft Button */}
+//         <div className="absolute right-18 flex justify-end mb-4">
+//           <button
+//             onClick={saveDraft}
+//             disabled={isSavingDraft}
+//             className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg disabled:opacity-50"
+//           >
+//             <Save size={18} />
+//             {isSavingDraft ? "Saving..." : "Save Draft"}
+//           </button>
+//         </div>
+
+//         {/* ── Step 1: Category ─────────────────────────────────────────────────── */}
+//         {step === 1 && (
+//           <div>
+//             {errors.category && (
+//               <div className="mt-6">
+//                 <Notification message={errors.category} type="danger" />
+//               </div>
+//             )}
+//             <h2 className="text-4xl my-4">Category</h2>
+//             <p className="text-gray-600 mb-4">What type of space is this?</p>
+//             <div className="grid grid-cols-2 gap-4">
+//               {categories.map((cat) => (
+//                 <label
+//                   key={cat._id}
+//                   className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+//                     spaceData.category === cat._id
+//                       ? "border-primary bg-blue-50"
+//                       : "border-gray-200 hover:border-gray-300"
+//                   }`}
+//                   onClick={() => {
+//                     setSpaceData((prev) => ({
+//                       ...prev,
+//                       category: cat._id,
+//                       subcategory: "", // reset subcategory when category changes
+//                     }));
+//                     setErrors((prev) => ({ ...prev, category: "" }));
+//                   }}
+//                 >
+//                   <span className="font-medium text-gray-800">{cat.name}</span>
+//                   <div
+//                     className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+//                       spaceData.category === cat._id
+//                         ? "border-primary"
+//                         : "border-gray-300"
+//                     }`}
+//                   >
+//                     {spaceData.category === cat._id && (
+//                       <div className="w-3 h-3 bg-primary rounded-full" />
+//                     )}
+//                   </div>
+//                 </label>
+//               ))}
+//             </div>
+//           </div>
+//         )}
+
+//         {/* ── Step 2: Title & Description ──────────────────────────────────────── */}
+//         {step === 2 && (
+//           <div>
+//             <h2 className="text-4xl my-4">Publish your space</h2>
+//             <Input
+//               label="Event space name"
+//               name="title"
+//               value={spaceData.title}
+//               onChange={handleChange}
+//               error={errors.title}
+//               required
+//             />
+//             <label className="block text-sm font-medium text-gray-700 mt-4">
+//               Description
+//             </label>
+//             <textarea
+//               name="description"
+//               value={spaceData.description || ""}
+//               onChange={handleChange}
+//               className={`mt-1 p-2 w-full h-48 border rounded-lg focus:ring-primary focus:border-primary ${
+//                 errors.description ? "border-red-500" : "border-gray-300"
+//               }`}
+//             />
+//             {errors.description && (
+//               <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+//             )}
+//           </div>
+//         )}
+
+//         {/* ── Step 3: Location ─────────────────────────────────────────────────── */}
+//         {step === 3 && isLoaded && (
+//           <div>
+//             <h2 className="text-4xl my-4">Location</h2>
+//             <Autocomplete
+//               onLoad={onLoad}
+//               onPlaceChanged={onPlaceChanged}
+//               options={{
+//                 fields: ["address_components", "geometry", "formatted_address"],
+//                 types: ["address"],
+//               }}
+//             >
+//               <Input
+//                 placeholder="Address"
+//                 defaultValue={spaceData.location.address}
+//                 required
+//               />
+//             </Autocomplete>
+//             {errors["location.address"] && (
+//               <p className="text-red-500 text-sm mt-1">
+//                 {errors["location.address"]}
+//               </p>
+//             )}
+//             <Input
+//               placeholder="City"
+//               name="location.city"
+//               value={spaceData.location.city}
+//               onChange={handleChange}
+//               required
+//             />
+//             {errors["location.city"] && (
+//               <p className="text-red-500 text-sm mt-1">
+//                 {errors["location.city"]}
+//               </p>
+//             )}
+//             <CountrySelect
+//               value={spaceData.location.country}
+//               onChange={handleChange}
+//               required
+//             />
+//             {errors["location.country"] && (
+//               <p className="text-red-500 text-sm mt-1">
+//                 {errors["location.country"]}
+//               </p>
+//             )}
+//           </div>
+//         )}
+
+//         {/* ── Step 4: Confirm Location / Map ───────────────────────────────────── */}
+//         {step === 4 && (
+//           <div>
+//             <h2 className="text-4xl my-4">Confirm Location</h2>
+//             <p className="mb-4">
+//               Pin your location on the map or adjust the marker below
+//             </p>
+//             <div className="flex gap-4">
+//               <div className="mb-4">
+//                 <input
+//                   type="number"
+//                   step="0.000001"
+//                   name="coordinates.latitude"
+//                   value={spaceData.coordinates.latitude || ""}
+//                   onChange={handleChange}
+//                   placeholder="Latitude"
+//                   className={`mt-1 p-2 w-full border rounded-lg focus:ring-primary focus:border-primary ${
+//                     errors.latitude ? "border-red-500" : "border-gray-300"
+//                   }`}
+//                 />
+//                 {errors.latitude && (
+//                   <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>
+//                 )}
+//               </div>
+//               <div className="mb-4">
+//                 <input
+//                   type="number"
+//                   step="0.000001"
+//                   name="coordinates.longitude"
+//                   value={spaceData.coordinates.longitude || ""}
+//                   onChange={handleChange}
+//                   placeholder="Longitude"
+//                   className={`mt-1 p-2 w-full border rounded-lg focus:ring-primary focus:border-primary ${
+//                     errors.longitude ? "border-red-500" : "border-gray-300"
+//                   }`}
+//                 />
+//                 {errors.longitude && (
+//                   <p className="text-red-500 text-sm mt-1">
+//                     {errors.longitude}
+//                   </p>
+//                 )}
+//               </div>
+//             </div>
+//             <div className="w-full h-[350px] md:h-[400px] border border-gray-200 rounded-lg mt-4">
+//               <MapComponent
+//                 coordinates={spaceData.coordinates}
+//                 onCoordinatesChange={(lat, lng) =>
+//                   setSpaceData((prev) => ({
+//                     ...prev,
+//                     coordinates: { latitude: lat, longitude: lng },
+//                   }))
+//                 }
+//               />
+//             </div>
+//           </div>
+//         )}
+
+//         {/* ── Step 5: Subcategory (NEW — only rendered when category has subs) ── */}
+//         {step === 5 && (
+//           <div>
+//             {errors.subcategory && (
+//               <div className="mt-6">
+//                 <Notification message={errors.subcategory} type="danger" />
+//               </div>
+//             )}
+//             <h2 className="text-4xl my-4">Subcategory</h2>
+//             <p className="text-gray-600 mb-4">
+//               Choose the option that best describes your space within{" "}
+//               <span className="font-medium text-gray-800">
+//                 {selectedCategory?.name}
+//               </span>
+//               .
+//             </p>
+//             <div className="grid grid-cols-2 gap-4">
+//               {subcategories.map((sub) => {
+//                 const subId = sub._id || sub;
+//                 const subName = sub.name || sub;
+//                 console.log(sub);
+//                 return (
+//                   <label
+//                     key={subId}
+//                     className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+//                       spaceData.subcategory === subId
+//                         ? "border-primary bg-blue-50"
+//                         : "border-gray-200 hover:border-gray-300"
+//                     }`}
+//                     onClick={() => {
+//                       setSpaceData((prev) => ({ ...prev, subcategory: subId }));
+//                       setErrors((prev) => ({ ...prev, subcategory: "" }));
+//                     }}
+//                   >
+//                     <span className="font-medium text-gray-800">{subName}</span>
+//                     <div
+//                       className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+//                         spaceData.subcategory === subId
+//                           ? "border-primary"
+//                           : "border-gray-300"
+//                       }`}
+//                     >
+//                       {spaceData.subcategory === subId && (
+//                         <div className="w-3 h-3 bg-primary rounded-full" />
+//                       )}
+//                     </div>
+//                   </label>
+//                 );
+//               })}
+//             </div>
+//           </div>
+//         )}
+
+//         {/* ── Step 6: Features & Extras (was step 5) ───────────────────────────── */}
+//         {step === 6 && (
+//           <div className="h-[500px] md:h-[600px] overflow-y-scroll">
+//             <h2 className="text-4xl my-4">Features & Extras</h2>
+//             <div className="mb-4">
+//               <YesNoToggle
+//                 label="WiFi access"
+//                 subtitle="Guests get access to free internet connection"
+//                 name="features.wifi"
+//                 value={spaceData.features.wifi}
+//                 onChange={handleFeatureChange}
+//               />
+//               {errors["features.wifi"] && (
+//                 <p className="text-red-500 text-sm mt-1">
+//                   {errors["features.wifi"]}
+//                 </p>
+//               )}
+//               <Counter
+//                 label="Restrooms"
+//                 subtitle="Numbers of restrooms guests can use"
+//                 name="features.restrooms"
+//                 value={spaceData.features.restrooms}
+//                 onChange={handleFeatureChange}
+//               />
+//               {errors["features.restrooms"] && (
+//                 <p className="text-red-500 text-sm mt-1">
+//                   {errors["features.restrooms"]}
+//                 </p>
+//               )}
+
+//               {spaceData.category === "6915bd724f4f95223e555e57" && (
+//                 <>
+//                   <h2 className="text-xl font-semibold my-4">
+//                     Treatment Room Features
+//                   </h2>
+//                   {treatmentRoomFeatures.map(({ key, title, description }) => {
+//                     const isChecked = spaceData.features[key];
+//                     return (
+//                       <label
+//                         key={key}
+//                         className={`flex items-center justify-between p-4 mt-4 border rounded-xl cursor-pointer transition-all ${
+//                           isChecked
+//                             ? "border-primary bg-blue-50"
+//                             : "border-gray-200 hover:border-gray-300"
+//                         }`}
+//                         onClick={() =>
+//                           setSpaceData((prev) => ({
+//                             ...prev,
+//                             features: {
+//                               ...prev.features,
+//                               [key]: !prev.features[key],
+//                             },
+//                           }))
+//                         }
+//                       >
+//                         <div className="flex flex-col items-start">
+//                           <span className="font-medium text-gray-800">
+//                             {title}
+//                           </span>
+//                           <p className="text-sm text-gray-500 mt-1 text-left">
+//                             {description}
+//                           </p>
+//                         </div>
+//                         <div
+//                           className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+//                             isChecked
+//                               ? "border-primary bg-primary"
+//                               : "border-gray-300"
+//                           }`}
+//                         >
+//                           {isChecked && (
+//                             <svg
+//                               xmlns="http://www.w3.org/2000/svg"
+//                               className="w-3 h-3 text-white"
+//                               fill="none"
+//                               viewBox="0 0 24 24"
+//                               stroke="currentColor"
+//                               strokeWidth={3}
+//                             >
+//                               <path
+//                                 strokeLinecap="round"
+//                                 strokeLinejoin="round"
+//                                 d="M5 13l4 4L19 7"
+//                               />
+//                             </svg>
+//                           )}
+//                         </div>
+//                       </label>
+//                     );
+//                   })}
+//                 </>
+//               )}
+
+//               {spaceData.category === "6915bd724f4f95223e555e5b" && (
+//                 <>
+//                   <h2 className="text-xl font-semibold my-4">
+//                     Medical Room Features
+//                   </h2>
+//                   {medicalFeatures.map(({ key, title, description }) => {
+//                     const isChecked = spaceData.features[key];
+//                     return (
+//                       <label
+//                         key={key}
+//                         className={`flex items-center justify-between p-4 mt-4 border rounded-xl cursor-pointer transition-all ${
+//                           isChecked
+//                             ? "border-primary bg-blue-50"
+//                             : "border-gray-200 hover:border-gray-300"
+//                         }`}
+//                         onClick={() =>
+//                           setSpaceData((prev) => ({
+//                             ...prev,
+//                             features: {
+//                               ...prev.features,
+//                               [key]: !prev.features[key],
+//                             },
+//                           }))
+//                         }
+//                       >
+//                         <div className="flex flex-col items-start">
+//                           <span className="font-medium text-gray-800">
+//                             {title}
+//                           </span>
+//                           <p className="text-sm text-gray-500 mt-1 text-left">
+//                             {description}
+//                           </p>
+//                         </div>
+//                         <div
+//                           className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+//                             isChecked
+//                               ? "border-primary bg-primary"
+//                               : "border-gray-300"
+//                           }`}
+//                         >
+//                           {isChecked && (
+//                             <svg
+//                               xmlns="http://www.w3.org/2000/svg"
+//                               className="w-3 h-3 text-white"
+//                               fill="none"
+//                               viewBox="0 0 24 24"
+//                               stroke="currentColor"
+//                               strokeWidth={3}
+//                             >
+//                               <path
+//                                 strokeLinecap="round"
+//                                 strokeLinejoin="round"
+//                                 d="M5 13l4 4L19 7"
+//                               />
+//                             </svg>
+//                           )}
+//                         </div>
+//                       </label>
+//                     );
+//                   })}
+//                 </>
+//               )}
+
+//               <div className="mt-5 flex gap-6 items-center">
+//                 <Input
+//                   label="Size (SQM)"
+//                   name="features.sizeSQM"
+//                   type="number"
+//                   value={spaceData.features.sizeSQM}
+//                   onChange={handleFeatureChange}
+//                   classes="w-full"
+//                   error={errors["features.sizeSQM"]}
+//                 />
+//                 <Input
+//                   label="Seat Capacity"
+//                   name="features.seatCapacity"
+//                   type="number"
+//                   value={spaceData.features.seatCapacity}
+//                   onChange={handleFeatureChange}
+//                   classes="w-full"
+//                   error={errors["features.seatCapacity"]}
+//                 />
+//               </div>
+//             </div>
+//             <div>
+//               <h3 className="font-semibold mb-2">Extras</h3>
+//               {spaceData.extras.map((extra, index) => (
+//                 <ExtraInput
+//                   key={index}
+//                   extra={extra}
+//                   onChange={(updated) => handleExtraChange(index, updated)}
+//                   onRemove={() => handleRemoveExtra(index)}
+//                 />
+//               ))}
+//               <Button
+//                 onClick={handleAddExtra}
+//                 className="mt-2 bg-primary text-white px-4 py-2 rounded-lg"
+//               >
+//                 Add More
+//               </Button>
+//             </div>
+//           </div>
+//         )}
+
+//         {/* ── Step 7: Photos (was step 6) ──────────────────────────────────────── */}
+//         {step === 7 && (
+//           <div>
+//             <h2 className="text-4xl my-4">Add Photos</h2>
+//             <Button
+//               onClick={() => setShowPopup(true)}
+//               className="mb-4 bg-primary text-white px-4 py-2 rounded-lg"
+//             >
+//               Add Photos
+//             </Button>
+//             {errors.images && (
+//               <Notification message={errors.images} type="danger" />
+//             )}
+//             {allPreviews.length > 0 && (
+//               <div className="mt-4">
+//                 <div className="grid grid-cols-2 gap-3 pb-10 h-[450px] md:h-[510px] overflow-scroll">
+//                   {allPreviews.map((img, index) => (
+//                     <div
+//                       key={index}
+//                       className={`relative w-full overflow-hidden rounded-lg border border-gray-200 ${
+//                         index === 0 ? "col-span-2 h-80" : "h-64"
+//                       }`}
+//                     >
+//                       <img
+//                         src={
+//                           typeof img === "string"
+//                             ? img
+//                             : URL.createObjectURL(img)
+//                         }
+//                         alt={`Uploaded ${index + 1}`}
+//                         className="w-full h-full object-cover"
+//                       />
+//                     </div>
+//                   ))}
+//                 </div>
+//               </div>
+//             )}
+//             {showPopup && (
+//               <ImageUploadPopup
+//                 onClose={() => setShowPopup(false)}
+//                 onUpload={handleImageUpload}
+//               />
+//             )}
+//           </div>
+//         )}
+
+//         {/* ── Step 8: Rearrange Images (was step 7) ────────────────────────────── */}
+//         {step === 8 && (
+//           <div>
+//             <h2 className="text-4xl my-4">Rearrange Images</h2>
+//             <ImageReorder
+//               images={allPreviews}
+//               onReorder={handleImageReorder}
+//               onAddMore={() => setShowPopup(true)}
+//             />
+//           </div>
+//         )}
+
+//         {/* ── Step 9: Pricing (was step 8) ─────────────────────────────────────── */}
+//         {step === 9 && (
+//           <div className="text-center flex flex-col items-center p-6">
+//             <div className="flex items-center gap-6 mb-8">
+//               <button
+//                 type="button"
+//                 onClick={() =>
+//                   setSpaceData((prev) => ({
+//                     ...prev,
+//                     pricing: {
+//                       ...prev.pricing,
+//                       pricingType: "DAILY",
+//                       hourlyPrice: null,
+//                     },
+//                   }))
+//                 }
+//                 className={`px-5 py-2 rounded-full font-medium transition ${
+//                   spaceData.pricing.pricingType === "DAILY"
+//                     ? "bg-primary text-white"
+//                     : "bg-gray-200 text-gray-700"
+//                 }`}
+//               >
+//                 Daily
+//               </button>
+//               <button
+//                 type="button"
+//                 onClick={() =>
+//                   setSpaceData((prev) => ({
+//                     ...prev,
+//                     pricing: {
+//                       ...prev.pricing,
+//                       pricingType: "HOURLY",
+//                       weekdayPrice: null,
+//                     },
+//                   }))
+//                 }
+//                 className={`px-5 py-2 rounded-full font-medium transition ${
+//                   spaceData.pricing.pricingType === "HOURLY"
+//                     ? "bg-primary text-white"
+//                     : "bg-gray-200 text-gray-700"
+//                 }`}
+//               >
+//                 Hourly
+//               </button>
+//             </div>
+
+//             {spaceData.pricing.pricingType === "DAILY" && (
+//               <>
+//                 <h3 className="text-3xl font-semibold mb-2">
+//                   Set a Weekday Price
+//                 </h3>
+//                 <p className="text-gray-600 mb-6">You can change it anytime.</p>
+//                 <div className="flex items-center justify-center px-6 pt-4 mb-3">
+//                   <span className="text-4xl font-bold text-primary mr-1 mb-4">
+//                     £
+//                   </span>
+//                   <Input
+//                     name="pricing.weekdayPrice"
+//                     type="number"
+//                     min="0"
+//                     value={spaceData.pricing.weekdayPrice}
+//                     onChange={handleChange}
+//                     autoFocus={true}
+//                     required
+//                     className="border-none bg-transparent text-center text-4xl font-semibold text-primary focus:ring-0 focus:outline-none no-spinner dynamic-width"
+//                   />
+//                 </div>
+//                 {errors.weekdayPrice && (
+//                   <p className="text-red-500 text-sm mt-1">
+//                     {errors.weekdayPrice}
+//                   </p>
+//                 )}
+//               </>
+//             )}
+
+//             {spaceData.pricing.pricingType === "HOURLY" && (
+//               <>
+//                 <h3 className="text-3xl font-semibold mb-2">
+//                   Set an Hourly Price
+//                 </h3>
+//                 <p className="text-gray-600 mb-6">You can change it anytime.</p>
+//                 <div className="flex items-center justify-center px-6 pt-4 mb-3">
+//                   <span className="text-4xl font-bold text-primary mr-1 mb-4">
+//                     £
+//                   </span>
+//                   <Input
+//                     name="pricing.hourlyPrice"
+//                     type="number"
+//                     min="0"
+//                     value={spaceData.pricing.hourlyPrice}
+//                     onChange={handleChange}
+//                     autoFocus={true}
+//                     required
+//                     className="border-none bg-transparent text-center text-4xl font-semibold text-primary focus:ring-0 focus:outline-none no-spinner dynamic-width"
+//                   />
+//                 </div>
+//                 {errors.hourlyPrice && (
+//                   <p className="text-red-500 text-sm mt-1">
+//                     {errors.hourlyPrice}
+//                   </p>
+//                 )}
+//               </>
+//             )}
+//           </div>
+//         )}
+
+//         {/* ── Step 10: Booking Settings (was step 9) ───────────────────────────── */}
+//         {step === 10 && (
+//           <div>
+//             <h2 className="text-4xl font-semibold mb-2">
+//               Price your booking settings
+//             </h2>
+//             <p className="text-gray-600 mb-6">You can change it anytime.</p>
+//             <div className="space-y-4">
+//               <label
+//                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+//                   spaceData.bookingSettings.approveFirstFive
+//                     ? "border-primary bg-blue-50"
+//                     : "border-gray-200 hover:border-gray-300"
+//                 }`}
+//                 onClick={() =>
+//                   setSpaceData((prev) => ({
+//                     ...prev,
+//                     bookingSettings: {
+//                       approveFirstFive: true,
+//                       instantBook: false,
+//                       approveAllBookings: false,
+//                     },
+//                   }))
+//                 }
+//               >
+//                 <div className="w-[90%] flex flex-col items-start gap-2">
+//                   <div className="flex items-center gap-2">
+//                     <span className="font-medium text-gray-800">
+//                       Approve first 5 bookings
+//                     </span>
+//                     <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full">
+//                       Recommended
+//                     </span>
+//                   </div>
+//                   <p className="text-sm text-gray-500 mt-1 text-left">
+//                     You'll manually approve your first 5 bookings. After that,
+//                     bookings can be automatic.
+//                   </p>
+//                 </div>
+//                 <div
+//                   className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+//                     spaceData.bookingSettings.approveFirstFive
+//                       ? "border-primary"
+//                       : "border-gray-300"
+//                   }`}
+//                 >
+//                   {spaceData.bookingSettings.approveFirstFive && (
+//                     <div className="w-3 h-3 bg-primary rounded-full" />
+//                   )}
+//                 </div>
+//               </label>
+
+//               <label
+//                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+//                   spaceData.bookingSettings.instantBook
+//                     ? "border-primary bg-blue-50"
+//                     : "border-gray-200 hover:border-gray-300"
+//                 }`}
+//                 onClick={() =>
+//                   setSpaceData((prev) => ({
+//                     ...prev,
+//                     bookingSettings: {
+//                       approveFirstFive: false,
+//                       instantBook: true,
+//                       approveAllBookings: false,
+//                     },
+//                   }))
+//                 }
+//               >
+//                 <div className="w-[90%] flex flex-col items-start">
+//                   <span className="font-medium text-gray-800">
+//                     Instant Book
+//                   </span>
+//                   <p className="text-sm text-gray-500 mt-1 text-left">
+//                     Guests can book instantly without needing your approval.
+//                   </p>
+//                 </div>
+//                 <div
+//                   className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+//                     spaceData.bookingSettings.instantBook
+//                       ? "border-primary"
+//                       : "border-gray-300"
+//                   }`}
+//                 >
+//                   {spaceData.bookingSettings.instantBook && (
+//                     <div className="w-3 h-3 bg-primary rounded-full" />
+//                   )}
+//                 </div>
+//               </label>
+
+//               <label
+//                 className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+//                   spaceData.bookingSettings.approveAllBookings
+//                     ? "border-primary bg-blue-50"
+//                     : "border-gray-200 hover:border-gray-300"
+//                 }`}
+//                 onClick={() =>
+//                   setSpaceData((prev) => ({
+//                     ...prev,
+//                     bookingSettings: {
+//                       approveFirstFive: false,
+//                       instantBook: false,
+//                       approveAllBookings: true,
+//                     },
+//                   }))
+//                 }
+//               >
+//                 <div className="w-[90%] flex flex-col items-start">
+//                   <span className="font-medium text-gray-800">
+//                     Approve All Bookings
+//                   </span>
+//                   <p className="text-sm text-gray-500 mt-1 text-left">
+//                     You'll manually approve all your bookings. You cannot
+//                     receive any booking unless you approve it.
+//                   </p>
+//                 </div>
+//                 <div
+//                   className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+//                     spaceData.bookingSettings.approveAllBookings
+//                       ? "border-primary"
+//                       : "border-gray-300"
+//                   }`}
+//                 >
+//                   {spaceData.bookingSettings.approveAllBookings && (
+//                     <div className="w-3 h-3 bg-primary rounded-full" />
+//                   )}
+//                 </div>
+//               </label>
+//             </div>
+//           </div>
+//         )}
+
+//         {/* ── Step 11: Discounts (was step 10) ─────────────────────────────────── */}
+//         {step === 11 && (
+//           <div>
+//             <h2 className="text-4xl font-semibold mb-2">
+//               Set up your discounts
+//             </h2>
+//             <p className="text-gray-600 mb-6">
+//               Encourage more bookings with discounts.
+//             </p>
+//             <div className="space-y-4">
+//               {[
+//                 {
+//                   key: "newListing",
+//                   label: "New Listing Promotion (20%)",
+//                   desc: "Get noticed faster with an automatic 20% discount on your first few bookings.",
+//                 },
+//                 {
+//                   key: "lastMinute",
+//                   label: "Last Minute Discount (1%)",
+//                   desc: "Offer small savings for guests booking within a few days of arrival.",
+//                 },
+//                 {
+//                   key: "weekly",
+//                   label: "Weekly Discount (10%)",
+//                   desc: "Reward guests who stay for 7 nights or more.",
+//                 },
+//                 {
+//                   key: "monthly",
+//                   label: "Monthly Discount (20%)",
+//                   desc: "Attract long-term stays with generous monthly savings.",
+//                 },
+//               ].map(({ key, label, desc }) => (
+//                 <label
+//                   key={key}
+//                   className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+//                     spaceData.pricing.discounts[key]
+//                       ? "border-primary bg-blue-50"
+//                       : "border-gray-200 hover:border-gray-300"
+//                   }`}
+//                   onClick={() =>
+//                     handleDiscountChange({
+//                       target: {
+//                         name: key,
+//                         checked: !spaceData.pricing.discounts[key],
+//                       },
+//                     })
+//                   }
+//                 >
+//                   <div className="w-[90%] flex flex-col items-start">
+//                     <span className="font-medium text-gray-800">{label}</span>
+//                     <p className="text-sm text-gray-500 mt-1 text-left">
+//                       {desc}
+//                     </p>
+//                   </div>
+//                   <div
+//                     className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+//                       spaceData.pricing.discounts[key]
+//                         ? "border-primary bg-primary"
+//                         : "border-gray-300"
+//                     }`}
+//                   >
+//                     {spaceData.pricing.discounts[key] && (
+//                       <svg
+//                         xmlns="http://www.w3.org/2000/svg"
+//                         className="w-3 h-3 text-white"
+//                         fill="none"
+//                         viewBox="0 0 24 24"
+//                         stroke="currentColor"
+//                         strokeWidth={3}
+//                       >
+//                         <path
+//                           strokeLinecap="round"
+//                           strokeLinejoin="round"
+//                           d="M5 13l4 4L19 7"
+//                         />
+//                       </svg>
+//                     )}
+//                   </div>
+//                 </label>
+//               ))}
+//             </div>
+//           </div>
+//         )}
+//       </div>
+
+//       {showModal && (
+//         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+//           <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center flex flex-col items-center">
+//             <IoIosCheckmarkCircleOutline size={100} color="green" />
+//             <h2 className="text-2xl font-bold mt-4 mb-2">Property Created!</h2>
+//             <p className="text-gray-600">
+//               Redirecting in {countdown} second{countdown > 1 ? "s" : ""}...
+//             </p>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Progress + Navigation */}
+//       <div>
+//         <ProgressBar step={step} totalSteps={totalSteps} />
+//         <div className="mt-6 flex justify-between">
+//           <button
+//             onClick={handleBack}
+//             disabled={step === 1}
+//             className="text-gray-600 hover:text-gray-900 disabled:opacity-50 cursor-pointer"
+//           >
+//             Back
+//           </button>
+//           <Button
+//             onClick={step === totalSteps ? handleSubmit : handleNext}
+//             disabled={isSubmitting}
+//             className="px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary/80 disabled:opacity-70"
+//           >
+//             {isSubmitting
+//               ? "Publishing..."
+//               : step === totalSteps
+//               ? "Publish Space"
+//               : "Next"}
+//           </Button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default CreateSpace;
+
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { apiFetch } from "../utils/api";
 import ProgressBar from "../components/ProgressBar";
@@ -13,19 +3790,18 @@ import Counter from "../components/Counter";
 import MapComponent from "../components/MapComponent";
 import Notification from "../components/Notification";
 import { Autocomplete, useLoadScript } from "@react-google-maps/api";
-import { Home, Bell, Compass, Save, FileText } from "lucide-react";
+import { Save, FileText } from "lucide-react";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import CountrySelect from "../components/CountrySelect";
+import AvailabilityCalendar from "../components/AvailabilityCalendar";
 
 const CreateSpace = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const totalSteps = 10;
+  const totalSteps = 12;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
-  const [selected, setSelected] = useState("");
   const [errors, setErrors] = useState({});
-  const [apiKey] = useState(import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ""); // set your key in .env
   const [categories, setCategories] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [countdown, setCountdown] = useState(3);
@@ -33,6 +3809,8 @@ const CreateSpace = () => {
   const [hasDraft, setHasDraft] = useState(false);
   const [showDraftPrompt, setShowDraftPrompt] = useState(false);
   const [draftId, setDraftId] = useState("");
+  const [availability, setAvailability] = useState("all");
+  const [blockedDates, setBlockedDates] = useState([]);
   const libraries = ["places"];
 
   const [spaceData, setSpaceData] = useState({
@@ -71,15 +3849,16 @@ const CreateSpace = () => {
     extras: [],
     imageFiles: [],
     imagePreviews: [],
-    serverImages: [], // important: initialize as empty array
+    serverImages: [],
     removedImages: [],
     coverImage: null,
     category: "",
+    subcategory: "",
     price: null,
     pricing: {
-      pricingType: "DAILY", // "DAILY" | "HOURLY"
-      weekdayPrice: null, // used when DAILY
-      hourlyPrice: null, // used when HOURLY
+      pricingType: "DAILY",
+      weekdayPrice: null,
+      hourlyPrice: null,
       preTaxPrice: null,
       discounts: {
         newListing: true,
@@ -109,7 +3888,6 @@ const CreateSpace = () => {
 
   const onPlaceChanged = () => {
     if (!autocompleteRef.current) return;
-
     const place = autocompleteRef.current.getPlace();
     if (!place.address_components) return;
 
@@ -120,15 +3898,8 @@ const CreateSpace = () => {
 
     place.address_components.forEach((component) => {
       const types = component.types;
-
-      if (types.includes("street_number")) {
-        streetNumber = component.long_name;
-      }
-
-      if (types.includes("route")) {
-        route = component.long_name;
-      }
-
+      if (types.includes("street_number")) streetNumber = component.long_name;
+      if (types.includes("route")) route = component.long_name;
       if (
         types.includes("locality") ||
         types.includes("postal_town") ||
@@ -136,29 +3907,24 @@ const CreateSpace = () => {
       ) {
         if (!city) city = component.long_name;
       }
-
-      if (types.includes("country")) {
-        country = component.short_name;
-      }
+      if (types.includes("country")) country = component.short_name;
     });
 
     const address = [streetNumber, route].filter(Boolean).join(" ");
-
     setSpaceData((prev) => ({
       ...prev,
-      location: {
-        ...prev.location,
-        address,
-        city,
-        country,
-      },
+      location: { ...prev.location, address, city, country },
     }));
   };
 
+  const selectedCategoryHasSubcategories = () => {
+    const cat = categories.find((c) => c._id === spaceData.category);
+    return Array.isArray(cat?.subcategory) && cat.subcategory.length > 0;
+  };
+
+  // ─── Effects ──────────────────────────────────────────────────────────────────
+
   useEffect(() => {
-    if (step > totalSteps) {
-      handleSubmit();
-    }
     if (
       step === 4 &&
       !spaceData.coordinates.latitude &&
@@ -189,35 +3955,57 @@ const CreateSpace = () => {
     checkForDraft();
   }, []);
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await apiFetch({
+          endpoint: "/categories",
+          method: "GET",
+        });
+        setCategories(response);
+      } catch (err) {
+        toast.error("Failed to load categories");
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (!hasDraft) return;
+    migrateLocalDraft();
+  }, [hasDraft]);
+
+  useEffect(() => {
+    return () => {
+      spaceData.imagePreviews.forEach((url) => {
+        if (url.startsWith("blob:")) URL.revokeObjectURL(url);
+      });
+    };
+  }, []);
+
+  // ─── Draft ────────────────────────────────────────────────────────────────────
+
   const checkForDraft = async () => {
     try {
-      const response = await apiFetch({
-        endpoint: "/drafts",
-        method: "GET",
-      });
-
+      const response = await apiFetch({ endpoint: "/drafts", method: "GET" });
       if (response.success && response.draft) {
         setHasDraft(true);
         setDraftId(response.draft._id);
         setShowDraftPrompt(true);
       }
     } catch (err) {
-      // No draft found, that's okay
       console.log("No draft found");
     }
   };
 
-  // ─── Save Draft ───────────────────────────────────────────────────────────────
   const saveDraft = async (overrideData = null, overrideStep = null) => {
     setIsSavingDraft(true);
-
     const data = overrideData || spaceData;
     const currentStep = overrideStep ?? step;
 
     try {
       const token = localStorage.getItem("token");
 
-      // ── Unauthenticated: save to localStorage ─────────────────────────────────
       if (!token) {
         const localDraft = {
           title: data.title,
@@ -227,13 +4015,13 @@ const CreateSpace = () => {
           features: data.features,
           extras: data.extras,
           category: data.category || null,
+          subcategory: data.subcategory || null,
           pricing: data.pricing,
           bookingSettings: data.bookingSettings,
           currentStep,
           imagePreviews: data.imagePreviews || [],
           savedAt: new Date().toISOString(),
         };
-
         localStorage.setItem("vencome_draft", JSON.stringify(localDraft));
         setHasDraft(true);
         toast.success(
@@ -242,9 +4030,7 @@ const CreateSpace = () => {
         return;
       }
 
-      // ── Authenticated: save to server ─────────────────────────────────────────
       const formData = new FormData();
-
       formData.append(
         "data",
         JSON.stringify({
@@ -255,6 +4041,7 @@ const CreateSpace = () => {
           features: data.features,
           extras: data.extras,
           category: data.category || null,
+          subcategory: data.subcategory || null,
           pricing: data.pricing,
           bookingSettings: data.bookingSettings,
           currentStep,
@@ -262,10 +4049,8 @@ const CreateSpace = () => {
       );
 
       data.imageFiles?.forEach((file) => formData.append("images", file));
-
-      if (data.removedImages?.length) {
+      if (data.removedImages?.length)
         formData.append("removedImages", JSON.stringify(data.removedImages));
-      }
 
       const res = await fetch(`${import.meta.env.VITE_API_URL}/drafts/save`, {
         method: "POST",
@@ -281,7 +4066,6 @@ const CreateSpace = () => {
         const serverImagePreviews = resData.draft.images.map(
           (img) => `${import.meta.env.VITE_API_URL}/${img.url}`
         );
-
         setSpaceData((prev) => ({
           ...prev,
           serverImages: resData.draft.images,
@@ -291,9 +4075,7 @@ const CreateSpace = () => {
         }));
       }
 
-      // Clear stale local draft now that it's on the server
       localStorage.removeItem("vencome_draft");
-
       setHasDraft(true);
       setDraftId(resData.draft._id);
       toast.success("Draft saved successfully!");
@@ -305,19 +4087,16 @@ const CreateSpace = () => {
     }
   };
 
-  // ─── Load Draft ───────────────────────────────────────────────────────────────
   const loadDraft = async () => {
     try {
       const token = localStorage.getItem("token");
 
-      // ── Unauthenticated: load from localStorage ───────────────────────────────
       if (!token) {
         const raw = localStorage.getItem("vencome_draft");
         if (!raw) {
           toast.info("No local draft found.");
           return;
         }
-
         const draft = JSON.parse(raw);
         setSpaceData((prev) => ({
           ...prev,
@@ -328,6 +4107,7 @@ const CreateSpace = () => {
           features: { ...prev.features, ...draft.features },
           extras: draft.extras || [],
           category: draft.category || "",
+          subcategory: draft.subcategory || "",
           pricing: { ...prev.pricing, ...draft.pricing },
           bookingSettings: {
             ...prev.bookingSettings,
@@ -339,13 +4119,11 @@ const CreateSpace = () => {
           removedImages: [],
         }));
         setStep(draft.currentStep || 1);
-        setSelected(draft.category || "");
         setShowDraftPrompt(false);
         toast.success("Local draft loaded. Sign in to restore images.");
         return;
       }
 
-      // ── Authenticated: check localStorage first, migrate if found ─────────────
       const raw = localStorage.getItem("vencome_draft");
       if (raw) {
         await migrateLocalDraft();
@@ -353,7 +4131,6 @@ const CreateSpace = () => {
         return;
       }
 
-      // ── Authenticated + no local draft: load from server ─────────────────────
       const response = await apiFetch({ endpoint: "/drafts", method: "GET" });
       if (response.success && response.draft) {
         const draft = response.draft;
@@ -375,6 +4152,7 @@ const CreateSpace = () => {
           removedImages: [],
           coverImage: serverImages[0] || null,
           category: draft.category?._id || draft.category || "",
+          subcategory: draft.subcategory?._id || draft.subcategory || "",
           pricing: { ...spaceData.pricing, ...draft.pricing },
           bookingSettings: {
             ...spaceData.bookingSettings,
@@ -383,7 +4161,6 @@ const CreateSpace = () => {
         });
 
         setStep(draft.currentStep || 1);
-        setSelected(draft.categories || "");
         setShowDraftPrompt(false);
         toast.success("Draft loaded successfully!");
       }
@@ -393,16 +4170,11 @@ const CreateSpace = () => {
     }
   };
 
-  // ─── On login: migrate local draft to server ──────────────────────────────────
-  // Call this after a successful login/signup if you want to auto-migrate
   const migrateLocalDraft = async () => {
     const raw = localStorage.getItem("vencome_draft");
     if (!raw) return;
-
     try {
       const draft = JSON.parse(raw);
-
-      // Build the payload directly so we don't race with React state updates
       const migratedData = {
         title: draft.title || "",
         description: draft.description || "",
@@ -411,6 +4183,7 @@ const CreateSpace = () => {
         features: { ...spaceData.features, ...draft.features },
         extras: draft.extras || [],
         category: draft.category || null,
+        subcategory: draft.subcategory || null,
         pricing: { ...spaceData.pricing, ...draft.pricing },
         bookingSettings: {
           ...spaceData.bookingSettings,
@@ -421,18 +4194,10 @@ const CreateSpace = () => {
         removedImages: [],
         imagePreviews: draft.imagePreviews || [],
       };
-
-      // Update the UI state
       setSpaceData((prev) => ({ ...prev, ...migratedData }));
       setStep(draft.currentStep || 1);
-      setSelected(draft.category || "");
-
-      // Push to server using the payload directly — bypasses stale spaceData
       await saveDraft(migratedData, draft.currentStep || 1);
-
-      // saveDraft clears localStorage on success, but belt-and-braces
       localStorage.removeItem("vencome_draft");
-
       toast.success("Your draft has been restored!");
     } catch (err) {
       console.error("Failed to migrate local draft:", err);
@@ -440,43 +4205,11 @@ const CreateSpace = () => {
     }
   };
 
-  // Cleanup blob URLs on unmount
-  useEffect(() => {
-    return () => {
-      spaceData.imagePreviews.forEach((url) => {
-        if (url.startsWith("blob:")) {
-          URL.revokeObjectURL(url);
-        }
-      });
-    };
-  }, []);
+  // ─── Handlers ─────────────────────────────────────────────────────────────────
 
-  // Fetch categories
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await apiFetch({
-          endpoint: "/categories",
-          method: "GET",
-        });
-        setCategories(response);
-      } catch (err) {
-        toast.error("Failed to load categories");
-      }
-    };
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    if (!hasDraft) return;
-    migrateLocalDraft();
-  }, [hasDraft]);
-
-  // Generic change handler
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setErrors((prev) => ({ ...prev, [name]: "" }));
-
     const val =
       type === "checkbox" ? checked : type === "number" ? Number(value) : value;
 
@@ -497,9 +4230,7 @@ const CreateSpace = () => {
     setSpaceData((prev) => {
       const updated = { ...prev };
       let ref = updated;
-      for (let i = 0; i < keys.length - 1; i++) {
-        ref = ref[keys[i]];
-      }
+      for (let i = 0; i < keys.length - 1; i++) ref = ref[keys[i]];
       ref[keys[keys.length - 1]] = value;
       return updated;
     });
@@ -530,16 +4261,12 @@ const CreateSpace = () => {
 
   const handleImageUpload = (newImages) => {
     setErrors((prev) => ({ ...prev, images: "" }));
-    console.log(newImages);
-
-    // Create preview URLs for the new images
     const newPreviews = newImages.map((file) => URL.createObjectURL(file));
-
     setSpaceData((prev) => ({
       ...prev,
-      imageFiles: [...(prev.imageFiles || []), ...newImages], // Store File objects
-      imagePreviews: [...(prev.imagePreviews || []), ...newPreviews], // Store preview URLs
-      coverImage: prev.coverImage || newPreviews[0] || null, // Keep existing cover or use first new image
+      imageFiles: [...(prev.imageFiles || []), ...newImages],
+      imagePreviews: [...(prev.imagePreviews || []), ...newPreviews],
+      coverImage: prev.coverImage || newPreviews[0] || null,
     }));
   };
 
@@ -548,12 +4275,8 @@ const CreateSpace = () => {
       const oldPreviews = prev.imagePreviews;
       const serverImages = prev.serverImages || [];
       const imageFiles = prev.imageFiles || [];
-
-      // Build a lookup: preview URL -> source info
-      // Server images start at index 0, new file images follow
       const serverPreviews = oldPreviews.slice(0, serverImages.length);
       const filePreviews = oldPreviews.slice(serverImages.length);
-
       const reorderedServerImages = [];
       const reorderedFiles = [];
 
@@ -563,9 +4286,7 @@ const CreateSpace = () => {
           reorderedServerImages.push(serverImages[serverIdx]);
         } else {
           const fileIdx = filePreviews.indexOf(preview);
-          if (fileIdx !== -1) {
-            reorderedFiles.push(imageFiles[fileIdx]);
-          }
+          if (fileIdx !== -1) reorderedFiles.push(imageFiles[fileIdx]);
         }
       });
 
@@ -590,7 +4311,23 @@ const CreateSpace = () => {
     }));
   };
 
-  // Validate current step
+  const addBlock = (start, end) => {
+    setBlockedDates((prev) => [...prev, { start, end }]);
+  };
+
+  const removeBlock = (dateStr) => {
+    setBlockedDates((prev) =>
+      prev.filter(({ start, end }) => {
+        const s = new Date(start);
+        const e = new Date(end);
+        const d = new Date(dateStr);
+        return d < s || d > e;
+      })
+    );
+  };
+
+  // ─── Validation ───────────────────────────────────────────────────────────────
+
   const validateStep = () => {
     const newErrors = {};
 
@@ -599,14 +4336,12 @@ const CreateSpace = () => {
         if (!spaceData.category)
           newErrors.category = "Please select a category";
         break;
-
       case 2:
         if (!spaceData.title.trim()) {
           newErrors.title = "Space name is required";
         } else if (spaceData.title.trim().length < 5) {
           newErrors.title = "Title must be at least 5 characters long";
         }
-
         if (!spaceData.description.trim()) {
           newErrors.description = "Description is required";
         } else if (spaceData.description.trim().length < 50) {
@@ -614,7 +4349,6 @@ const CreateSpace = () => {
             "Description must be at least 50 characters long";
         }
         break;
-
       case 3:
         if (!spaceData.location.address.trim())
           newErrors["location.address"] = "Address is required";
@@ -623,46 +4357,40 @@ const CreateSpace = () => {
         if (!spaceData.location.country.trim())
           newErrors["location.country"] = "Country is required";
         break;
-
       case 4:
         if (!spaceData.coordinates.latitude || !spaceData.coordinates.longitude)
           newErrors.coordinates = "Please pin a location on the map";
         break;
-
       case 5:
+        if (!spaceData.subcategory)
+          newErrors.subcategory = "Please select a subcategory";
+        break;
+      case 6:
         if (!spaceData.features.sizeSQM || spaceData.features.sizeSQM <= 5)
           newErrors["features.sizeSQM"] = "Size must be greater than 5";
-
         if (
           !spaceData.features.seatCapacity ||
           spaceData.features.seatCapacity <= 0
         )
           newErrors["features.seatCapacity"] =
             "Seat capacity must be greater than 0";
-
         if (spaceData.features.restrooms < 0)
           newErrors["features.restrooms"] = "Restrooms cannot be negative";
-
-        // Extras validation
         spaceData.extras.forEach((extra, index) => {
-          if (!extra.name || !extra.name.trim()) {
+          if (!extra.name || !extra.name.trim())
             newErrors[`extras.${index}.name`] = "Extra name is required";
-          }
-          if (extra.price != null && extra.price < 0) {
+          if (extra.price != null && extra.price < 0)
             newErrors[`extras.${index}.price`] = "Price cannot be negative";
-          }
         });
         break;
-
-      case 6:
+      case 7:
         if (
           spaceData.imageFiles.length === 0 &&
           (!spaceData.serverImages || spaceData.serverImages.length === 0)
         )
           newErrors.images = "At least one photo is required";
         break;
-
-      case 8:
+      case 9:
         if (spaceData.pricing.pricingType === "DAILY") {
           if (
             !spaceData.pricing.weekdayPrice ||
@@ -677,17 +4405,17 @@ const CreateSpace = () => {
             newErrors.hourlyPrice = "Enter a valid hourly price";
         }
         break;
-
       default:
         break;
     }
 
     setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) {
+    if (Object.keys(newErrors).length > 0)
       toast.error("Please fix the errors before continuing");
-    }
     return Object.keys(newErrors).length === 0;
   };
+
+  // ─── Navigation ───────────────────────────────────────────────────────────────
 
   const fetchCoordinates = async () => {
     try {
@@ -696,23 +4424,14 @@ const CreateSpace = () => {
         city: spaceData.location.city,
         country: spaceData.location.country,
       });
-
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/geocode?${params.toString()}`
       );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch coordinates");
-      }
-
+      if (!response.ok) throw new Error("Failed to fetch coordinates");
       const data = await response.json();
-
       setSpaceData((prev) => ({
         ...prev,
-        coordinates: {
-          latitude: data.latitude,
-          longitude: data.longitude,
-        },
+        coordinates: { latitude: data.latitude, longitude: data.longitude },
       }));
     } catch (err) {
       console.error("Failed to fetch coordinates:", err);
@@ -726,33 +4445,35 @@ const CreateSpace = () => {
   const handleNext = () => {
     if (validateStep()) {
       setErrors({});
-
       setStep((prev) => {
-        return prev + 1;
+        const next = prev + 1;
+        if (next === 5 && !selectedCategoryHasSubcategories()) return next + 1;
+        return next;
       });
     }
   };
 
   const handleBack = () => {
     setErrors({});
-
     setStep((prev) => {
       const prevStep = prev - 1;
-
+      if (prevStep === 5 && !selectedCategoryHasSubcategories())
+        return Math.max(1, prevStep - 1);
       return Math.max(1, prevStep);
     });
   };
 
-  // Final submit
+  // ─── Submit ───────────────────────────────────────────────────────────────────
+
   const handleSubmit = async () => {
     if (!validateStep()) return;
-
     setIsSubmitting(true);
     try {
       const formData = new FormData();
       formData.append("title", spaceData.title);
       formData.append("description", spaceData.description);
       formData.append("category", spaceData.category);
+      formData.append("subcategory", spaceData.subcategory || "");
       formData.append("pricing", JSON.stringify(spaceData.pricing));
       formData.append("features", JSON.stringify(spaceData.features));
       formData.append(
@@ -763,18 +4484,19 @@ const CreateSpace = () => {
       formData.append("coordinates", JSON.stringify(spaceData.coordinates));
       formData.append("extras", JSON.stringify(spaceData.extras || []));
       formData.append("draftId", draftId);
+      formData.append("availability", availability);
+      formData.append("blockedDates", JSON.stringify(blockedDates));
 
-      // Append new files only
       spaceData.imageFiles.forEach((file) => formData.append("images", file));
-
-      // Append removed images (server images the user deleted)
       formData.append("removedImages", JSON.stringify(spaceData.removedImages));
+
       const token = localStorage.getItem("token");
       if (!token) {
         navigate("/login");
         saveDraft();
         return;
       }
+
       const res = await fetch(`${import.meta.env.VITE_API_URL}/properties`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -795,23 +4517,20 @@ const CreateSpace = () => {
       }
 
       const data = await res.json();
+      console.log(data);
+      // if (!res.ok) throw new Error(data.message || "Failed to create space");
 
-      if (!res.ok) throw new Error(data.message || "Failed to create space");
-
-      toast.success("Your space has been published successfully!");
-
-      setShowModal(true);
-      const timer = setInterval(() => {
-        setCountdown((c) => {
-          if (c <= 1) {
-            clearInterval(timer);
-            // Reload the home page
-            window.location.href = "/";
-            // or: window.location.replace("/"); to replace history
-          }
-          return c - 1;
-        });
-      }, 1000);
+      // toast.success("Your space has been published successfully!");
+      // setShowModal(true);
+      // const timer = setInterval(() => {
+      //   setCountdown((c) => {
+      //     if (c <= 1) {
+      //       clearInterval(timer);
+      //       window.location.href = "/";
+      //     }
+      //     return c - 1;
+      //   });
+      // }, 1000);
     } catch (err) {
       console.error(err);
       toast.error(err.message || "Something went wrong. Please try again.");
@@ -819,6 +4538,8 @@ const CreateSpace = () => {
       setIsSubmitting(false);
     }
   };
+
+  // ─── Static data ──────────────────────────────────────────────────────────────
 
   const treatmentRoomFeatures = [
     {
@@ -944,6 +4665,8 @@ const CreateSpace = () => {
     },
   ];
 
+  // ─── Derived ──────────────────────────────────────────────────────────────────
+
   const allPreviews = [
     ...(spaceData.serverImages || [])
       .filter((img) => !(spaceData.removedImages || []).includes(img.filename))
@@ -951,11 +4674,67 @@ const CreateSpace = () => {
     ...(spaceData.imageFiles || []).map((file) => URL.createObjectURL(file)),
   ];
 
+  const selectedCategory = categories.find((c) => c._id === spaceData.category);
+  const subcategories = selectedCategory?.subcategory || [];
+
+  // ─── Shared renderers ─────────────────────────────────────────────────────────
+
+  const renderFeatureCheckbox = ({ key, title, description }) => {
+    const isChecked = spaceData.features[key];
+    return (
+      <label
+        key={key}
+        className={`flex items-center justify-between p-4 mt-4 border rounded-xl cursor-pointer transition-all ${
+          isChecked
+            ? "border-primary bg-blue-50"
+            : "border-gray-200 hover:border-gray-300"
+        }`}
+        onClick={() =>
+          setSpaceData((prev) => ({
+            ...prev,
+            features: { ...prev.features, [key]: !prev.features[key] },
+          }))
+        }
+      >
+        <div className="flex flex-col items-start">
+          <span className="font-medium text-gray-800">{title}</span>
+          <p className="text-sm text-gray-500 mt-1 text-left">{description}</p>
+        </div>
+        <div
+          className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+            isChecked ? "border-primary bg-primary" : "border-gray-300"
+          }`}
+        >
+          {isChecked && (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-3 h-3 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={3}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          )}
+        </div>
+      </label>
+    );
+  };
+
+  // ─── Render ───────────────────────────────────────────────────────────────────
+
   return (
     <div className="min-h-[calc(100vh-65px)] flex flex-col justify-between bg-gray-50 p-4 sm:p-8">
       <div className="absolute">
         <ToastContainer />
       </div>
+
+      {/* Draft prompt */}
       {showDraftPrompt && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-8 max-w-md w-full">
@@ -988,18 +4767,21 @@ const CreateSpace = () => {
       )}
 
       <div className="container mx-auto">
-        {/* Save Draft Button - Always visible */}
-        <div className="absolute right-18 flex justify-end mb-4">
-          <button
-            onClick={saveDraft}
-            disabled={isSavingDraft}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg disabled:opacity-50"
-          >
-            <Save size={18} />
-            {isSavingDraft ? "Saving..." : "Save Draft"}
-          </button>
-        </div>
+        {/* Save Draft — hidden on final step */}
+        {step < totalSteps && (
+          <div className="absolute right-18 flex justify-end mb-4">
+            <button
+              onClick={saveDraft}
+              disabled={isSavingDraft}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg disabled:opacity-50"
+            >
+              <Save size={18} />
+              {isSavingDraft ? "Saving..." : "Save Draft"}
+            </button>
+          </div>
+        )}
 
+        {/* ── Step 1: Category ──────────────────────────────────────────────────── */}
         {step === 1 && (
           <div>
             {errors.category && (
@@ -1019,7 +4801,11 @@ const CreateSpace = () => {
                       : "border-gray-200 hover:border-gray-300"
                   }`}
                   onClick={() => {
-                    setSpaceData((prev) => ({ ...prev, category: cat._id }));
+                    setSpaceData((prev) => ({
+                      ...prev,
+                      category: cat._id,
+                      subcategory: "",
+                    }));
                     setErrors((prev) => ({ ...prev, category: "" }));
                   }}
                 >
@@ -1041,6 +4827,7 @@ const CreateSpace = () => {
           </div>
         )}
 
+        {/* ── Step 2: Title & Description ───────────────────────────────────────── */}
         {step === 2 && (
           <div>
             <h2 className="text-4xl my-4">Publish your space</h2>
@@ -1056,19 +4843,20 @@ const CreateSpace = () => {
               Description
             </label>
             <textarea
-              label="Description"
               name="description"
               value={spaceData.description || ""}
               onChange={handleChange}
               className={`mt-1 p-2 w-full h-48 border rounded-lg focus:ring-primary focus:border-primary ${
                 errors.description ? "border-red-500" : "border-gray-300"
               }`}
-            ></textarea>
+            />
             {errors.description && (
               <p className="text-red-500 text-sm mt-1">{errors.description}</p>
             )}
           </div>
         )}
+
+        {/* ── Step 3: Location ──────────────────────────────────────────────────── */}
         {step === 3 && isLoaded && (
           <div>
             <h2 className="text-4xl my-4">Location</h2>
@@ -1086,13 +4874,11 @@ const CreateSpace = () => {
                 required
               />
             </Autocomplete>
-
             {errors["location.address"] && (
               <p className="text-red-500 text-sm mt-1">
                 {errors["location.address"]}
               </p>
             )}
-
             <Input
               placeholder="City"
               name="location.city"
@@ -1105,7 +4891,6 @@ const CreateSpace = () => {
                 {errors["location.city"]}
               </p>
             )}
-
             <CountrySelect
               value={spaceData.location.country}
               onChange={handleChange}
@@ -1119,15 +4904,14 @@ const CreateSpace = () => {
           </div>
         )}
 
+        {/* ── Step 4: Confirm Location / Map ────────────────────────────────────── */}
         {step === 4 && (
           <div>
             <h2 className="text-4xl my-4">Confirm Location</h2>
             <p className="mb-4">
               Pin your location on the map or adjust the marker below
             </p>
-
             <div className="flex gap-4">
-              {/* Latitude */}
               <div className="mb-4">
                 <input
                   type="number"
@@ -1144,8 +4928,6 @@ const CreateSpace = () => {
                   <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>
                 )}
               </div>
-
-              {/* Longitude */}
               <div className="mb-4">
                 <input
                   type="number"
@@ -1165,8 +4947,6 @@ const CreateSpace = () => {
                 )}
               </div>
             </div>
-
-            {/* Google Map */}
             <div className="w-full h-[350px] md:h-[400px] border border-gray-200 rounded-lg mt-4">
               <MapComponent
                 coordinates={spaceData.coordinates}
@@ -1181,7 +4961,60 @@ const CreateSpace = () => {
           </div>
         )}
 
+        {/* ── Step 5: Subcategory ───────────────────────────────────────────────── */}
         {step === 5 && (
+          <div>
+            {errors.subcategory && (
+              <div className="mt-6">
+                <Notification message={errors.subcategory} type="danger" />
+              </div>
+            )}
+            <h2 className="text-4xl my-4">Subcategory</h2>
+            <p className="text-gray-600 mb-4">
+              Choose the option that best describes your space within{" "}
+              <span className="font-medium text-gray-800">
+                {selectedCategory?.name}
+              </span>
+              .
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              {subcategories.map((sub) => {
+                const subId = sub._id || sub;
+                const subName = sub.name || sub;
+                return (
+                  <label
+                    key={subId}
+                    className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+                      spaceData.subcategory === subId
+                        ? "border-primary bg-blue-50"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                    onClick={() => {
+                      setSpaceData((prev) => ({ ...prev, subcategory: subId }));
+                      setErrors((prev) => ({ ...prev, subcategory: "" }));
+                    }}
+                  >
+                    <span className="font-medium text-gray-800">{subName}</span>
+                    <div
+                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                        spaceData.subcategory === subId
+                          ? "border-primary"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      {spaceData.subcategory === subId && (
+                        <div className="w-3 h-3 bg-primary rounded-full" />
+                      )}
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 6: Features & Extras ─────────────────────────────────────────── */}
+        {step === 6 && (
           <div className="h-[500px] md:h-[600px] overflow-y-scroll">
             <h2 className="text-4xl my-4">Features & Extras</h2>
             <div className="mb-4">
@@ -1214,64 +5047,7 @@ const CreateSpace = () => {
                   <h2 className="text-xl font-semibold my-4">
                     Treatment Room Features
                   </h2>
-                  {treatmentRoomFeatures.map(({ key, title, description }) => {
-                    const isChecked = spaceData.features[key]; // <-- corrected
-
-                    return (
-                      <label
-                        key={key}
-                        className={`flex items-center justify-between p-4 mt-4 border rounded-xl cursor-pointer transition-all ${
-                          isChecked
-                            ? "border-primary bg-blue-50"
-                            : "border-gray-200 hover:border-gray-300"
-                        }`}
-                        onClick={() =>
-                          setSpaceData((prev) => ({
-                            ...prev,
-                            features: {
-                              ...prev.features,
-                              [key]: !prev.features[key], // toggle only this one
-                            },
-                          }))
-                        }
-                      >
-                        <div className="flex flex-col items-start">
-                          <span className="font-medium text-gray-800">
-                            {title}
-                          </span>
-                          <p className="text-sm text-gray-500 mt-1 text-left">
-                            {description}
-                          </p>
-                        </div>
-
-                        {/* Custom checkbox */}
-                        <div
-                          className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
-                            isChecked
-                              ? "border-primary bg-primary"
-                              : "border-gray-300"
-                          }`}
-                        >
-                          {isChecked && (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="w-3 h-3 text-white"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={3}
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                          )}
-                        </div>
-                      </label>
-                    );
-                  })}
+                  {treatmentRoomFeatures.map(renderFeatureCheckbox)}
                 </>
               )}
               {spaceData.category === "6915bd724f4f95223e555e5b" && (
@@ -1279,64 +5055,7 @@ const CreateSpace = () => {
                   <h2 className="text-xl font-semibold my-4">
                     Medical Room Features
                   </h2>
-                  {medicalFeatures.map(({ key, title, description }) => {
-                    const isChecked = spaceData.features[key]; // <-- corrected
-
-                    return (
-                      <label
-                        key={key}
-                        className={`flex items-center justify-between p-4 mt-4 border rounded-xl cursor-pointer transition-all ${
-                          isChecked
-                            ? "border-primary bg-blue-50"
-                            : "border-gray-200 hover:border-gray-300"
-                        }`}
-                        onClick={() =>
-                          setSpaceData((prev) => ({
-                            ...prev,
-                            features: {
-                              ...prev.features,
-                              [key]: !prev.features[key], // toggle only this one
-                            },
-                          }))
-                        }
-                      >
-                        <div className="flex flex-col items-start">
-                          <span className="font-medium text-gray-800">
-                            {title}
-                          </span>
-                          <p className="text-sm text-gray-500 mt-1 text-left">
-                            {description}
-                          </p>
-                        </div>
-
-                        {/* Custom checkbox */}
-                        <div
-                          className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
-                            isChecked
-                              ? "border-primary bg-primary"
-                              : "border-gray-300"
-                          }`}
-                        >
-                          {isChecked && (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="w-3 h-3 text-white"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={3}
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                          )}
-                        </div>
-                      </label>
-                    );
-                  })}
+                  {medicalFeatures.map(renderFeatureCheckbox)}
                 </>
               )}
               <div className="mt-5 flex gap-6 items-center">
@@ -1379,21 +5098,20 @@ const CreateSpace = () => {
             </div>
           </div>
         )}
-        {step === 6 && (
+
+        {/* ── Step 7: Photos ────────────────────────────────────────────────────── */}
+        {step === 7 && (
           <div>
             <h2 className="text-4xl my-4">Add Photos</h2>
-
             <Button
               onClick={() => setShowPopup(true)}
               className="mb-4 bg-primary text-white px-4 py-2 rounded-lg"
             >
               Add Photos
             </Button>
-
             {errors.images && (
               <Notification message={errors.images} type="danger" />
             )}
-
             {allPreviews.length > 0 && (
               <div className="mt-4">
                 <div className="grid grid-cols-2 gap-3 pb-10 h-[450px] md:h-[510px] overflow-scroll">
@@ -1418,7 +5136,6 @@ const CreateSpace = () => {
                 </div>
               </div>
             )}
-
             {showPopup && (
               <ImageUploadPopup
                 onClose={() => setShowPopup(false)}
@@ -1428,20 +5145,21 @@ const CreateSpace = () => {
           </div>
         )}
 
-        {step === 7 && (
+        {/* ── Step 8: Rearrange Images ──────────────────────────────────────────── */}
+        {step === 8 && (
           <div>
             <h2 className="text-4xl my-4">Rearrange Images</h2>
             <ImageReorder
-              images={allPreviews} // ✅ Use allPreviews here too
+              images={allPreviews}
               onReorder={handleImageReorder}
               onAddMore={() => setShowPopup(true)}
             />
           </div>
         )}
 
-        {step === 8 && (
+        {/* ── Step 9: Pricing ───────────────────────────────────────────────────── */}
+        {step === 9 && (
           <div className="text-center flex flex-col items-center p-6">
-            {/* Pricing Type Toggle */}
             <div className="flex items-center gap-6 mb-8">
               <button
                 type="button"
@@ -1463,7 +5181,6 @@ const CreateSpace = () => {
               >
                 Daily
               </button>
-
               <button
                 type="button"
                 onClick={() =>
@@ -1486,14 +5203,12 @@ const CreateSpace = () => {
               </button>
             </div>
 
-            {/* DAILY PRICING */}
             {spaceData.pricing.pricingType === "DAILY" && (
               <>
                 <h3 className="text-3xl font-semibold mb-2">
                   Set a Weekday Price
                 </h3>
                 <p className="text-gray-600 mb-6">You can change it anytime.</p>
-
                 <div className="flex items-center justify-center px-6 pt-4 mb-3">
                   <span className="text-4xl font-bold text-primary mr-1 mb-4">
                     £
@@ -1504,35 +5219,25 @@ const CreateSpace = () => {
                     min="0"
                     value={spaceData.pricing.weekdayPrice}
                     onChange={handleChange}
-                    autoFocus={true}
+                    autoFocus
                     required
                     className="border-none bg-transparent text-center text-4xl font-semibold text-primary focus:ring-0 focus:outline-none no-spinner dynamic-width"
                   />
                 </div>
-
                 {errors.weekdayPrice && (
                   <p className="text-red-500 text-sm mt-1">
                     {errors.weekdayPrice}
                   </p>
                 )}
-
-                {/* <p className="text-gray-500 mt-2">
-                  Price before tax:{" "}
-                  <span className="font-medium text-gray-700">
-                    £{spaceData.pricing.weekdayPrice + 5 || 0}
-                  </span>
-                </p> */}
               </>
             )}
 
-            {/* HOURLY PRICING */}
             {spaceData.pricing.pricingType === "HOURLY" && (
               <>
                 <h3 className="text-3xl font-semibold mb-2">
                   Set an Hourly Price
                 </h3>
                 <p className="text-gray-600 mb-6">You can change it anytime.</p>
-
                 <div className="flex items-center justify-center px-6 pt-4 mb-3">
                   <span className="text-4xl font-bold text-primary mr-1 mb-4">
                     £
@@ -1543,170 +5248,96 @@ const CreateSpace = () => {
                     min="0"
                     value={spaceData.pricing.hourlyPrice}
                     onChange={handleChange}
-                    autoFocus={true}
+                    autoFocus
                     required
                     className="border-none bg-transparent text-center text-4xl font-semibold text-primary focus:ring-0 focus:outline-none no-spinner dynamic-width"
                   />
                 </div>
-
                 {errors.hourlyPrice && (
                   <p className="text-red-500 text-sm mt-1">
                     {errors.hourlyPrice}
                   </p>
                 )}
-
-                {/* <p className="text-gray-500 mt-2">
-                  Price before tax:{" "}
-                  <span className="font-medium text-gray-700">
-                    £{spaceData.pricing.hourlyPrice + 5 || 0}
-                  </span>
-                </p> */}
               </>
             )}
           </div>
         )}
 
-        {step === 9 && (
+        {/* ── Step 10: Booking Settings ─────────────────────────────────────────── */}
+        {step === 10 && (
           <div>
             <h2 className="text-4xl font-semibold mb-2">
               Price your booking settings
             </h2>
             <p className="text-gray-600 mb-6">You can change it anytime.</p>
-
             <div className="space-y-4">
-              {/* Option 1 - Approve first 5 bookings */}
-              <label
-                className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
-                  spaceData.bookingSettings.approveFirstFive
-                    ? "border-primary bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
-                onClick={() =>
-                  setSpaceData((prev) => ({
-                    ...prev,
-                    bookingSettings: {
-                      approveFirstFive: true,
-                      instantBook: false,
-                      approveAllBookings: false,
-                    },
-                  }))
-                }
-              >
-                <div className="w-[90%] flex flex-col items-start gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-800">
-                      Approve first 5 bookings
-                    </span>
-                    <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full">
-                      Recommended
-                    </span>
+              {[
+                {
+                  key: "approveFirstFive",
+                  label: "Approve first 5 bookings",
+                  desc: "You'll manually approve your first 5 bookings. After that, bookings can be automatic.",
+                  recommended: true,
+                },
+                {
+                  key: "instantBook",
+                  label: "Instant Book",
+                  desc: "Guests can book instantly without needing your approval.",
+                },
+                {
+                  key: "approveAllBookings",
+                  label: "Approve All Bookings",
+                  desc: "You'll manually approve all your bookings. You cannot receive any booking unless you approve it.",
+                },
+              ].map(({ key, label, desc, recommended }) => (
+                <label
+                  key={key}
+                  className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+                    spaceData.bookingSettings[key]
+                      ? "border-primary bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                  onClick={() =>
+                    setSpaceData((prev) => ({
+                      ...prev,
+                      bookingSettings: {
+                        approveFirstFive: false,
+                        instantBook: false,
+                        approveAllBookings: false,
+                        [key]: true,
+                      },
+                    }))
+                  }
+                >
+                  <div className="w-[90%] flex flex-col items-start gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-gray-800">{label}</span>
+                      {recommended && (
+                        <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full">
+                          Recommended
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-500 text-left">{desc}</p>
                   </div>
-                  <p className="text-sm text-gray-500 mt-1 text-left">
-                    You’ll manually approve your first 5 bookings. After that,
-                    bookings can be automatic.
-                  </p>
-                </div>
-
-                {/* Custom radio */}
-                <div
-                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                    spaceData.bookingSettings.approveFirstFive
-                      ? "border-primary"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {spaceData.bookingSettings.approveFirstFive && (
-                    <div className="w-3 h-3 bg-primary rounded-full" />
-                  )}
-                </div>
-              </label>
-
-              {/* Option 2 - Instant Book */}
-              <label
-                className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
-                  spaceData.bookingSettings.instantBook
-                    ? "border-primary bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
-                onClick={() =>
-                  setSpaceData((prev) => ({
-                    ...prev,
-                    bookingSettings: {
-                      approveFirstFive: false,
-                      instantBook: true,
-                      approveAllBookings: false,
-                    },
-                  }))
-                }
-              >
-                <div className="w-[90%] flex flex-col items-start">
-                  <span className="font-medium text-gray-800">
-                    Instant Book
-                  </span>
-                  <p className="text-sm text-gray-500 mt-1 text-left">
-                    Guests can book instantly without needing your approval.
-                  </p>
-                </div>
-
-                {/* Custom radio */}
-                <div
-                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                    spaceData.bookingSettings.instantBook
-                      ? "border-primary"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {spaceData.bookingSettings.instantBook && (
-                    <div className="w-3 h-3 bg-primary rounded-full" />
-                  )}
-                </div>
-              </label>
-
-              <label
-                className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
-                  spaceData.bookingSettings.approveAllBookings
-                    ? "border-primary bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
-                onClick={() =>
-                  setSpaceData((prev) => ({
-                    ...prev,
-                    bookingSettings: {
-                      approveFirstFive: false,
-                      instantBook: false,
-                      approveAllBookings: true,
-                    },
-                  }))
-                }
-              >
-                <div className="w-[90%] flex flex-col items-start">
-                  <span className="font-medium text-gray-800">
-                    Approve All Bookings
-                  </span>
-                  <p className="text-sm text-gray-500 mt-1 text-left">
-                    You’ll manually approve your all your bookings. You can not
-                    received all booking unless you approve it
-                  </p>
-                </div>
-
-                {/* Custom radio */}
-                <div
-                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                    spaceData.bookingSettings.approveAllBookings
-                      ? "border-primary"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {spaceData.bookingSettings.approveAllBookings && (
-                    <div className="w-3 h-3 bg-primary rounded-full" />
-                  )}
-                </div>
-              </label>
+                  <div
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                      spaceData.bookingSettings[key]
+                        ? "border-primary"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    {spaceData.bookingSettings[key] && (
+                      <div className="w-3 h-3 bg-primary rounded-full" />
+                    )}
+                  </div>
+                </label>
+              ))}
             </div>
           </div>
         )}
 
-        {step === 10 && (
+        {/* ── Step 11: Discounts ────────────────────────────────────────────────── */}
+        {step === 11 && (
           <div>
             <h2 className="text-4xl font-semibold mb-2">
               Set up your discounts
@@ -1714,218 +5345,127 @@ const CreateSpace = () => {
             <p className="text-gray-600 mb-6">
               Encourage more bookings with discounts.
             </p>
-
             <div className="space-y-4">
-              {/* New Listing Promotion */}
-              <label
-                className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
-                  spaceData.pricing.discounts.newListing
-                    ? "border-primary bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
-                onClick={() =>
-                  handleDiscountChange({
-                    target: {
-                      name: "newListing",
-                      checked: !spaceData.pricing.discounts.newListing,
-                    },
-                  })
-                }
-              >
-                <div className="w-[90%] flex flex-col items-start">
-                  <span className="font-medium text-gray-800">
-                    New Listing Promotion (20%)
-                  </span>
-                  <p className="text-sm text-gray-500 mt-1 text-left">
-                    Get noticed faster with an automatic 20% discount on your
-                    first few bookings.
-                  </p>
-                </div>
-
-                {/* Custom checkbox */}
-                <div
-                  className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
-                    spaceData.pricing.discounts.newListing
-                      ? "border-primary bg-primary"
-                      : "border-gray-300"
+              {[
+                {
+                  key: "newListing",
+                  label: "New Listing Promotion (20%)",
+                  desc: "Get noticed faster with an automatic 20% discount on your first few bookings.",
+                },
+                {
+                  key: "lastMinute",
+                  label: "Last Minute Discount (1%)",
+                  desc: "Offer small savings for guests booking within a few days of arrival.",
+                },
+                {
+                  key: "weekly",
+                  label: "Weekly Discount (10%)",
+                  desc: "Reward guests who stay for 7 nights or more.",
+                },
+                {
+                  key: "monthly",
+                  label: "Monthly Discount (20%)",
+                  desc: "Attract long-term stays with generous monthly savings.",
+                },
+              ].map(({ key, label, desc }) => (
+                <label
+                  key={key}
+                  className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
+                    spaceData.pricing.discounts[key]
+                      ? "border-primary bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
                   }`}
+                  onClick={() =>
+                    handleDiscountChange({
+                      target: {
+                        name: key,
+                        checked: !spaceData.pricing.discounts[key],
+                      },
+                    })
+                  }
                 >
-                  {spaceData.pricing.discounts.newListing && (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-3 h-3 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={3}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  )}
-                </div>
-              </label>
+                  <div className="w-[90%] flex flex-col items-start">
+                    <span className="font-medium text-gray-800">{label}</span>
+                    <p className="text-sm text-gray-500 mt-1 text-left">
+                      {desc}
+                    </p>
+                  </div>
+                  <div
+                    className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+                      spaceData.pricing.discounts[key]
+                        ? "border-primary bg-primary"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    {spaceData.pricing.discounts[key] && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-3 h-3 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={3}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
 
-              {/* Last Minute Discount */}
-              <label
-                className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
-                  spaceData.pricing.discounts.lastMinute
-                    ? "border-primary bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
-                onClick={() =>
-                  handleDiscountChange({
-                    target: {
-                      name: "lastMinute",
-                      checked: !spaceData.pricing.discounts.lastMinute,
-                    },
-                  })
-                }
+        {/* ── Step 12: Availability ─────────────────────────────────────────────── */}
+        {step === 12 && (
+          <div>
+            <h2 className="text-4xl font-semibold mb-2">
+              Set your availability
+            </h2>
+            <p className="text-gray-600 mb-8">
+              Configure when your space is open for bookings. This will be saved
+              when you publish.
+            </p>
+
+            <div className="bg-white p-6 rounded-xl shadow mb-6">
+              <h3 className="text-lg font-semibold mb-3">
+                Default Availability
+              </h3>
+              <select
+                value={availability}
+                onChange={(e) => setAvailability(e.target.value)}
+                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
               >
-                <div className="w-[90%] flex flex-col items-start">
-                  <span className="font-medium text-gray-800">
-                    Last Minute Discount (1%)
-                  </span>
-                  <p className="text-sm text-gray-500 mt-1 text-left">
-                    Offer small savings for guests booking within a few days of
-                    arrival.
-                  </p>
-                </div>
+                <option value="all">Available every day</option>
+                <option value="weekdays">Weekdays only</option>
+                <option value="weekends">Weekends only</option>
+                <option value="custom">Custom schedule</option>
+              </select>
+            </div>
 
-                <div
-                  className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
-                    spaceData.pricing.discounts.lastMinute
-                      ? "border-primary bg-primary"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {spaceData.pricing.discounts.lastMinute && (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-3 h-3 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={3}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  )}
-                </div>
-              </label>
-
-              {/* Weekly Discount */}
-              <label
-                className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
-                  spaceData.pricing.discounts.weekly
-                    ? "border-primary bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
-                onClick={() =>
-                  handleDiscountChange({
-                    target: {
-                      name: "weekly",
-                      checked: !spaceData.pricing.discounts.weekly,
-                    },
-                  })
-                }
-              >
-                <div className="w-[90%] flex flex-col items-start">
-                  <span className="font-medium text-gray-800">
-                    Weekly Discount (10%)
-                  </span>
-                  <p className="text-sm text-gray-500 mt-1 text-left">
-                    Reward guests who stay for 7 nights or more.
-                  </p>
-                </div>
-
-                <div
-                  className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
-                    spaceData.pricing.discounts.weekly
-                      ? "border-primary bg-primary"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {spaceData.pricing.discounts.weekly && (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-3 h-3 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={3}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  )}
-                </div>
-              </label>
-
-              {/* Monthly Discount */}
-              <label
-                className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
-                  spaceData.pricing.discounts.monthly
-                    ? "border-primary bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
-                onClick={() =>
-                  handleDiscountChange({
-                    target: {
-                      name: "monthly",
-                      checked: !spaceData.pricing.discounts.monthly,
-                    },
-                  })
-                }
-              >
-                <div className="w-[90%] flex flex-col items-start">
-                  <span className="font-medium text-gray-800">
-                    Monthly Discount (20%)
-                  </span>
-                  <p className="text-sm text-gray-500 mt-1 text-left">
-                    Attract long-term stays with generous monthly savings.
-                  </p>
-                </div>
-
-                <div
-                  className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
-                    spaceData.pricing.discounts.monthly
-                      ? "border-primary bg-primary"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {spaceData.pricing.discounts.monthly && (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-3 h-3 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={3}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  )}
-                </div>
-              </label>
+            <div className="bg-white p-6 rounded-xl shadow">
+              <h3 className="text-lg font-semibold mb-1">Block Dates</h3>
+              <p className="text-sm text-gray-500 mb-4">
+                Click dates to mark them as unavailable. You can always update
+                this later.
+              </p>
+              <AvailabilityCalendar
+                blockedDates={blockedDates}
+                bookedDates={[]}
+                onBlock={(start, end) => addBlock(start, end)}
+                onUnblock={(dateStr) => removeBlock(dateStr)}
+                monthsToShow={6}
+              />
             </div>
           </div>
         )}
       </div>
+
+      {/* Success modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center flex flex-col items-center">
@@ -1938,7 +5478,7 @@ const CreateSpace = () => {
         </div>
       )}
 
-      {/* Progress + Navigation */}
+      {/* ── Progress + Navigation ─────────────────────────────────────────────── */}
       <div>
         <ProgressBar step={step} totalSteps={totalSteps} />
         <div className="mt-6 flex justify-between">
@@ -1949,7 +5489,6 @@ const CreateSpace = () => {
           >
             Back
           </button>
-
           <Button
             onClick={step === totalSteps ? handleSubmit : handleNext}
             disabled={isSubmitting}
