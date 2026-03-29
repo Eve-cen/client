@@ -4429,7 +4429,6 @@ const CreateSpace = () => {
       );
       if (!response.ok) throw new Error("Failed to fetch coordinates");
       const data = await response.json();
-      ``;
       setSpaceData((prev) => ({
         ...prev,
         coordinates: { latitude: data.latitude, longitude: data.longitude },
@@ -4512,30 +4511,26 @@ const CreateSpace = () => {
         return;
       }
       if (res.status === 403) {
-        // Parse the response body
-        const data = await res.json();
-        toast.error(
-          data.message ||
-            "Please complete your profile before creating a property"
-        );
+        toast.error("Please complete your profile before creating a property");
         saveDraft();
         return;
       }
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to create space");
+      console.log(data);
+      // if (!res.ok) throw new Error(data.message || "Failed to create space");
 
-      toast.success("Your space has been published successfully!");
-      setShowModal(true);
-      const timer = setInterval(() => {
-        setCountdown((c) => {
-          if (c <= 1) {
-            clearInterval(timer);
-            window.location.href = "/";
-          }
-          return c - 1;
-        });
-      }, 1000);
+      // toast.success("Your space has been published successfully!");
+      // setShowModal(true);
+      // const timer = setInterval(() => {
+      //   setCountdown((c) => {
+      //     if (c <= 1) {
+      //       clearInterval(timer);
+      //       window.location.href = "/";
+      //     }
+      //     return c - 1;
+      //   });
+      // }, 1000);
     } catch (err) {
       console.error(err);
       toast.error(err.message || "Something went wrong. Please try again.");
