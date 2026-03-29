@@ -537,7 +537,7 @@ const AuthForm = ({ onForgotPassword, onSuccess }) => {
                 Verify Your Email
               </h2>
               <p className="text-gray-600 mb-4">
-                We've sent a 4-digit code to <strong>{email}</strong>
+                We've sent a 6-digit code to <strong>{email}</strong>
               </p>
               <p className="text-xs text-gray-500">
                 The code will expire in 10 minutes
