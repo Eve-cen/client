@@ -4,10 +4,10 @@ import Button from "./Button";
 import OTPInput from "./OTPInput";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-import { apiFetch } from "../utils/api";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CustomToast from "./CustomToast";
+import { useAuth } from "../context/AuthContext";
 
 const AuthForm = ({ onForgotPassword, onSuccess }) => {
   const { pathname } = useLocation();
@@ -21,6 +21,7 @@ const AuthForm = ({ onForgotPassword, onSuccess }) => {
   const [touched, setTouched] = useState({ email: false, password: false });
   const [step, setStep] = useState("credentials");
   const navigate = useNavigate();
+  const { login, signup, verifyOtp, googleLogin } = useAuth();
 
   const calculateStrength = (pass) => {
     const checks = [
@@ -58,13 +59,11 @@ const AuthForm = ({ onForgotPassword, onSuccess }) => {
       setErrors((prev) => ({ ...prev, password: validatePassword(password) }));
   }, [email, password, touched]);
 
-  // Login: no strength requirement. Signup: must be score 100
   const isFormValid = () => {
     const base = email && password && !errors.email && !errors.password;
     return isLogin ? base : base && score === 100;
   };
 
-  // Pre-fill remembered email on login
   useEffect(() => {
     if (isLogin) {
       const remembered = localStorage.getItem("rememberedEmail");
@@ -92,11 +91,9 @@ const AuthForm = ({ onForgotPassword, onSuccess }) => {
 
     setLoading(true);
     try {
-      const data = await apiFetch({
-        endpoint: isLogin ? "/auth/login" : "/auth/signup",
-        method: "POST",
-        body: { email, password },
-      });
+      const data = await (isLogin
+        ? login(email, password)
+        : signup(email, password));
 
       if (data.requiresVerification) {
         setStep("otp");
@@ -119,13 +116,7 @@ const AuthForm = ({ onForgotPassword, onSuccess }) => {
   };
 
   const handleVerifyOTP = async (otpValue) => {
-    const data = await apiFetch({
-      endpoint: "/auth/verify-login",
-      method: "POST",
-      body: { email, otp: otpValue },
-    });
-
-    localStorage.setItem("token", data.token);
+    await verifyOtp(email, otpValue);
 
     if (isLogin) {
       if (rememberMe) {
@@ -153,11 +144,7 @@ const AuthForm = ({ onForgotPassword, onSuccess }) => {
   const handleResendOTP = async () => {
     setLoading(true);
     try {
-      await apiFetch({
-        endpoint: isLogin ? "/auth/login" : "/auth/signup",
-        method: "POST",
-        body: { email, password },
-      });
+      await (isLogin ? login(email, password) : signup(email, password));
       toast.success(<CustomToast message="OTP resent successfully!" />, {
         className: "custom-toast-success",
       });
@@ -173,12 +160,7 @@ const AuthForm = ({ onForgotPassword, onSuccess }) => {
   const handleGoogleSuccess = async (credentialResponse) => {
     setLoading(true);
     try {
-      const data = await apiFetch({
-        endpoint: "/auth/google",
-        method: "POST",
-        body: { token: credentialResponse.credential },
-      });
-      localStorage.setItem("token", data.token);
+      await googleLogin(credentialResponse.credential);
       onSuccess();
       navigate("/");
     } catch (err) {
@@ -255,7 +237,6 @@ const AuthForm = ({ onForgotPassword, onSuccess }) => {
                   {showPassword ? "Hide" : "Show"}
                 </button>
 
-                {/* Password strength — signup only */}
                 {!isLogin && password && (
                   <div className="mt-3 space-y-2">
                     <div className="flex items-center justify-between text-sm">
@@ -297,7 +278,6 @@ const AuthForm = ({ onForgotPassword, onSuccess }) => {
                 )}
               </div>
 
-              {/* Remember me + Forgot password — login only */}
               {isLogin && (
                 <div className="flex items-center justify-between">
                   <label className="flex items-center gap-2 cursor-pointer">
