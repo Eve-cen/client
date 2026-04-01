@@ -109,7 +109,7 @@ const PropertyDetails = () => {
               </div>
 
               <BookingForm propertyId={property._id} property={property} />
-              {user && user._id !== property.host._id && <ChatBox />}
+              {/* {user && user._id !== property.host._id && <ChatBox />} */}
             </div>
           </div>
         </div>
