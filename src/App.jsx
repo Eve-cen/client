@@ -39,6 +39,7 @@ import PropertyAvailability from "./pages/PropertyAvailability";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import Notifications from "./pages/Notifications";
+import BookingDetails from "./pages/BookingDetails";
 
 // QueryClient lives OUTSIDE the component tree — never recreated on re-render
 const queryClient = new QueryClient({
@@ -140,6 +141,14 @@ function AppContent() {
           element={
             <PrivateRoute requireHost>
               <CreateSpace />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/bookings/:id"
+          element={
+            <PrivateRoute requireHost>
+              <BookingDetails />
             </PrivateRoute>
           }
         />

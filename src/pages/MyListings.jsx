@@ -109,6 +109,16 @@ const MyListings = () => {
     }
   };
 
+  const handleDeleteDraft = async () => {
+    try {
+      await apiFetch({ endpoint: "/drafts", method: "DELETE" });
+      setDraft(null);
+    } catch (err) {
+      console.error("Failed to delete draft:", err);
+      toast?.error("Failed to discard draft");
+    }
+  };
+
   if (loading) return <VencomeLoader />;
 
   return (
@@ -196,9 +206,34 @@ const MyListings = () => {
                   : "—"}
               </p>
 
-              <p className="text-xs text-primary font-medium mt-3 group-hover:underline">
-                Continue editing →
-              </p>
+              <div className="flex items-center justify-between mt-3">
+                <p className="text-xs text-primary font-medium group-hover:underline">
+                  Continue editing →
+                </p>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteDraft();
+                  }}
+                  className="p-1 text-gray-400 hover:text-red-500 transition"
+                  title="Discard draft"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.8}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         )}

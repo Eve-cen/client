@@ -18,7 +18,8 @@ const PropertyDetails = () => {
   const [property, setProperty] = useState(null);
   const [host, setHost] = useState(null);
   const [loading, setLoading] = useState(true);
-  // const [showChat, setShowChat] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showChat, setShowChat] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -34,7 +35,6 @@ const PropertyDetails = () => {
         const hostData = await apiFetch({
           endpoint: `/hosts/${data.property.host._id}`,
         });
-        console.log(hostData);
         setHost(hostData);
         setError("");
       } catch (err) {
@@ -45,6 +45,7 @@ const PropertyDetails = () => {
       }
     };
     fetchProperty();
+    setUser(localStorage.getItem("user"));
   }, [id]);
 
   if (loading) {
@@ -108,8 +109,7 @@ const PropertyDetails = () => {
               </div>
 
               <BookingForm propertyId={property._id} property={property} />
-              {/* {user && user._id !== property.host._id && ( */}
-              {/* )} */}
+              {user && user._id !== property.host._id && <ChatBox />}
             </div>
           </div>
         </div>

@@ -151,7 +151,7 @@ export default function BookingForm({ property }) {
       }, 1000);
     } catch (err) {
       console.error("Booking failed:", err);
-      alert("Booking failed: " + (err.message || "Please try again"));
+      // alert("Booking failed: " + (err.message || "Please try again"));
     } finally {
       setLoading(false);
     }
