@@ -278,7 +278,7 @@ const CreateSpace = () => {
           features: data.features,
           extras: data.extras,
           category: data.category || null,
-          subcategory: data.subcategory || null,
+          subcategory: data.subcategory || [],
           pricing: data.pricing,
           bookingSettings, // ✅ updated
           currentStep,
@@ -344,7 +344,7 @@ const CreateSpace = () => {
           features: { ...prev.features, ...draft.features },
           extras: draft.extras || [],
           category: draft.category || "",
-          subcategory: draft.subcategory || "",
+          subcategory: draft.subcategory || [],
           pricing: { ...prev.pricing, ...draft.pricing },
 
           // ✅ IMPORTANT
@@ -398,7 +398,7 @@ const CreateSpace = () => {
           removedImages: [],
           coverImage: serverImages[0] || null,
           category: draft.category?._id || draft.category || "",
-          subcategory: draft.subcategory?._id || draft.subcategory || "",
+          subcategory: draft.subcategory?._id || draft.subcategory || [],
           pricing: { ...prev.pricing, ...draft.pricing },
 
           // ✅ CRITICAL FIX
@@ -435,7 +435,7 @@ const CreateSpace = () => {
         features: { ...spaceData.features, ...draft.features },
         extras: draft.extras || [],
         category: draft.category || null,
-        subcategory: draft.subcategory || null,
+        subcategory: draft.subcategory || [],
         pricing: { ...spaceData.pricing, ...draft.pricing },
 
         // ✅ normalize
@@ -762,10 +762,7 @@ const CreateSpace = () => {
       formData.append("timeBlocks", JSON.stringify(timeBlocks || []));
 
       formData.append("blockedDates", JSON.stringify(blockedDates || []));
-      console.log(spaceData.imagePreviews);
-      spaceData.imagePreviews.forEach((file) =>
-        formData.append("images", file)
-      );
+      spaceData.imageFiles.forEach((file) => formData.append("images", file));
       formData.append(
         "removedImages",
         JSON.stringify(spaceData.removedImages || [])
