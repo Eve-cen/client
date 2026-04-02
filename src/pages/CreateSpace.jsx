@@ -759,17 +759,13 @@ const CreateSpace = () => {
 
       // ✅ availability/timeBlocks sent separately
       formData.append("availability", availability);
-      formData.append("timeBlocks", JSON.stringify(spaceData.timeBlocks || []));
+      formData.append("timeBlocks", JSON.stringify(timeBlocks || []));
 
       formData.append("blockedDates", JSON.stringify(blockedDates || []));
-
-      spaceData.imageFiles.forEach((file) => formData.append("images", file));
-      formData.append(
-        "removedImages",
-        JSON.stringify(spaceData.removedImages || [])
+      console.log(spaceData.imagePreviews);
+      spaceData.imagePreviews.forEach((file) =>
+        formData.append("images", file)
       );
-      spaceData.imageFiles.forEach((file) => formData.append("images", file));
-
       formData.append(
         "removedImages",
         JSON.stringify(spaceData.removedImages || [])

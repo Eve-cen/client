@@ -1,4 +1,4 @@
-function AvailabilitySelector({
+export default function AvailabilitySelector({
   availability,
   setAvailability,
   timeBlocks,
