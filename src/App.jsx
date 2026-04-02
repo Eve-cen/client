@@ -139,9 +139,9 @@ function AppContent() {
         <Route
           path="/create-space"
           element={
-            <PrivateRoute requireHost>
-              <CreateSpace />
-            </PrivateRoute>
+            // <PrivateRoute requireHost>
+            <CreateSpace />
+            // </PrivateRoute>
           }
         />
         <Route
