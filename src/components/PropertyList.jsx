@@ -1,16 +1,21 @@
 import React from "react";
 import Card from "./EvenCard";
 
-const Featured = ({ properties }) => {
+const Featured = ({ properties, limit }) => {
   const hasProperties = Array.isArray(properties) && properties.length > 0;
+  const displayedProperties = hasProperties
+    ? [...properties]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, limit || properties.length)
+    : [];
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <h2 className="text-3xl text-gray-900 mb-8">Featured Event Centers</h2>
 
-      {hasProperties ? (
+      {displayedProperties.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {properties.map((property) => (
+          {displayedProperties.map((property) => (
             <Card key={property._id} id={property._id} data={property} />
           ))}
         </div>

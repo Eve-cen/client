@@ -111,6 +111,7 @@ const Home = () => {
             properties={filteredProperties}
             onUpdate={handleUpdate}
             onDelete={handleDelete}
+            limit={4}
           />
         </>
       )}
