@@ -17,6 +17,7 @@ import { Save, FileText } from "lucide-react";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import CountrySelect from "../components/CountrySelect";
 import AvailabilityCalendar from "../components/AvailabilityCalendar";
+import AvailabilitySelector from "../components/AvailabilitySelector";
 
 const CreateSpace = () => {
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ const CreateSpace = () => {
   const [showDraftPrompt, setShowDraftPrompt] = useState(false);
   const [draftId, setDraftId] = useState("");
   const [availability, setAvailability] = useState("all");
+  const [timeBlocks, setTimeBlocks] = useState([{ start: "", end: "" }]);
   const [blockedDates, setBlockedDates] = useState([]);
   const libraries = ["places"];
 
@@ -76,7 +78,7 @@ const CreateSpace = () => {
     removedImages: [],
     coverImage: null,
     category: "",
-    subcategory: "",
+    subcategory: [],
     price: null,
     pricing: {
       pricingType: "DAILY",
@@ -230,6 +232,16 @@ const CreateSpace = () => {
     try {
       const token = localStorage.getItem("token");
 
+      // ✅ normalize booking settings
+      const bookingSettings = {
+        availability: data.bookingSettings?.availability || "all",
+        timeBlocks:
+          data.bookingSettings?.availability === "custom"
+            ? data.bookingSettings?.timeBlocks || []
+            : [],
+        ...data.bookingSettings,
+      };
+
       if (!token) {
         const localDraft = {
           title: data.title,
@@ -239,13 +251,14 @@ const CreateSpace = () => {
           features: data.features,
           extras: data.extras,
           category: data.category || null,
-          subcategory: data.subcategory || null,
+          subcategory: data.subcategory || [],
           pricing: data.pricing,
-          bookingSettings: data.bookingSettings,
+          bookingSettings, // ✅ updated
           currentStep,
           imagePreviews: data.imagePreviews || [],
           savedAt: new Date().toISOString(),
         };
+
         localStorage.setItem("vencome_draft", JSON.stringify(localDraft));
         setHasDraft(true);
         toast.success(
@@ -267,14 +280,15 @@ const CreateSpace = () => {
           category: data.category || null,
           subcategory: data.subcategory || null,
           pricing: data.pricing,
-          bookingSettings: data.bookingSettings,
+          bookingSettings, // ✅ updated
           currentStep,
         })
       );
 
       data.imageFiles?.forEach((file) => formData.append("images", file));
-      if (data.removedImages?.length)
+      if (data.removedImages?.length) {
         formData.append("removedImages", JSON.stringify(data.removedImages));
+      }
 
       const res = await fetch(`${import.meta.env.VITE_API_URL}/drafts/save`, {
         method: "POST",
@@ -287,7 +301,6 @@ const CreateSpace = () => {
       if (!res.ok) throw new Error(resData.message || "Failed to save draft");
 
       if (resData.draft.images) {
-        // ── images already have full CDN URLs — don't prepend VITE_API_URL ──
         setSpaceData((prev) => ({
           ...prev,
           serverImages: resData.draft.images,
@@ -319,7 +332,9 @@ const CreateSpace = () => {
           toast.info("No local draft found.");
           return;
         }
+
         const draft = JSON.parse(raw);
+
         setSpaceData((prev) => ({
           ...prev,
           title: draft.title || "",
@@ -331,18 +346,24 @@ const CreateSpace = () => {
           category: draft.category || "",
           subcategory: draft.subcategory || "",
           pricing: { ...prev.pricing, ...draft.pricing },
+
+          // ✅ IMPORTANT
           bookingSettings: {
+            availability: draft.bookingSettings?.availability || "all",
+            timeBlocks: draft.bookingSettings?.timeBlocks || [],
             ...prev.bookingSettings,
             ...draft.bookingSettings,
           },
+
           imagePreviews: draft.imagePreviews || [],
           imageFiles: [],
           serverImages: [],
           removedImages: [],
         }));
+
         setStep(draft.currentStep || 1);
         setShowDraftPrompt(false);
-        toast.success("Local draft loaded. Sign in to restore images.");
+        toast.success("Local draft loaded.");
         return;
       }
 
@@ -354,20 +375,23 @@ const CreateSpace = () => {
       }
 
       const response = await apiFetch({ endpoint: "/drafts", method: "GET" });
+
       if (response.success && response.draft) {
         const draft = response.draft;
+
         const serverImages =
           draft.images?.map((img) => ({
             filename: img.filename,
             url: img.url,
           })) || [];
 
-        setSpaceData({
+        setSpaceData((prev) => ({
+          ...prev,
           title: draft.title || "",
           description: draft.description || "",
           location: draft.location || { address: "", city: "", country: "" },
           coordinates: draft.coordinates || { latitude: null, longitude: null },
-          features: { ...spaceData.features, ...draft.features },
+          features: { ...prev.features, ...draft.features },
           extras: draft.extras || [],
           imageFiles: [],
           serverImages,
@@ -375,12 +399,16 @@ const CreateSpace = () => {
           coverImage: serverImages[0] || null,
           category: draft.category?._id || draft.category || "",
           subcategory: draft.subcategory?._id || draft.subcategory || "",
-          pricing: { ...spaceData.pricing, ...draft.pricing },
+          pricing: { ...prev.pricing, ...draft.pricing },
+
+          // ✅ CRITICAL FIX
           bookingSettings: {
-            ...spaceData.bookingSettings,
+            availability: draft.bookingSettings?.availability || "all",
+            timeBlocks: draft.bookingSettings?.timeBlocks || [],
+            ...prev.bookingSettings,
             ...draft.bookingSettings,
           },
-        });
+        }));
 
         setStep(draft.currentStep || 1);
         setShowDraftPrompt(false);
@@ -395,8 +423,10 @@ const CreateSpace = () => {
   const migrateLocalDraft = async () => {
     const raw = localStorage.getItem("vencome_draft");
     if (!raw) return;
+
     try {
       const draft = JSON.parse(raw);
+
       const migratedData = {
         title: draft.title || "",
         description: draft.description || "",
@@ -407,23 +437,31 @@ const CreateSpace = () => {
         category: draft.category || null,
         subcategory: draft.subcategory || null,
         pricing: { ...spaceData.pricing, ...draft.pricing },
+
+        // ✅ normalize
         bookingSettings: {
+          availability: draft.bookingSettings?.availability || "all",
+          timeBlocks: draft.bookingSettings?.timeBlocks || [],
           ...spaceData.bookingSettings,
           ...draft.bookingSettings,
         },
+
         imageFiles: [],
         serverImages: [],
         removedImages: [],
         imagePreviews: draft.imagePreviews || [],
       };
+
       setSpaceData((prev) => ({ ...prev, ...migratedData }));
       setStep(draft.currentStep || 1);
+
       await saveDraft(migratedData, draft.currentStep || 1);
+
       localStorage.removeItem("vencome_draft");
       toast.success("Your draft has been restored!");
     } catch (err) {
       console.error("Failed to migrate local draft:", err);
-      toast.error("Failed to restore your draft. Please try again.");
+      toast.error("Failed to restore your draft.");
     }
   };
 
@@ -584,8 +622,8 @@ const CreateSpace = () => {
           newErrors.coordinates = "Please pin a location on the map";
         break;
       case 5:
-        if (!spaceData.subcategory)
-          newErrors.subcategory = "Please select a subcategory";
+        if (!spaceData.subcategory.length)
+          newErrors.subcategory = "Please select at least one subcategory";
         break;
       case 6:
         if (!spaceData.features.sizeSQM || spaceData.features.sizeSQM <= 5)
@@ -689,35 +727,53 @@ const CreateSpace = () => {
 
   const handleSubmit = async () => {
     if (!validateStep()) return;
+
     setIsSubmitting(true);
+
     try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        saveDraft();
+        navigate("/login");
+        return;
+      }
+
       const formData = new FormData();
       formData.append("title", spaceData.title);
       formData.append("description", spaceData.description);
       formData.append("category", spaceData.category);
-      formData.append("subcategory", spaceData.subcategory || "");
+      formData.append("subcategory", JSON.stringify(spaceData.subcategory));
       formData.append("pricing", JSON.stringify(spaceData.pricing));
       formData.append("features", JSON.stringify(spaceData.features));
+
       formData.append(
         "bookingSettings",
         JSON.stringify(spaceData.bookingSettings)
       );
+
       formData.append("location", JSON.stringify(spaceData.location));
       formData.append("coordinates", JSON.stringify(spaceData.coordinates));
       formData.append("extras", JSON.stringify(spaceData.extras || []));
       formData.append("draftId", draftId);
+
+      // ✅ availability/timeBlocks sent separately
       formData.append("availability", availability);
-      formData.append("blockedDates", JSON.stringify(blockedDates));
+      formData.append("timeBlocks", JSON.stringify(spaceData.timeBlocks || []));
+
+      formData.append("blockedDates", JSON.stringify(blockedDates || []));
 
       spaceData.imageFiles.forEach((file) => formData.append("images", file));
-      formData.append("removedImages", JSON.stringify(spaceData.removedImages));
+      formData.append(
+        "removedImages",
+        JSON.stringify(spaceData.removedImages || [])
+      );
+      spaceData.imageFiles.forEach((file) => formData.append("images", file));
 
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        saveDraft();
-        return;
-      }
+      formData.append(
+        "removedImages",
+        JSON.stringify(spaceData.removedImages || [])
+      );
 
       const res = await fetch(`${import.meta.env.VITE_API_URL}/properties`, {
         method: "POST",
@@ -726,36 +782,53 @@ const CreateSpace = () => {
         credentials: "include",
       });
 
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        data = null;
+      }
+
       if (res.status === 401) {
         localStorage.removeItem("token");
         saveDraft();
         navigate("/login");
         return;
       }
+
       if (res.status === 403) {
-        toast.error("Please complete your profile before creating a property");
+        toast.error(
+          data?.message ||
+            "Please complete your profile before creating a property"
+        );
+
+        if (data?.missingFields) {
+          console.log("Missing fields:", data.missingFields);
+        }
+
         saveDraft();
         return;
       }
 
-      const data = await res.json();
-      console.log(data);
-      // if (!res.ok) throw new Error(data.message || "Failed to create space");
+      if (!res.ok) {
+        throw new Error(data?.message || "Failed to create space");
+      }
 
-      // toast.success("Your space has been published successfully!");
-      // setShowModal(true);
-      // const timer = setInterval(() => {
-      //   setCountdown((c) => {
-      //     if (c <= 1) {
-      //       clearInterval(timer);
-      //       window.location.href = "/";
-      //     }
-      //     return c - 1;
-      //   });
-      // }, 1000);
+      toast.success("Your space has been published successfully!");
+      setShowModal(true);
+
+      const timer = setInterval(() => {
+        setCountdown((c) => {
+          if (c <= 1) {
+            clearInterval(timer);
+            window.location.href = "/";
+          }
+          return c - 1;
+        });
+      }, 1000);
     } catch (err) {
       console.error(err);
-      toast.error(err.message || "Something went wrong. Please try again.");
+      toast.error(err.message || "Something went wrong.");
     } finally {
       setIsSubmitting(false);
     }
@@ -886,7 +959,6 @@ const CreateSpace = () => {
         "We are not CQC registered, but the space is fully compliant so basic procedures can be carried out by practitioners with their own CQC approval.",
     },
   ];
-
   // ─── Derived ──────────────────────────────────────────────────────────────────
 
   const allPreviews = [
@@ -1203,29 +1275,52 @@ const CreateSpace = () => {
               {subcategories.map((sub) => {
                 const subId = sub._id || sub;
                 const subName = sub.name || sub;
+
+                const isSelected = spaceData.subcategory.includes(subId);
                 return (
                   <label
                     key={subId}
                     className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
-                      spaceData.subcategory === subId
+                      isSelected
                         ? "border-primary bg-blue-50"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                     onClick={() => {
-                      setSpaceData((prev) => ({ ...prev, subcategory: subId }));
+                      setSpaceData((prev) => {
+                        const already = prev.subcategory.includes(subId);
+                        return {
+                          ...prev,
+                          subcategory: already
+                            ? prev.subcategory.filter((s) => s !== subId)
+                            : [...prev.subcategory, subId],
+                        };
+                      });
                       setErrors((prev) => ({ ...prev, subcategory: "" }));
                     }}
                   >
                     <span className="font-medium text-gray-800">{subName}</span>
                     <div
-                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                        spaceData.subcategory === subId
-                          ? "border-primary"
+                      className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${
+                        isSelected
+                          ? "border-primary bg-primary"
                           : "border-gray-300"
                       }`}
                     >
-                      {spaceData.subcategory === subId && (
-                        <div className="w-3 h-3 bg-primary rounded-full" />
+                      {isSelected && (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-3 h-3 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={3}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
                       )}
                     </div>
                   </label>
@@ -1653,22 +1748,12 @@ const CreateSpace = () => {
               when you publish.
             </p>
 
-            <div className="bg-white p-6 rounded-xl shadow mb-6">
-              <h3 className="text-lg font-semibold mb-3">
-                Default Availability
-              </h3>
-              <select
-                value={availability}
-                onChange={(e) => setAvailability(e.target.value)}
-                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-primary focus:border-primary"
-              >
-                <option value="all">Available every day</option>
-                <option value="weekdays">Weekdays only</option>
-                <option value="weekends">Weekends only</option>
-                <option value="custom">Custom schedule</option>
-              </select>
-            </div>
-
+            <AvailabilitySelector
+              availability={availability}
+              setAvailability={setAvailability}
+              timeBlocks={timeBlocks}
+              setTimeBlocks={setTimeBlocks}
+            />
             <div className="bg-white p-6 rounded-xl shadow">
               <h3 className="text-lg font-semibold mb-1">Block Dates</h3>
               <p className="text-sm text-gray-500 mb-4">
@@ -1680,7 +1765,7 @@ const CreateSpace = () => {
                 bookedDates={[]}
                 onBlock={(start, end) => addBlock(start, end)}
                 onUnblock={(dateStr) => removeBlock(dateStr)}
-                monthsToShow={6}
+                monthsPerPage={6}
               />
             </div>
           </div>
