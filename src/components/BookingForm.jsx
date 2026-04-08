@@ -7,6 +7,7 @@ import Button from "./Button";
 import { apiFetch } from "../utils/api";
 import { useNavigate } from "react-router-dom";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
+import { toast } from "react-toastify";
 
 export default function BookingForm({ property }) {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ export default function BookingForm({ property }) {
   const [guests, setGuests] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [countdown, setCountdown] = useState(5);
+  const [licensePdf, setLicensePdf] = useState(null);
+  const [licensePdfError, setLicensePdfError] = useState(null);
 
   const [range, setRange] = useState([
     {
@@ -108,55 +111,69 @@ export default function BookingForm({ property }) {
     e.preventDefault();
 
     if (hoursPerDay <= 0) {
-      alert("Check-out time must be after check-in time");
+      toast.warn("Check-out time must be after check-in time");
       return;
     }
 
     if (checkOutFull < checkInFull) {
-      alert("Overall check-out must be after check-in");
+      toast.warn("Overall check-out must be after check-in");
       return;
+    }
+
+    if (licensePdf === null) {
+      toast.warn("Please upload your license");
     }
 
     setLoading(true);
 
-    const bookingData = {
-      propertyId: property._id,
-      checkIn: checkInFull.toISOString(),
-      checkOut: checkOutFull.toISOString(),
-      guests,
-      extras: [], // add selected extras here
-    };
-
     try {
-      const booking = await apiFetch({
-        endpoint: "/bookings",
+      const formData = new FormData();
+      formData.append("propertyId", property._id);
+      formData.append("checkIn", checkInFull.toISOString());
+      formData.append("checkOut", checkOutFull.toISOString());
+      formData.append("guests", guests);
+      formData.append("extras", JSON.stringify([])); // add selected extras here
+
+      if (licensePdf) {
+        formData.append("licensePdf", licensePdf); // must be a File object
+      }
+
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/bookings`, {
         method: "POST",
-        body: bookingData,
-        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
       });
+
+      if (!response.ok) {
+        const err = await response.json();
+        console.log(err);
+        throw new Error(err.error || "Booking failed");
+      }
+
+      const booking = await response.json();
 
       setShowModal(true);
 
-      // Countdown redirect
       const interval = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(interval);
             setShowModal(false);
             navigate("/my-bookings", { replace: true });
-            window.location.reload(); // Reload homepage
+            window.location.reload();
           }
           return prev - 1;
         });
       }, 1000);
     } catch (err) {
-      console.error("Booking failed:", err);
-      // alert("Booking failed: " + (err.message || "Please try again"));
+      toast.error("Booking failed: " + (err.message || "Please try again"));
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div>
       <div className="flex border rounded-2xl w-full mb-4 text-sm">
@@ -259,6 +276,103 @@ export default function BookingForm({ property }) {
         )}
       </div>
 
+      {property.category.name === "Medical Rooms" && (
+        <div className="space-y-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-gray-700">
+              License PDF
+            </label>
+
+            {!licensePdf ? (
+              <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-blue-400 transition-colors duration-200">
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      if (file.size > 10 * 1024 * 1024) {
+                        setLicensePdfError("File must be under 10MB");
+                        return;
+                      }
+                      setLicensePdfError(null);
+                      setLicensePdf(file);
+                    }
+                  }}
+                />
+                <svg
+                  className="w-7 h-7 text-gray-400 mb-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12V4m0 0L8 8m4-4l4 4"
+                  />
+                </svg>
+                <span className="text-sm text-gray-500">
+                  Click to upload PDF
+                </span>
+                <span className="text-xs text-gray-400 mt-0.5">
+                  PDF only · Max 10MB
+                </span>
+              </label>
+            ) : (
+              <div className="flex items-center justify-between w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex-shrink-0 w-8 h-8 bg-red-100 rounded flex items-center justify-center">
+                    <svg
+                      className="w-4 h-4 text-red-600"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 4h5v5a1 1 0 001 1h5v10H6V4z" />
+                    </svg>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-gray-700 truncate">
+                      {licensePdf.name}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {(licensePdf.size / 1024).toFixed(1)} KB
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLicensePdf(null);
+                    setLicensePdfError(null);
+                  }}
+                  className="flex-shrink-0 ml-3 text-gray-400 hover:text-red-500 transition-colors"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+            )}
+
+            {licensePdfError && (
+              <p className="text-xs text-red-500">{licensePdfError}</p>
+            )}
+          </div>
+        </div>
+      )}
       <Button
         type="submit"
         onClick={handleSubmit}

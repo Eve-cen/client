@@ -8,8 +8,6 @@ const HostCard = ({ host }) => {
     month: "long",
   });
 
-  console.log(host);
-
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <div className="flex items-center space-x-4 mb-4">

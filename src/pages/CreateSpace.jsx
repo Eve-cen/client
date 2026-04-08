@@ -22,7 +22,8 @@ import AvailabilitySelector from "../components/AvailabilitySelector";
 const CreateSpace = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const totalSteps = 12;
+  const [cqcDocuments, setCqcDocuments] = useState([]);
+  const cqcFileInputRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [errors, setErrors] = useState({});
@@ -70,6 +71,28 @@ const CreateSpace = () => {
       naturalLight: false,
       dirtyTowelShoot: false,
       cqcCompliance: false,
+      treatmentBed: false,
+      clinicianDesk: false,
+      patientSeating: false,
+      sinkHandwashing: false,
+      reliableWifi: false,
+      hcaPhlebotomy: false,
+      gradeIIBuilding: false,
+      ultrasoundColposcopy: false,
+      receptionFacilities: false,
+      mannedReception: false,
+      access247: false,
+      bookableMeetingRooms: false,
+      gigabitInternet: false,
+      postHandling: false,
+      eventsSpace: false,
+      cleaningIncluded: false,
+      dogFriendly: false,
+      bikeStorage: false,
+      membersCafe: false,
+      breakoutAreas: false,
+      showers: false,
+      airConditioning: false,
     },
     extras: [],
     imageFiles: [],
@@ -98,7 +121,8 @@ const CreateSpace = () => {
       approveAllBookings: false,
     },
   });
-
+  const isMedicalCategory = spaceData.category === "6915bd724f4f95223e555e5b";
+  const totalSteps = isMedicalCategory ? 13 : 12;
   const [showPopup, setShowPopup] = useState(false);
 
   const { isLoaded } = useLoadScript({
@@ -289,6 +313,8 @@ const CreateSpace = () => {
       if (data.removedImages?.length) {
         formData.append("removedImages", JSON.stringify(data.removedImages));
       }
+
+      cqcDocuments.forEach((file) => formData.append("cqcDocuments", file));
 
       const res = await fetch(`${import.meta.env.VITE_API_URL}/drafts/save`, {
         method: "POST",
@@ -767,6 +793,7 @@ const CreateSpace = () => {
         "removedImages",
         JSON.stringify(spaceData.removedImages || [])
       );
+      cqcDocuments.forEach((file) => formData.append("cqcDocuments", file));
 
       const res = await fetch(`${import.meta.env.VITE_API_URL}/properties`, {
         method: "POST",
@@ -950,6 +977,124 @@ const CreateSpace = () => {
       title: "Fully CQC compliant",
       description:
         "We are not CQC registered, but the space is fully compliant so basic procedures can be carried out by practitioners with their own CQC approval.",
+    },
+    // Clinical Room Features
+    {
+      key: "treatmentBed",
+      title: "Treatment bed",
+      description:
+        "Electric or hydraulic treatment/examination bed for patient care.",
+    },
+    {
+      key: "clinicianDesk",
+      title: "Clinician's desk and chair",
+      description: "Dedicated desk and seating for the practitioner.",
+    },
+    {
+      key: "patientSeating",
+      title: "Patient seating",
+      description: "Comfortable seating available for patients in the room.",
+    },
+    {
+      key: "sinkHandwashing",
+      title: "Sink and handwashing facilities",
+      description: "Dedicated sink for clinical handwashing within the room.",
+    },
+    {
+      key: "reliableWifi",
+      title: "Reliable Wi-Fi",
+      description:
+        "Fast and stable internet connection available in the space.",
+    },
+    {
+      key: "hcaPhlebotomy",
+      title: "HCA & Phlebotomy Available",
+      description:
+        "Healthcare assistant and phlebotomy services available on site.",
+    },
+    {
+      key: "gradeIIBuilding",
+      title: "Newly refurbished, Grade II listed building",
+      description:
+        "Space is within a newly refurbished, Grade II listed heritage building.",
+    },
+    {
+      key: "ultrasoundColposcopy",
+      title: "Ultrasound and Colposcopy Machines",
+      description: "Ultrasound and colposcopy equipment available for use.",
+    },
+    {
+      key: "receptionFacilities",
+      title: "Reception Facilities",
+      description:
+        "Staffed reception available to greet patients and visitors.",
+    },
+    // Building Amenities
+    {
+      key: "mannedReception",
+      title: "Manned Reception",
+      description: "Dedicated reception staff present during operating hours.",
+    },
+    {
+      key: "access247",
+      title: "24/7 Access",
+      description: "Round-the-clock access to the building and space.",
+    },
+    {
+      key: "bookableMeetingRooms",
+      title: "Bookable Meeting Rooms",
+      description: "Additional meeting rooms available to reserve separately.",
+    },
+    {
+      key: "gigabitInternet",
+      title: "1 Gbps Internet (symmetric)",
+      description: "Enterprise-grade symmetric gigabit internet connection.",
+    },
+    {
+      key: "postHandling",
+      title: "Post Handling",
+      description: "Mail and postal services handled on your behalf.",
+    },
+    {
+      key: "eventsSpace",
+      title: "Events Space",
+      description: "Dedicated space available for hosting events.",
+    },
+    {
+      key: "cleaningIncluded",
+      title: "Cleaning included",
+      description: "Professional cleaning of the space is included.",
+    },
+    {
+      key: "dogFriendly",
+      title: "Dog Friendly",
+      description: "Well-behaved dogs are welcome in the building.",
+    },
+    {
+      key: "bikeStorage",
+      title: "Bike Storage",
+      description: "Secure bicycle storage available on the premises.",
+    },
+    {
+      key: "membersCafe",
+      title: "Members' Café",
+      description: "On-site café available exclusively for members and guests.",
+    },
+    {
+      key: "breakoutAreas",
+      title: "Breakout Areas",
+      description:
+        "Informal spaces available for breaks and informal meetings.",
+    },
+    {
+      key: "showers",
+      title: "Showers",
+      description: "Shower facilities available within the building.",
+    },
+    {
+      key: "airConditioning",
+      title: "Air Conditioning",
+      description: "Climate-controlled environment with air conditioning.",
     },
   ];
   // ─── Derived ──────────────────────────────────────────────────────────────────
@@ -1362,10 +1507,21 @@ const CreateSpace = () => {
               )}
               {spaceData.category === "6915bd724f4f95223e555e5b" && (
                 <>
-                  <h2 className="text-xl font-semibold my-4">
-                    Medical Room Features
+                  <h2 className="text-xl font-semibold mt-6 mb-2">
+                    Clinical Room Features
                   </h2>
-                  {medicalFeatures.map(renderFeatureCheckbox)}
+                  <p className="text-sm text-gray-500 mb-3">
+                    Select all facilities available within the room.
+                  </p>
+                  {medicalFeatures.slice(0, 9).map(renderFeatureCheckbox)}
+
+                  <h2 className="text-xl font-semibold mt-8 mb-2">
+                    Building Amenities
+                  </h2>
+                  <p className="text-sm text-gray-500 mb-3">
+                    Select all amenities available in the wider building.
+                  </p>
+                  {medicalFeatures.slice(9).map(renderFeatureCheckbox)}
                 </>
               )}
               <div className="mt-5 flex gap-6 items-center">
@@ -1761,6 +1917,120 @@ const CreateSpace = () => {
                 monthsPerPage={6}
               />
             </div>
+          </div>
+        )}
+
+        {/* ── Step 13: CQC Document Upload (Medical only) ──────────────────────── */}
+        {step === 13 && (
+          <div>
+            <h2 className="text-4xl font-semibold mb-2">
+              CQC Compliance Documents
+            </h2>
+            <p className="text-gray-600 mb-2">
+              Upload your CQC-compliant documentation for this medical room.
+              Guests will be able to download and review these before booking.
+            </p>
+            <p className="text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 mb-6">
+              Accepted formats: PDF, DOC, DOCX. Max 10MB per file.
+            </p>
+
+            <div
+              onClick={() => cqcFileInputRef.current?.click()}
+              className="border-2 border-dashed border-gray-300 hover:border-primary rounded-xl p-10 text-center cursor-pointer transition-all hover:bg-blue-50"
+            >
+              <div className="flex flex-col items-center gap-2 text-gray-500">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-10 h-10 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 16v-8m0 0-3 3m3-3 3 3M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1"
+                  />
+                </svg>
+                <p className="font-medium text-gray-700">
+                  Click to upload documents
+                </p>
+                <p className="text-sm">PDF, DOC, DOCX up to 10MB</p>
+              </div>
+              <input
+                ref={cqcFileInputRef}
+                type="file"
+                accept=".pdf,.doc,.docx"
+                multiple
+                className="hidden"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files || []);
+                  const valid = files.filter((f) => f.size <= 10 * 1024 * 1024);
+                  if (valid.length < files.length)
+                    toast.warn("Some files exceeded 10MB and were skipped.");
+                  setCqcDocuments((prev) => [...prev, ...valid]);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+
+            {cqcDocuments.length > 0 && (
+              <div className="mt-6 space-y-3">
+                <h3 className="font-semibold text-gray-800">
+                  Uploaded Documents ({cqcDocuments.length})
+                </h3>
+                {cqcDocuments.map((doc, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <FileText size={20} className="text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-800 text-sm truncate max-w-[220px]">
+                          {doc.name}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {(doc.size / 1024).toFixed(1)} KB
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() =>
+                        setCqcDocuments((prev) =>
+                          prev.filter((_, i) => i !== index)
+                        )
+                      }
+                      className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-5 h-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {cqcDocuments.length === 0 && (
+              <p className="text-center text-sm text-gray-400 mt-4">
+                No documents uploaded yet.
+              </p>
+            )}
           </div>
         )}
       </div>

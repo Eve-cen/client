@@ -11,6 +11,7 @@ import Button from "../components/Button";
 import ChatBox from "../components/ChatBox";
 import HostCard from "../components/HostCard";
 import VencomeLoader from "../components/Loader";
+import { FileText, Download } from "lucide-react";
 
 const PropertyDetails = () => {
   const { id } = useParams();
@@ -114,6 +115,61 @@ const PropertyDetails = () => {
           </div>
         </div>
         <PropertyDescription data={property.description} />
+        {property.cqcDocuments?.length > 0 && (
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-1">
+              CQC Compliance Documents
+            </h3>
+            <p className="text-sm text-gray-500 mb-4">
+              Download and review the host's CQC compliance documentation before
+              booking.
+            </p>
+            <div className="space-y-3">
+              {property.cqcDocuments.map((url, index) => {
+                const fileName =
+                  url.split("/").pop() || `CQC-Document-${index + 1}`;
+                const ext = fileName.split(".").pop().toLowerCase();
+                const iconColor =
+                  ext === "pdf" ? "text-red-500" : "text-blue-500";
+                const bgColor =
+                  ext === "pdf"
+                    ? "bg-red-50 border-red-200"
+                    : "bg-blue-50 border-blue-200";
+
+                return (
+                  <a
+                    key={index}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download={fileName}
+                    className={`flex items-center justify-between p-4 border rounded-xl transition-all hover:shadow-sm ${bgColor}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-10 h-10 rounded-lg bg-white border flex items-center justify-center flex-shrink-0 ${iconColor}`}
+                      >
+                        <FileText size={20} />
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-800 text-sm truncate max-w-[200px]">
+                          {fileName}
+                        </p>
+                        <p className="text-xs text-gray-500 uppercase">
+                          {ext} Document
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 text-sm font-medium text-gray-600">
+                      <Download size={16} />
+                      Download
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        )}
         <PropertyOffers data={property.features} />
         <PropertyLocation data={property.coordinates} />
         <ReviewsSection reviews={property.reviews} />
