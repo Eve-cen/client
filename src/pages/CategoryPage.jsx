@@ -22,7 +22,7 @@ const CategoryPage = () => {
         setLoading(true);
         const catData = await apiFetch({ endpoint: `/categories/${id}` });
         setCategory(catData.category);
-        setSubCategory(catData.category.subcategory);
+        setSubCategory(catData.category.subcategories);
         setProperties(catData.properties);
         setError("");
       } catch (err) {
@@ -52,7 +52,7 @@ const CategoryPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="container w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Category Header */}
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">

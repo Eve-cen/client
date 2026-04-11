@@ -1,0 +1,702 @@
+[{
+  "_id": {
+    "$oid": "6915bd724f4f95223e555e57"
+  },
+  "name": "Treatment Rooms",
+  "image": "https://images.pexels.com/photos/3822625/pexels-photo-3822625.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "description": "Private and serene treatment rooms ideal for wellness sessions, massages, and therapy.",
+  "updatedAt": {
+    "$date": "2026-03-20T07:51:39.916Z"
+  },
+  "subcategories": [
+    {
+      "name": "Osteopathy",
+      "_id": {
+        "$oid": "69bcfc8b60ec07d73d5078cc"
+      },
+      "createdAt": {
+        "$date": "2026-03-20T07:51:39.916Z"
+      },
+      "updatedAt": {
+        "$date": "2026-03-20T07:51:39.916Z"
+      }
+    },
+    {
+      "name": "Physiotherapy",
+      "_id": {
+        "$oid": "69bcfc8b60ec07d73d5078cd"
+      },
+      "createdAt": {
+        "$date": "2026-03-20T07:51:39.916Z"
+      },
+      "updatedAt": {
+        "$date": "2026-03-20T07:51:39.916Z"
+      }
+    },
+    {
+      "name": "Sports Therapy",
+      "_id": {
+        "$oid": "69bcfc8b60ec07d73d5078ce"
+      },
+      "createdAt": {
+        "$date": "2026-03-20T07:51:39.916Z"
+      },
+      "updatedAt": {
+        "$date": "2026-03-20T07:51:39.916Z"
+      }
+    },
+    {
+      "name": "Hands on Care",
+      "_id": {
+        "$oid": "69bcfc8b60ec07d73d5078cf"
+      },
+      "createdAt": {
+        "$date": "2026-03-20T07:51:39.916Z"
+      },
+      "updatedAt": {
+        "$date": "2026-03-20T07:51:39.916Z"
+      }
+    },
+    {
+      "name": "Aesthetics",
+      "_id": {
+        "$oid": "69bcfc8b60ec07d73d5078d0"
+      },
+      "createdAt": {
+        "$date": "2026-03-20T07:51:39.916Z"
+      },
+      "updatedAt": {
+        "$date": "2026-03-20T07:51:39.916Z"
+      }
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6915bd724f4f95223e555e58"
+  },
+  "name": "Meeting Rooms",
+  "image": "https://images.pexels.com/photos/1181396/pexels-photo-1181396.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "description": "Professional meeting spaces equipped with modern facilities for business discussions and team collaborations."
+},
+{
+  "_id": {
+    "$oid": "6915bd724f4f95223e555e59"
+  },
+  "name": "Warehouse/Storage Space",
+  "image": "https://images.pexels.com/photos/4484073/pexels-photo-4484073.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "description": "Spacious and secure warehouses perfect for storage, logistics, and inventory management.",
+  "updatedAt": {
+    "$date": "2026-04-11T02:20:41.881Z"
+  },
+  "subcategories": [
+    {
+      "name": "Wine Storage",
+      "_id": {
+        "$oid": "69d9aff93c9cae99e89d8757"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      }
+    },
+    {
+      "name": "Personal Storage",
+      "_id": {
+        "$oid": "69d9aff93c9cae99e89d8758"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      }
+    },
+    {
+      "name": "Student Storage",
+      "_id": {
+        "$oid": "69d9aff93c9cae99e89d8759"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      }
+    },
+    {
+      "name": "External Lockups",
+      "_id": {
+        "$oid": "69d9aff93c9cae99e89d875a"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      }
+    },
+    {
+      "name": "Food Storage",
+      "_id": {
+        "$oid": "69d9aff93c9cae99e89d875b"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      }
+    },
+    {
+      "name": "Chemical Storage",
+      "_id": {
+        "$oid": "69d9aff93c9cae99e89d875c"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      }
+    },
+    {
+      "name": "Climate-Controlled Storage",
+      "_id": {
+        "$oid": "69d9aff93c9cae99e89d875d"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      }
+    },
+    {
+      "name": "Vehicle Storage",
+      "_id": {
+        "$oid": "69d9aff93c9cae99e89d875e"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      }
+    },
+    {
+      "name": "Portable Storage",
+      "_id": {
+        "$oid": "69d9aff93c9cae99e89d875f"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      }
+    },
+    {
+      "name": "Business/Commercial Storage",
+      "_id": {
+        "$oid": "69d9aff93c9cae99e89d8760"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      }
+    },
+    {
+      "name": "Document & Archive Storage",
+      "_id": {
+        "$oid": "69d9aff93c9cae99e89d8761"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      }
+    },
+    {
+      "name": "Cold Storage",
+      "_id": {
+        "$oid": "69d9aff93c9cae99e89d8762"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      }
+    },
+    {
+      "name": "High-Security Storage",
+      "_id": {
+        "$oid": "69d9aff93c9cae99e89d8763"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:20:41.881Z"
+      }
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6915bd724f4f95223e555e5a"
+  },
+  "name": "Clean Rooms",
+  "image": "https://images.pexels.com/photos/3825529/pexels-photo-3825529.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "description": "Specialized controlled environments designed for pharmaceutical, biotech, or electronics manufacturing."
+},
+{
+  "_id": {
+    "$oid": "6915bd724f4f95223e555e5b"
+  },
+  "name": "Medical Rooms",
+  "image": "https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "description": "Fully equipped medical spaces suitable for clinics, diagnostics, and healthcare professionals."
+},
+{
+  "_id": {
+    "$oid": "6915bd724f4f95223e555e5c"
+  },
+  "name": "Pop-Up Stores",
+  "image": "https://images.pexels.com/photos/3184192/pexels-photo-3184192.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "description": "Trendy short-term retail spaces ideal for brand activations, launches, and seasonal sales.",
+  "subcategories": [
+    {
+      "name": "Retail Pop-Up Shops",
+      "_id": {
+        "$oid": "69d9b0c85a14968f9559373a"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:24:08.986Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:24:08.986Z"
+      }
+    },
+    {
+      "name": "Brand Experience Pop-Ups",
+      "_id": {
+        "$oid": "69d9b0c85a14968f9559373b"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:24:08.986Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:24:08.986Z"
+      }
+    },
+    {
+      "name": "Food & Beverage Pop-Ups",
+      "_id": {
+        "$oid": "69d9b0c85a14968f9559373c"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:24:08.986Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:24:08.986Z"
+      }
+    },
+    {
+      "name": "Collaborative Pop-Ups",
+      "_id": {
+        "$oid": "69d9b0c85a14968f9559373d"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:24:08.986Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:24:08.986Z"
+      }
+    },
+    {
+      "name": "Art & Culture Pop-Ups",
+      "_id": {
+        "$oid": "69d9b0c85a14968f9559373e"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:24:08.986Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:24:08.986Z"
+      }
+    },
+    {
+      "name": "Wellness & Beauty Pop-Ups",
+      "_id": {
+        "$oid": "69d9b0c85a14968f9559373f"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:24:08.986Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:24:08.986Z"
+      }
+    },
+    {
+      "name": "Seasonal & Holiday Pop-Ups",
+      "_id": {
+        "$oid": "69d9b0c85a14968f95593740"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:24:08.986Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:24:08.986Z"
+      }
+    },
+    {
+      "name": "Product Testing / Market Research Pop-Ups",
+      "_id": {
+        "$oid": "69d9b0c85a14968f95593741"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:24:08.986Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:24:08.986Z"
+      }
+    }
+  ],
+  "updatedAt": {
+    "$date": "2026-04-11T02:24:08.986Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6915bd724f4f95223e555e5d"
+  },
+  "name": "Event Rooms",
+  "image": "https://images.pexels.com/photos/2608517/pexels-photo-2608517.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "description": "Elegant venues designed to host events, parties, and conferences of all sizes.",
+  "subcategories": [
+    {
+      "name": "Birthdays",
+      "_id": {
+        "$oid": "69d9b0797bc05746f0725613"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      }
+    },
+    {
+      "name": "Social Event Spaces",
+      "_id": {
+        "$oid": "69d9b0797bc05746f0725614"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      }
+    },
+    {
+      "name": "Corporate Event Rooms",
+      "_id": {
+        "$oid": "69d9b0797bc05746f0725615"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      }
+    },
+    {
+      "name": "Wedding & Banquet Halls",
+      "_id": {
+        "$oid": "69d9b0797bc05746f0725616"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      }
+    },
+    {
+      "name": "Creative & Cultural Spaces",
+      "_id": {
+        "$oid": "69d9b0797bc05746f0725617"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      }
+    },
+    {
+      "name": "Wellness & Lifestyle Event Spaces",
+      "_id": {
+        "$oid": "69d9b0797bc05746f0725618"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      }
+    },
+    {
+      "name": "Dining & Hospitality Event Rooms",
+      "_id": {
+        "$oid": "69d9b0797bc05746f0725619"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      }
+    },
+    {
+      "name": "Entertainment & Party Venues",
+      "_id": {
+        "$oid": "69d9b0797bc05746f072561a"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      }
+    },
+    {
+      "name": "Hybrid / Multi-Purpose Spaces",
+      "_id": {
+        "$oid": "69d9b0797bc05746f072561b"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:22:49.135Z"
+      }
+    }
+  ],
+  "updatedAt": {
+    "$date": "2026-04-11T02:22:49.135Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6915bd724f4f95223e555e5e"
+  },
+  "name": "Office Spaces",
+  "image": "https://images.pexels.com/photos/3184298/pexels-photo-3184298.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "description": "Modern and comfortable office spaces perfect for startups, freelancers, and established businesses.",
+  "subcategories": [
+    {
+      "name": "Long-Term Leases",
+      "_id": {
+        "$oid": "69d9b1596cbae7f72094a2e5"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:26:33.000Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:26:33.000Z"
+      }
+    },
+    {
+      "name": "Private Offices",
+      "_id": {
+        "$oid": "69d9b1596cbae7f72094a2e6"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:26:33.000Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:26:33.000Z"
+      }
+    },
+    {
+      "name": "Meeting Rooms",
+      "_id": {
+        "$oid": "69d9b1596cbae7f72094a2e7"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:26:33.000Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:26:33.000Z"
+      }
+    },
+    {
+      "name": "Flexible / Serviced Offices",
+      "_id": {
+        "$oid": "69d9b1596cbae7f72094a2e8"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:26:33.000Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:26:33.000Z"
+      }
+    },
+    {
+      "name": "Co-Working Spaces",
+      "_id": {
+        "$oid": "69d9b1596cbae7f72094a2e9"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:26:33.000Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:26:33.000Z"
+      }
+    },
+    {
+      "name": "Private Offices (Within Shared Spaces)",
+      "_id": {
+        "$oid": "69d9b1596cbae7f72094a2ea"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:26:33.000Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:26:33.000Z"
+      }
+    },
+    {
+      "name": "Virtual Offices",
+      "_id": {
+        "$oid": "69d9b1596cbae7f72094a2eb"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:26:33.000Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:26:33.000Z"
+      }
+    },
+    {
+      "name": "Creative / Studio Offices",
+      "_id": {
+        "$oid": "69d9b1596cbae7f72094a2ec"
+      },
+      "createdAt": {
+        "$date": "2026-04-11T02:26:33.000Z"
+      },
+      "updatedAt": {
+        "$date": "2026-04-11T02:26:33.000Z"
+      }
+    }
+  ],
+  "updatedAt": {
+    "$date": "2026-04-11T02:26:33.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6915bd724f4f95223e555e5f"
+  },
+  "name": "Lab Rooms",
+  "image": "https://images.pexels.com/photos/3825527/pexels-photo-3825527.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "description": "Advanced laboratory rooms equipped for research, testing, and scientific development."
+},
+{
+  "_id": {
+    "$oid": "6915bd724f4f95223e555e60"
+  },
+  "name": "Showrooms",
+  "image": "https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "description": "Stylish showrooms designed to display products and attract clients in an elegant setting."
+},
+{
+  "_id": {
+    "$oid": "691d1165d99676157c73d197"
+  },
+  "name": "Cosmetics Space",
+  "image": "https://media.istockphoto.com/id/2155481789/photo/modern-beauty-and-cosmetics-store-with-display-shelves.jpg?s=612x612&w=0&k=20&c=kI1Dflw0P2CatcCOKyiQgQ3lVX6UKSoZLtuekcVSshQ=",
+  "description": "A clean and modern space designed for beauty treatments, cosmetic procedures, and professional makeup sessions."
+},
+{
+  "_id": {
+    "$oid": "698101a4d3331e866328c7f9"
+  },
+  "name": "Fitness Spaces",
+  "image": "https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "description": "Spaces designed for fitness, training, and group exercise activities.",
+  "createdAt": {
+    "$date": "2026-02-02T19:57:24.423Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-02T19:57:24.423Z"
+  },
+  "__v": 0,
+  "subcategories": [
+    {
+      "name": "Reformer pilates rooms",
+      "description": "Studios equipped with reformer pilates machines",
+      "_id": {
+        "$oid": "698101a4d3331e866328c7fa"
+      },
+      "createdAt": {
+        "$date": "2026-02-02T19:57:24.421Z"
+      },
+      "updatedAt": {
+        "$date": "2026-02-02T19:57:24.421Z"
+      },
+      "image": "https://images.pexels.com/photos/3823036/pexels-photo-3823036.jpeg?auto=compress&cs=tinysrgb&w=800"
+    },
+    {
+      "name": "Yoga",
+      "description": "Quiet spaces suitable for yoga and stretching sessions",
+      "_id": {
+        "$oid": "698101a4d3331e866328c7fb"
+      },
+      "createdAt": {
+        "$date": "2026-02-02T19:57:24.422Z"
+      },
+      "updatedAt": {
+        "$date": "2026-02-02T19:57:24.422Z"
+      },
+      "image": "https://images.pexels.com/photos/3822622/pexels-photo-3822622.jpeg?auto=compress&cs=tinysrgb&w=800"
+    },
+    {
+      "name": "Zumba",
+      "description": "Open spaces for dance-based fitness classes",
+      "_id": {
+        "$oid": "698101a4d3331e866328c7fc"
+      },
+      "createdAt": {
+        "$date": "2026-02-02T19:57:24.422Z"
+      },
+      "updatedAt": {
+        "$date": "2026-02-02T19:57:24.422Z"
+      },
+      "image": "https://images.pexels.com/photos/3768919/pexels-photo-3768919.jpeg?auto=compress&cs=tinysrgb&w=800"
+    },
+    {
+      "name": "Kickboxing",
+      "description": "Training areas for kickboxing and combat fitness",
+      "_id": {
+        "$oid": "698101a4d3331e866328c7fd"
+      },
+      "createdAt": {
+        "$date": "2026-02-02T19:57:24.422Z"
+      },
+      "updatedAt": {
+        "$date": "2026-02-02T19:57:24.422Z"
+      },
+      "image": "https://images.pexels.com/photos/4761791/pexels-photo-4761791.jpeg?auto=compress&cs=tinysrgb&w=800"
+    }
+  ]
+}]

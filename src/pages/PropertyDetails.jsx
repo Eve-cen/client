@@ -104,7 +104,7 @@ const PropertyDetails = () => {
                   </p>
                 ) : (
                   <p className="text-2xl">
-                    ${property.pricing?.weekdayPrice} / night
+                    ${property.pricing?.weekdayPrice} / day
                   </p>
                 )}
               </div>

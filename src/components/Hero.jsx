@@ -1,11 +1,82 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../utils/api";
 import Input from "./Input";
 import Button from "./Button";
 import Navbar from "./Navbar";
 import DateSelector from "./DateSelector";
-import { MapPin, Building2, Globe, TowerControlIcon } from "lucide-react"; // pick suitable icons
+import {
+  MapPin,
+  Building2,
+  Globe,
+  TowerControlIcon,
+  ChevronDown,
+} from "lucide-react"; // pick suitable icons
+
+const DURATION_OPTIONS = [
+  { value: "less_than_1_month", label: "Less than 1 month" },
+  { value: "1_to_3_months", label: "1 – 3 months" },
+  { value: "3_to_12_months", label: "3 – 12 months" },
+  { value: "12_plus_months", label: "12+ months" },
+];
+
+const DurationDropdown = ({ value, onChange }) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const selected = DURATION_OPTIONS.find((o) => o.value === value);
+
+  return (
+    <div ref={ref} className="relative">
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Duration
+      </label>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between text-left px-4 py-3 border border-gray-300 rounded-lg bg-white hover:border-gray-300 transition"
+      >
+        <span className={selected ? "text-gray-900" : "text-gray-400"}>
+          {selected ? selected.label : "Choose duration"}
+        </span>
+        <ChevronDown
+          size={14}
+          className={`transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute z-50 w-full bg-white border border-gray-200 rounded-lg shadow-md mt-1 overflow-hidden">
+          {DURATION_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => {
+                onChange(opt.value);
+                setOpen(false);
+              }}
+              className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 transition ${
+                value === opt.value
+                  ? "font-medium text-blue-600"
+                  : "text-gray-800"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Hero = ({ onExplore }) => {
   const navigate = useNavigate();
@@ -17,6 +88,7 @@ const Hero = ({ onExplore }) => {
     maxPrice: "",
     checkIn: "",
     checkOut: "",
+    duration: "",
   });
   const [error, setError] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -88,6 +160,7 @@ const Hero = ({ onExplore }) => {
       // Backend accepts checkIn & checkOut as optional logs
       if (formData.checkIn) queryParams.append("checkIn", formData.checkIn);
       if (formData.checkOut) queryParams.append("checkOut", formData.checkOut);
+      if (formData.duration) queryParams.append("duration", formData.duration);
 
       const data = await apiFetch({
         endpoint: `/properties/search?${queryParams.toString()}`,
@@ -118,7 +191,7 @@ const Hero = ({ onExplore }) => {
         <div className="w-full max-w-6xl bg-white bg-opacity-90 p-6 rounded-[24px] shadow-lg mt-10">
           <form
             onSubmit={handleSearchSubmit}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4"
           >
             <div className="relative">
               <Input
@@ -194,7 +267,12 @@ const Hero = ({ onExplore }) => {
               onChange={handleChange}
               placeholder="20"
             />
-
+            <DurationDropdown
+              value={formData.duration}
+              onChange={(val) =>
+                setFormData((prev) => ({ ...prev, duration: val }))
+              }
+            />
             <Button children="Search" className="py-1" />
           </form>
           {error && <p className="text-red-500 mt-2 text-center">{error}</p>}

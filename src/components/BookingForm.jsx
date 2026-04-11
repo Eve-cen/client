@@ -30,19 +30,49 @@ export default function BookingForm({ property }) {
   const [checkOutTime, setCheckOutTime] = useState("18:00"); // default
 
   // Generate time options every 30 mins
-  const generateTimes = () => {
+  const generateAllowedTimes = (openTime = "00:00", closeTime = "23:30") => {
     const times = [];
-    for (let h = 0; h < 24; h++) {
-      for (let m = 0; m < 60; m += 30) {
-        const hour = h.toString().padStart(2, "0");
-        const minute = m.toString().padStart(2, "0");
-        times.push(`${hour}:${minute}`);
-      }
+    const [openH, openM] = openTime.split(":").map(Number);
+    const [closeH, closeM] = closeTime.split(":").map(Number);
+    const openMinutes = openH * 60 + openM;
+    const closeMinutes = closeH * 60 + closeM;
+
+    for (let total = openMinutes; total <= closeMinutes; total += 30) {
+      const h = Math.floor(total / 60)
+        .toString()
+        .padStart(2, "0");
+      const m = (total % 60).toString().padStart(2, "0");
+      times.push(`${h}:${m}`);
     }
     return times;
   };
 
-  const timeOptions = generateTimes();
+  const openTime = property.customAvailability?.openTime || "09:00";
+  const closeTime = property.customAvailability?.closeTime || "18:00";
+  const minBookingHours = property.customAvailability?.minBookingHours || 1;
+  const allowedDays = property.customAvailability?.days; // e.g. [1,2,3,4,5]
+
+  // Allowed time slots for this property
+  const timeOptions = generateAllowedTimes(openTime, closeTime);
+
+  const isDayDisabled = (date) => {
+    // If host defined specific days, block everything else
+    if (allowedDays && allowedDays.length > 0) {
+      return !allowedDays.includes(date.getDay()); // getDay(): 0=Sun … 6=Sat
+    }
+    // Fallback to the string-based availability field
+    const dow = date.getDay();
+    if (property.availability === "weekdays") return dow === 0 || dow === 6;
+    if (property.availability === "weekends") return dow >= 1 && dow <= 5;
+    return false;
+  };
+
+  const checkOutOptions = timeOptions.filter((t) => {
+    const [inH, inM] = checkInTime.split(":").map(Number);
+    const [outH, outM] = t.split(":").map(Number);
+    const diffHours = (outH * 60 + outM - (inH * 60 + inM)) / 60;
+    return diffHours >= minBookingHours;
+  });
 
   // Calculate hours per day based on times only (ignore dates)
   const getHoursPerDay = () => {
@@ -119,9 +149,11 @@ export default function BookingForm({ property }) {
       toast.warn("Overall check-out must be after check-in");
       return;
     }
-
-    if (licensePdf === null) {
-      toast.warn("Please upload your license");
+    if (property.category.name === "Medical Rooms") {
+      if (licensePdf === null) {
+        toast.warn("Please upload your license");
+        return;
+      }
     }
 
     setLoading(true);
@@ -245,6 +277,7 @@ export default function BookingForm({ property }) {
         rangeColors={["#305CDE"]}
         minDate={new Date()}
         showDateDisplay={false}
+        disabledDay={isDayDisabled} // ← NEW
         className="mx-auto"
       />
 
@@ -262,12 +295,12 @@ export default function BookingForm({ property }) {
           <div className="space-y-1 text-right">
             {nights === 0 ? (
               <p className="text-orange-600 text-sm">
-                Same-day booking = 1 night stay
+                Same-day booking = 1 day
               </p>
             ) : null}
             <p className="text-gray-600">
-              {displayNights} night{displayNights > 1 ? "s" : ""} × ${nightRate}
-              /night
+              {displayNights} day{displayNights > 1 ? "s" : ""} × ${nightRate}
+              /day
             </p>
             <p className="text-2xl font-bold">
               ${totalPriceNightly.toFixed(2)}

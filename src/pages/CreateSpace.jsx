@@ -121,6 +121,14 @@ const CreateSpace = () => {
       approveAllBookings: false,
     },
   });
+  const [customAvailability, setCustomAvailability] = useState(
+    property.customAvailability || {
+      days: [0, 1, 2, 3, 4, 5, 6],
+      openTime: "09:00",
+      closeTime: "18:00",
+      minBookingHours: 2,
+    }
+  );
   const isMedicalCategory = spaceData.category === "6915bd724f4f95223e555e5b";
   const totalSteps = isMedicalCategory ? 13 : 12;
   const [showPopup, setShowPopup] = useState(false);
@@ -785,6 +793,7 @@ const CreateSpace = () => {
 
       // ✅ availability/timeBlocks sent separately
       formData.append("availability", availability);
+      formData.append("customAvailability", customAvailability);
       formData.append("timeBlocks", JSON.stringify(timeBlocks || []));
 
       formData.append("blockedDates", JSON.stringify(blockedDates || []));
@@ -1900,8 +1909,8 @@ const CreateSpace = () => {
             <AvailabilitySelector
               availability={availability}
               setAvailability={setAvailability}
-              timeBlocks={timeBlocks}
-              setTimeBlocks={setTimeBlocks}
+              customAvailability={customAvailability}
+              setCustomAvailability={setCustomAvailability}
             />
             <div className="bg-white p-6 rounded-xl shadow">
               <h3 className="text-lg font-semibold mb-1">Block Dates</h3>
