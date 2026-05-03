@@ -23,7 +23,9 @@ const CreateSpace = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [cqcDocuments, setCqcDocuments] = useState([]);
+  const [leaseFile, setLeaseFile] = useState(null);
   const cqcFileInputRef = useRef(null);
+  const leaseFileInputRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [errors, setErrors] = useState({});
@@ -121,16 +123,15 @@ const CreateSpace = () => {
       approveAllBookings: false,
     },
   });
-  const [customAvailability, setCustomAvailability] = useState(
-    property.customAvailability || {
-      days: [0, 1, 2, 3, 4, 5, 6],
-      openTime: "09:00",
-      closeTime: "18:00",
-      minBookingHours: 2,
-    }
-  );
+  const [customAvailability, setCustomAvailability] = useState({
+    days: [0, 1, 2, 3, 4, 5, 6],
+    openTime: "09:00",
+    closeTime: "18:00",
+    minBookingHours: 2,
+  });
   const isMedicalCategory = spaceData.category === "6915bd724f4f95223e555e5b";
-  const totalSteps = isMedicalCategory ? 13 : 12;
+  // Step count: 12 base + 1 CQC (medical) + 1 Lease = 13 or 14
+  const totalSteps = isMedicalCategory ? 14 : 13;
   const [showPopup, setShowPopup] = useState(false);
 
   const { isLoaded } = useLoadScript({
@@ -285,7 +286,7 @@ const CreateSpace = () => {
           category: data.category || null,
           subcategory: data.subcategory || [],
           pricing: data.pricing,
-          bookingSettings, // ✅ updated
+          bookingSettings,
           currentStep,
           imagePreviews: data.imagePreviews || [],
           savedAt: new Date().toISOString(),
@@ -312,7 +313,7 @@ const CreateSpace = () => {
           category: data.category || null,
           subcategory: data.subcategory || [],
           pricing: data.pricing,
-          bookingSettings, // ✅ updated
+          bookingSettings,
           currentStep,
         })
       );
@@ -804,6 +805,11 @@ const CreateSpace = () => {
       );
       cqcDocuments.forEach((file) => formData.append("cqcDocuments", file));
 
+      // ✅ NEW: Add lease file if present
+      if (leaseFile) {
+        formData.append("leaseFile", leaseFile);
+      }
+
       const res = await fetch(`${import.meta.env.VITE_API_URL}/properties`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -987,7 +993,6 @@ const CreateSpace = () => {
       description:
         "We are not CQC registered, but the space is fully compliant so basic procedures can be carried out by practitioners with their own CQC approval.",
     },
-    // Clinical Room Features
     {
       key: "treatmentBed",
       title: "Treatment bed",
@@ -1038,7 +1043,6 @@ const CreateSpace = () => {
       description:
         "Staffed reception available to greet patients and visitors.",
     },
-    // Building Amenities
     {
       key: "mannedReception",
       title: "Manned Reception",
@@ -1106,6 +1110,7 @@ const CreateSpace = () => {
       description: "Climate-controlled environment with air conditioning.",
     },
   ];
+
   // ─── Derived ──────────────────────────────────────────────────────────────────
 
   const allPreviews = [
@@ -1930,7 +1935,7 @@ const CreateSpace = () => {
         )}
 
         {/* ── Step 13: CQC Document Upload (Medical only) ──────────────────────── */}
-        {step === 13 && (
+        {step === 13 && isMedicalCategory && (
           <div>
             <h2 className="text-4xl font-semibold mb-2">
               CQC Compliance Documents
@@ -2038,6 +2043,116 @@ const CreateSpace = () => {
             {cqcDocuments.length === 0 && (
               <p className="text-center text-sm text-gray-400 mt-4">
                 No documents uploaded yet.
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* ── Step 13/14: Lease Agreement Upload ──────────────────────────────── */}
+        {step === (isMedicalCategory ? 14 : 13) && (
+          <div>
+            <h2 className="text-4xl font-semibold mb-2">
+              Upload Lease Agreement
+            </h2>
+            <p className="text-gray-600 mb-2">
+              Upload your standard lease agreement. Guests will be required to
+              review and e-sign this before booking.
+            </p>
+            <p className="text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 mb-6">
+              Accepted formats: PDF, DOC, DOCX. Max 10MB. This is optional for
+              now and can be added later.
+            </p>
+
+            <div
+              onClick={() => leaseFileInputRef.current?.click()}
+              className="border-2 border-dashed border-gray-300 hover:border-primary rounded-xl p-10 text-center cursor-pointer transition-all hover:bg-blue-50"
+            >
+              <div className="flex flex-col items-center gap-2 text-gray-500">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-10 h-10 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 16v-8m0 0-3 3m3-3 3 3M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1"
+                  />
+                </svg>
+                <p className="font-medium text-gray-700">
+                  Click to upload lease agreement
+                </p>
+                <p className="text-sm">PDF, DOC, DOCX up to 10MB</p>
+              </div>
+              <input
+                ref={leaseFileInputRef}
+                type="file"
+                accept=".pdf,.doc,.docx"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  if (file.size > 10 * 1024 * 1024) {
+                    toast.warn(
+                      "File exceeds 10MB. Please upload a smaller file."
+                    );
+                    return;
+                  }
+                  setLeaseFile(file);
+                  toast.success("Lease agreement uploaded successfully!");
+                  e.target.value = "";
+                }}
+              />
+            </div>
+
+            {leaseFile && (
+              <div className="mt-6">
+                <h3 className="font-semibold text-gray-800 mb-3">
+                  Uploaded Lease Agreement
+                </h3>
+                <div className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <FileText size={20} className="text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-800 text-sm">
+                        {leaseFile.name}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {(leaseFile.size / 1024).toFixed(1)} KB
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setLeaseFile(null)}
+                    className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {!leaseFile && (
+              <p className="text-center text-sm text-gray-400 mt-4">
+                No lease agreement uploaded yet.
               </p>
             )}
           </div>
