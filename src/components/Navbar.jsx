@@ -239,7 +239,7 @@ export default function Navbar({ activeTab: activeTabProp, onTabChange }) {
     }
   }, []);
 
-  const navBg = (scrolled || !isHomePage) ? "rgba(255,255,255,1)" : "rgba(10,22,40,0.35)";
+  const navBg = (scrolled || !isHomePage) ? "rgba(255,255,255,1)" : "rgba(10,22,40,0.22)";
   const navShadow = (scrolled || !isHomePage) ? "0 2px 12px rgba(0,0,0,0.08)" : "0 0px 0px rgba(0,0,0,0)";
 
   // ── UI STATE ───────────────────────────────────────────────────────────────
