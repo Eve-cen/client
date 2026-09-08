@@ -858,7 +858,7 @@ function HorizontalBars({ data }) {
   );
 }
 
-function MetricCard({ icon: Icon, label, value, growth, iconClasses, positive, index }) {
+function MetricCard({ icon: Icon, label, value, subtitle, growth, iconClasses, positive, index }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -878,6 +878,9 @@ function MetricCard({ icon: Icon, label, value, growth, iconClasses, positive, i
             {label}
           </p>
           <p className="mt-1 text-[28px] font-extrabold text-[#0A1628]">{value}</p>
+          {subtitle ? (
+            <p className="mt-0.5 text-[12px] text-[#6B7280]">{subtitle}</p>
+          ) : null}
           {growth ? (
             <div className="mt-2">
               <GrowthBadge value={growth} positive={positive} />
@@ -1022,6 +1025,7 @@ function OverviewSection({ onSectionChange, moderationQueue, setReviewOpenId, st
       icon: Users,
       label: "Total Users",
       value: formatNumber(totalUsersCount),
+      subtitle: `${formatNumber(stats.totalHosts)} hosts · ${formatNumber(stats.totalCustomers)} customers`,
       growth: "",
       iconClasses: "bg-[rgba(10,22,40,0.06)] text-[#0A1628]",
       positive: true,
@@ -6223,6 +6227,8 @@ export default function AdminDashboard() {
   const [bookings, setBookings] = useState([]);
   const [stats, setStats] = useState({
     totalUsers: 0,
+    totalHosts: 0,
+    totalCustomers: 0,
     totalListings: 0,
     totalBookings: 0,
     totalRevenue: 0,
@@ -6528,18 +6534,29 @@ export default function AdminDashboard() {
   const fetchUsers = useCallback(async (page) => {
     try {
       const authToken = localStorage.getItem("vencome_token");
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/users?page=${page}&limit=20`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
+      const headers = { Authorization: `Bearer ${authToken}` };
+      const API = import.meta.env.VITE_API_URL;
+      const [res, hostsRes, customersRes] = await Promise.all([
+        fetch(`${API}/admin/users?page=${page}&limit=20`, { headers }),
+        // "Total Users" alone didn't say whether it meant hosts or renters --
+        // these two give the breakdown shown under it. limit=1 since only
+        // the pagination `total` is needed, not the actual user records.
+        fetch(`${API}/admin/users?role=host&limit=1`, { headers }),
+        fetch(`${API}/admin/users?role=customer&limit=1`, { headers }),
+      ]);
       if (res.ok) {
         const data = await res.json();
         const allUsers = data.users || [];
         setUsers(allUsers);
         setUsersPage(data.page || page);
         setUsersTotalPages(data.pages || 1);
+        const hostsData = hostsRes.ok ? await hostsRes.json() : null;
+        const customersData = customersRes.ok ? await customersRes.json() : null;
         setStats((prev) => ({
           ...prev,
           totalUsers: data.total || allUsers.length,
+          totalHosts: hostsData?.total ?? prev.totalHosts,
+          totalCustomers: customersData?.total ?? prev.totalCustomers,
           activeUsers: allUsers.filter((user) => !user.isBanned).length,
         }));
       }
