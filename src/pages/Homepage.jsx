@@ -192,7 +192,7 @@ function HeroSection() {
 
         <p
           style={{
-            fontSize: "clamp(15px, 3.6vw, 18px)",
+            fontSize: "clamp(17px, 4vw, 20px)",
             color: "rgba(255,255,255,0.8)",
             maxWidth: 520,
             lineHeight: 1.65,
