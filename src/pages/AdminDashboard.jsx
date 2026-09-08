@@ -6557,7 +6557,8 @@ export default function AdminDashboard() {
           totalUsers: data.total || allUsers.length,
           totalHosts: hostsData?.total ?? prev.totalHosts,
           totalCustomers: customersData?.total ?? prev.totalCustomers,
-          activeUsers: allUsers.filter((user) => !user.isBanned).length,
+          // activeUsers comes from GET /admin/stats (platform-wide), not
+          // computed here -- this page only ever has 20 users on it.
         }));
       }
     } catch (err) {
@@ -6580,7 +6581,8 @@ export default function AdminDashboard() {
         setStats((prev) => ({
           ...prev,
           totalListings: data.total || allListings.length,
-          pendingListings: allListings.filter((listing) => !listing.isActive).length,
+          // pendingListings comes from GET /admin/stats (platform-wide),
+          // not computed here -- this page only ever has 50 listings on it.
         }));
         setModerationQueue(
           allListings
@@ -6626,11 +6628,24 @@ export default function AdminDashboard() {
       try {
         const headers = { Authorization: `Bearer ${token}` };
 
-        const [bookingsRes, analyticsRes, reportsRes] = await Promise.all([
+        const [bookingsRes, analyticsRes, reportsRes, statsRes] = await Promise.all([
           fetch(`${import.meta.env.VITE_API_URL}/admin/bookings?limit=50`, { headers }),
           fetch(`${import.meta.env.VITE_API_URL}/admin/overview-analytics`, { headers }),
           fetch(`${import.meta.env.VITE_API_URL}/admin/reports?status=all&limit=100`, { headers }),
+          fetch(`${import.meta.env.VITE_API_URL}/admin/stats`, { headers }),
         ]);
+
+        if (statsRes.ok) {
+          const statsData = await statsRes.json();
+          // Platform-wide counts -- not the page-scoped ones fetchUsers/
+          // fetchListings used to compute from whatever single page of
+          // results they'd fetched.
+          setStats((prev) => ({
+            ...prev,
+            activeUsers: statsData.activeUsers ?? prev.activeUsers,
+            pendingListings: statsData.pendingListings ?? prev.pendingListings,
+          }));
+        }
 
         if (bookingsRes.ok) {
           const bookingsData = await bookingsRes.json();
