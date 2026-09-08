@@ -444,11 +444,13 @@ export default function SearchPage() {
 
   const filteredResults = useMemo(() => {
     const getListingPrice = (listing) => {
+      // || not ?? -- an inactive pricing tier defaults to 0 (not null/undefined),
+      // which nullish coalescing would treat as "set" and stop right there.
       const base = Number(
-        listing.pricing?.hourly ??
-          listing.pricing?.hourlyPrice ??
-          listing.pricing?.daily ??
-          listing.pricing?.weekdayPrice ??
+        listing.pricing?.hourly ||
+          listing.pricing?.hourlyPrice ||
+          listing.pricing?.daily ||
+          listing.pricing?.weekdayPrice ||
           0
       );
       // Sort/filter by the cheapest possible rate, matching the "From £X"
