@@ -239,7 +239,7 @@ export default function Navbar({ activeTab: activeTabProp, onTabChange }) {
     }
   }, []);
 
-  const navBg = (scrolled || !isHomePage) ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.12)";
+  const navBg = (scrolled || !isHomePage) ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.9)";
   const navShadow = (scrolled || !isHomePage) ? "0 2px 12px rgba(0,0,0,0.08)" : "0 0px 0px rgba(0,0,0,0)";
 
   // ── UI STATE ───────────────────────────────────────────────────────────────
@@ -740,8 +740,8 @@ export default function Navbar({ activeTab: activeTabProp, onTabChange }) {
           background: navBg,
           boxShadow: navShadow,
           zIndex: 1000,
-          backdropFilter: scrolled ? "none" : "blur(16px)",
-          WebkitBackdropFilter: scrolled ? "none" : "blur(16px)",
+          backdropFilter: "none",
+          WebkitBackdropFilter: "none",
           borderBottom: scrolled ? "1px solid #E5E7EB" : "1px solid rgba(255,255,255,0.15)",
           borderRadius: scrolled ? 0 : "0 0 32px 32px",
           overflow: "visible",
