@@ -74,6 +74,9 @@ const ServiceLocationPage = () => {
   const [subcategory, setSubcategory] = useState(loaderData?.subcategory || null);
   const [properties, setProperties] = useState(loaderData?.properties || []);
   const [loading, setLoading] = useState(!loaderData?.subcategory);
+  const [prospectEmail, setProspectEmail] = useState("");
+  const [prospectStatus, setProspectStatus] = useState("idle"); // idle | submitting | success | error
+  const [prospectError, setProspectError] = useState("");
 
   useEffect(() => {
     // Same reasoning as CategoryPage.jsx: the SSR loader already fetched
@@ -110,6 +113,38 @@ const ServiceLocationPage = () => {
 
   const locationName = properties[0]?.location?.neighborhood || titleCaseSlug(locationSlug);
   const heroImage = subcategory.image || category?.image;
+
+  const handleProspectSubmit = async (event) => {
+    event.preventDefault();
+    if (!prospectEmail.trim()) {
+      setProspectError("Please enter your email");
+      return;
+    }
+    setProspectStatus("submitting");
+    setProspectError("");
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/prospect-emails`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: prospectEmail.trim(),
+          location: locationName,
+          category: category?.name,
+          subcategory: subcategory.name,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setProspectError(data.error || "Something went wrong");
+        setProspectStatus("error");
+        return;
+      }
+      setProspectStatus("success");
+    } catch {
+      setProspectError("Network error. Please try again.");
+      setProspectStatus("error");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -164,6 +199,40 @@ const ServiceLocationPage = () => {
               <Building2 size={18} />
               Start Listing Your Space
             </Link>
+
+            {prospectStatus === "success" ? (
+              <p className="mt-6 text-[14px] font-semibold text-[#16A34A]">
+                Thanks! We'll email you the moment {subcategory.name} opens in {locationName}.
+              </p>
+            ) : (
+              <form onSubmit={handleProspectSubmit} className="mt-6 w-full max-w-sm">
+                <p className="mb-3 text-[13px] text-[#6B7280]">
+                  Not ready to list yet? Leave your email and we'll notify you when we launch here.
+                </p>
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    value={prospectEmail}
+                    onChange={(e) => {
+                      setProspectEmail(e.target.value);
+                      setProspectError("");
+                    }}
+                    placeholder="you@example.com"
+                    className="min-h-[44px] flex-1 rounded-full border border-[#E5E7EB] px-4 text-[14px] outline-none"
+                  />
+                  <button
+                    type="submit"
+                    disabled={prospectStatus === "submitting"}
+                    className="min-h-[44px] rounded-full bg-[#0A1628] px-5 text-[14px] font-semibold text-white disabled:opacity-60"
+                  >
+                    {prospectStatus === "submitting" ? "..." : "Notify me"}
+                  </button>
+                </div>
+                {prospectError ? (
+                  <p className="mt-2 text-[12px] text-[#DC2626]">{prospectError}</p>
+                ) : null}
+              </form>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
