@@ -1707,6 +1707,18 @@ export default function PropertyDetails() {
                 />
               </motion.section>
 
+              {property?.video && (
+                <motion.section {...sectionProps(0.12)} className="border-b border-[#E5E7EB] py-6">
+                  <h2 className="mb-4 text-[20px] font-bold text-[#0A1628]">Video Tour</h2>
+                  <video
+                    src={property.video}
+                    controls
+                    className="w-full rounded-2xl bg-black"
+                    style={{ maxHeight: 480 }}
+                  />
+                </motion.section>
+              )}
+
               <motion.section {...sectionProps(0.15)}>
                 <AmenitiesSection property={property} />
               </motion.section>

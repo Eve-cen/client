@@ -246,6 +246,7 @@ const defaultState = {
   bookingApproval: "approveFirstFive",
   blockedDates: [],
   leaseAgreement: null,
+  video: null,
   icalUrl: "",
 };
 
@@ -1189,6 +1190,12 @@ export default function CreateSpace() {
         formData.append("existingLeaseAgreement", form.leaseAgreement);
       }
 
+      if (form.video instanceof File) {
+        formData.append("video", form.video);
+      } else if (typeof form.video === "string" && form.video) {
+        formData.append("existingVideo", form.video);
+      }
+
       if (form.category) {
         formData.append("category", form.category);
       }
@@ -1261,11 +1268,14 @@ export default function CreateSpace() {
         form.leaseAgreement instanceof File
           ? await uploadFileToR2(form.leaseAgreement)
           : form.leaseAgreement;
+      const resolvedVideo =
+        form.video instanceof File ? await uploadFileToR2(form.video) : form.video;
 
       setForm((prev) => ({
         ...prev,
         images: resolvedImages,
         leaseAgreement: resolvedLease,
+        video: resolvedVideo,
       }));
 
       const payload = {
@@ -1276,6 +1286,7 @@ export default function CreateSpace() {
           ...form,
           images: resolvedImages,
           leaseAgreement: resolvedLease,
+          video: resolvedVideo,
           bufferBefore: effectiveBufferBefore,
           bufferAfter: effectiveBufferAfter,
         },
@@ -3626,8 +3637,8 @@ export default function CreateSpace() {
             {step === 12 ? (
               <div>
                 <SectionHeader
-                  title="Upload Lease Agreement"
-                  subtitle="Upload your standard lease agreement. Guests will be required to review and e-sign this before booking. This is optional and can be added later."
+                  title="Lease Agreement & Video"
+                  subtitle="Upload your standard lease agreement and an optional video tour of the space. Both are optional and can be added later."
                 />
 
                 <div
@@ -3755,6 +3766,106 @@ export default function CreateSpace() {
                   </div>
                 )}
 
+                <div style={{ marginTop: "32px" }}>
+                  <p style={{ fontSize: "15px", fontWeight: "700", color: "#0A1628", margin: "0 0 12px" }}>
+                    Video Tour
+                  </p>
+
+                  {!form.video ? (
+                    <label
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "48px 24px",
+                        border: "2px dashed #E5E7EB",
+                        borderRadius: "16px",
+                        cursor: "pointer",
+                        background: "#fff",
+                        transition: "all 0.2s ease",
+                      }}
+                      onMouseEnter={(event) => {
+                        event.currentTarget.style.borderColor = "#2E58EC";
+                        event.currentTarget.style.background = "rgba(46,88,236,0.02)";
+                      }}
+                      onMouseLeave={(event) => {
+                        event.currentTarget.style.borderColor = "#E5E7EB";
+                        event.currentTarget.style.background = "#fff";
+                      }}
+                    >
+                      <input
+                        type="file"
+                        accept="video/mp4,video/quicktime,video/webm"
+                        style={{ display: "none" }}
+                        onChange={(event) => {
+                          const file = event.target.files?.[0];
+                          if (file) updateField("video", file);
+                        }}
+                      />
+                      <Upload size={32} color="#2E58EC" style={{ marginBottom: "12px" }} />
+                      <p style={{ fontSize: "15px", fontWeight: "600", color: "#0A1628", margin: "0 0 6px" }}>
+                        Click to upload a video tour
+                      </p>
+                      <p style={{ fontSize: "13px", color: "#6B7280", margin: 0 }}>
+                        MP4, MOV or WebM up to 100MB
+                      </p>
+                    </label>
+                  ) : (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "16px 20px",
+                        border: "1.5px solid #86EFAC",
+                        borderRadius: "12px",
+                        background: "#F0FDF4",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <div
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "10px",
+                            background: "#DCFCE7",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Check size={20} color="#16A34A" />
+                        </div>
+                        <div>
+                          <p style={{ fontSize: "14px", fontWeight: "600", color: "#0A1628", margin: "0 0 2px" }}>
+                            {form.video instanceof File ? form.video.name : "Video uploaded"}
+                          </p>
+                          <p style={{ fontSize: "12px", color: "#6B7280", margin: 0 }}>
+                            {form.video instanceof File
+                              ? `${(form.video.size / 1024 / 1024).toFixed(1)} MB`
+                              : "Saved from your draft"}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => updateField("video", null)}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          color: "#DC2626",
+                          fontSize: "13px",
+                          fontWeight: "600",
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 <button
                   type="button"
                   onClick={() => setStep(13)}
@@ -3768,7 +3879,7 @@ export default function CreateSpace() {
                     textDecoration: "underline",
                   }}
                 >
-                  Skip for now — add later from listings settings
+                  Continue
                 </button>
               </div>
             ) : null}

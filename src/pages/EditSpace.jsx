@@ -60,6 +60,7 @@ export default function EditSpace({ embedded = false, idOverride, onClose } = {}
     discounts: { newListing: false, lastMinute: false, weekly: false, monthly: false, extendedHours: 0 },
     blockedDates: [],
     leaseAgreement: null,
+    video: null,
     availability: {
       openDays: [],
       openTime: "",
@@ -137,6 +138,7 @@ export default function EditSpace({ embedded = false, idOverride, onClose } = {}
           },
           blockedDates: p.blockedDates || [],
           leaseAgreement: p.leaseAgreement || null,
+          video: p.video || null,
           availability: {
             openDays: p.availability?.openDays || [],
             openTime: p.availability?.openTime || "",
@@ -305,6 +307,12 @@ export default function EditSpace({ embedded = false, idOverride, onClose } = {}
         payload.append("leaseFile", formData.leaseAgreement);
       } else if (typeof formData.leaseAgreement === "string" && formData.leaseAgreement) {
         payload.append("existingLeaseAgreement", formData.leaseAgreement);
+      }
+
+      if (formData.video instanceof File) {
+        payload.append("video", formData.video);
+      } else if (typeof formData.video === "string" && formData.video) {
+        payload.append("existingVideo", formData.video);
       }
 
       formData.photos.forEach((photo) => {
@@ -1752,6 +1760,72 @@ export default function EditSpace({ embedded = false, idOverride, onClose } = {}
               <button
                 type="button"
                 onClick={() => setFormData((prev) => ({ ...prev, leaseAgreement: null }))}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "#DC2626", fontSize: "13px", fontWeight: "600" }}
+              >
+                Remove
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: "16px",
+            border: "1px solid #E5E7EB",
+            padding: "24px",
+            marginBottom: "16px",
+          }}
+        >
+          <h3 style={{ fontSize: "16px", fontWeight: "700", color: "#0A1628", marginBottom: "16px" }}>
+            Video Tour
+          </h3>
+          {!formData.video ? (
+            <label
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "32px 24px",
+                border: "2px dashed #E5E7EB",
+                borderRadius: "12px",
+                cursor: "pointer",
+                background: "#fff",
+              }}
+            >
+              <input
+                type="file"
+                accept="video/mp4,video/quicktime,video/webm"
+                style={{ display: "none" }}
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) setFormData((prev) => ({ ...prev, video: file }));
+                }}
+              />
+              <p style={{ fontSize: "14px", fontWeight: "600", color: "#0A1628", margin: "0 0 4px" }}>
+                Click to upload a video tour
+              </p>
+              <p style={{ fontSize: "13px", color: "#6B7280", margin: 0 }}>MP4, MOV or WebM up to 100MB</p>
+            </label>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "14px 18px",
+                border: "1.5px solid #86EFAC",
+                borderRadius: "10px",
+                background: "#F0FDF4",
+              }}
+            >
+              <p style={{ fontSize: "14px", fontWeight: "600", color: "#0A1628", margin: 0 }}>
+                {formData.video instanceof File ? formData.video.name : "Video uploaded"}
+              </p>
+              <button
+                type="button"
+                onClick={() => setFormData((prev) => ({ ...prev, video: null }))}
                 style={{ background: "none", border: "none", cursor: "pointer", color: "#DC2626", fontSize: "13px", fontWeight: "600" }}
               >
                 Remove
