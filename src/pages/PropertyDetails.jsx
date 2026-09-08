@@ -1678,6 +1678,8 @@ export default function PropertyDetails() {
           images={propertyView.images}
           onOpen={openImage}
           onShowAll={() => openImage(0, true)}
+          activeImageIndex={activeImageIndex}
+          onChangeImage={changeImage}
         />
 
         <div className="mx-auto max-w-[1280px] px-4 py-8 md:px-6 md:py-12">
@@ -2192,7 +2194,7 @@ export default function PropertyDetails() {
   );
 }
 
-function PhotoGallery({ images, onOpen, onShowAll }) {
+function PhotoGallery({ images, onOpen, onShowAll, activeImageIndex, onChangeImage }) {
   return (
     <div className="mx-auto max-w-[1280px] px-4 pt-24 md:px-6 md:pt-28">
       <div className="relative overflow-hidden rounded-2xl">
@@ -2205,25 +2207,67 @@ function PhotoGallery({ images, onOpen, onShowAll }) {
           <span>Show all photos</span>
         </button>
 
-        <div className="md:hidden">
-          <button
-            type="button"
-            onClick={() => onOpen(0)}
-            className="relative block h-[260px] w-full"
+        <div className="relative md:hidden">
+          <motion.div
+            className="relative h-[260px] w-full"
+            drag={images.length > 1 ? "x" : false}
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.08}
+            onDragEnd={(_, info) => {
+              if (images.length < 2) return;
+              if (info.offset.x > 60) onChangeImage(-1);
+              else if (info.offset.x < -60) onChangeImage(1);
+            }}
           >
-            <img
-              {...getResponsiveImageProps(images[0])}
-              sizes="100vw"
-              alt="Property hero"
-              className="h-full w-full object-cover"
-            />
-            {images.length > 1 ? (
-              <span className="absolute bottom-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1 text-[12px] font-semibold text-white backdrop-blur-sm">
+            <button
+              type="button"
+              onClick={() => onOpen(activeImageIndex)}
+              className="block h-full w-full"
+            >
+              <img
+                {...getResponsiveImageProps(images[activeImageIndex])}
+                sizes="100vw"
+                alt={`Property view ${activeImageIndex + 1}`}
+                className="h-full w-full select-none object-cover"
+                draggable={false}
+              />
+            </button>
+          </motion.div>
+
+          {images.length > 1 ? (
+            <>
+              <span className="pointer-events-none absolute bottom-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1 text-[12px] font-semibold text-white backdrop-blur-sm">
                 <Grid size={13} />
-                1 / {images.length}
+                {activeImageIndex + 1} / {images.length}
               </span>
-            ) : null}
-          </button>
+
+              <button
+                type="button"
+                aria-label="Next photo"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onChangeImage(1);
+                }}
+                className="absolute right-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm"
+              >
+                <ChevronRight size={22} />
+              </button>
+
+              {activeImageIndex > 0 ? (
+                <button
+                  type="button"
+                  aria-label="Previous photo"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onChangeImage(-1);
+                  }}
+                  className="absolute left-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm"
+                >
+                  <ChevronLeft size={22} />
+                </button>
+              ) : null}
+            </>
+          ) : null}
         </div>
 
         <div className="hidden grid-cols-[2fr_1fr_1fr] grid-rows-[240px_240px] gap-1.5 md:grid">
