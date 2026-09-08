@@ -1891,7 +1891,7 @@ export default function PropertyDetails() {
             >
               {property?.bookingSettings?.instantBook
                 ? `Your booking for ${property?.title} has been confirmed.`
-                : `Your request for ${property?.title} has been sent to the host.`}
+                : `Your request for ${property?.title} has been sent to the host and is awaiting their response.`}
             </p>
             <p
               style={{
@@ -1900,7 +1900,9 @@ export default function PropertyDetails() {
                 marginBottom: "32px",
               }}
             >
-              A confirmation email has been sent to you.
+              {property?.bookingSettings?.instantBook
+                ? "A confirmation email has been sent to you."
+                : "We'll email you the moment the host approves or declines — no need to check back."}
             </p>
             <div
               style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}
