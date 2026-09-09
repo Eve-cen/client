@@ -99,12 +99,7 @@ export default function AuthPage({ mode = "login" }) {
       setEmailError("Please enter a valid email address");
       return;
     }
-    if (!agreedToTerms) {
-      setTermsError("Please agree to the Terms & Conditions to continue");
-      return;
-    }
     setEmailError("");
-    setTermsError("");
     setIsLoading(true);
 
     try {
@@ -140,7 +135,12 @@ export default function AuthPage({ mode = "login" }) {
       setFirstNameError("Please enter your first name");
       return;
     }
+    if (!agreedToTerms) {
+      setTermsError("Please agree to the Terms & Conditions to continue");
+      return;
+    }
     setFirstNameError("");
+    setTermsError("");
     setIsLoading(true);
 
     try {
@@ -232,12 +232,7 @@ export default function AuthPage({ mode = "login" }) {
       setEmailError("Please enter a valid email address");
       return;
     }
-    if (!agreedToTerms) {
-      setTermsError("Please agree to the Terms & Conditions to continue");
-      return;
-    }
     setEmailError("");
-    setTermsError("");
     setPasswordError("");
     setIsLoading(true);
 
@@ -852,46 +847,50 @@ export default function AuthPage({ mode = "login" }) {
                     </span>
                   </label>
 
-                  <label
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: 10,
-                      marginBottom: 8,
-                      cursor: "pointer",
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={agreedToTerms}
-                      onChange={(e) => {
-                        setAgreedToTerms(e.target.checked);
-                        if (e.target.checked) setTermsError("");
-                      }}
-                      style={{
-                        width: 16,
-                        height: 16,
-                        marginTop: 2,
-                        flexShrink: 0,
-                        accentColor: COLORS.blue,
-                        cursor: "pointer",
-                      }}
-                    />
-                    <span style={{ fontSize: 13, color: COLORS.grey, lineHeight: 1.5 }}>
-                      I agree to VenCome's{" "}
-                      <Link to="/terms-and-conditions" target="_blank" style={{ color: COLORS.blue, textDecoration: "none" }}>
-                        Terms & Conditions
-                      </Link>{" "}
-                      and{" "}
-                      <Link to="/privacy" target="_blank" style={{ color: COLORS.blue, textDecoration: "none" }}>
-                        Privacy Policy
-                      </Link>
-                    </span>
-                  </label>
-                  {termsError ? (
-                    <p style={{ fontSize: 12, color: COLORS.error, marginTop: 0, marginBottom: 12 }}>
-                      {termsError}
-                    </p>
+                  {mode === "signup" ? (
+                    <>
+                      <label
+                        style={{
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: 10,
+                          marginBottom: 8,
+                          cursor: "pointer",
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={agreedToTerms}
+                          onChange={(e) => {
+                            setAgreedToTerms(e.target.checked);
+                            if (e.target.checked) setTermsError("");
+                          }}
+                          style={{
+                            width: 16,
+                            height: 16,
+                            marginTop: 2,
+                            flexShrink: 0,
+                            accentColor: COLORS.blue,
+                            cursor: "pointer",
+                          }}
+                        />
+                        <span style={{ fontSize: 13, color: COLORS.grey, lineHeight: 1.5 }}>
+                          I agree to VenCome's{" "}
+                          <Link to="/terms-and-conditions" target="_blank" style={{ color: COLORS.blue, textDecoration: "none" }}>
+                            Terms & Conditions
+                          </Link>{" "}
+                          and{" "}
+                          <Link to="/privacy" target="_blank" style={{ color: COLORS.blue, textDecoration: "none" }}>
+                            Privacy Policy
+                          </Link>
+                        </span>
+                      </label>
+                      {termsError ? (
+                        <p style={{ fontSize: 12, color: COLORS.error, marginTop: 0, marginBottom: 12 }}>
+                          {termsError}
+                        </p>
+                      ) : null}
+                    </>
                   ) : null}
 
                   <button
@@ -978,7 +977,7 @@ export default function AuthPage({ mode = "login" }) {
                         position: "relative",
                       }}
                     >
-                      {!agreedToTerms ? (
+                      {mode === "signup" && !agreedToTerms ? (
                         <div
                           onClick={() => setTermsError("Please agree to the Terms & Conditions to continue")}
                           style={{ position: "absolute", inset: 0, zIndex: 1, cursor: "pointer" }}
@@ -986,7 +985,7 @@ export default function AuthPage({ mode = "login" }) {
                       ) : null}
                       <GoogleLogin
                         onSuccess={async (credentialResponse) => {
-                          if (!agreedToTerms) {
+                          if (mode === "signup" && !agreedToTerms) {
                             setTermsError("Please agree to the Terms & Conditions to continue");
                             return;
                           }
@@ -1081,6 +1080,19 @@ export default function AuthPage({ mode = "login" }) {
                         text="continue_with"
                       />
                     </div>
+                    {mode !== "signup" ? (
+                      <p style={{ fontSize: 12, color: COLORS.grey, textAlign: "center", marginTop: 10 }}>
+                        By continuing, you agree to VenCome's{" "}
+                        <Link to="/terms-and-conditions" target="_blank" style={{ color: COLORS.blue, textDecoration: "none" }}>
+                          Terms & Conditions
+                        </Link>{" "}
+                        and{" "}
+                        <Link to="/privacy" target="_blank" style={{ color: COLORS.blue, textDecoration: "none" }}>
+                          Privacy Policy
+                        </Link>
+                        .
+                      </p>
+                    ) : null}
                   </div>
 
                 </div>
@@ -1164,6 +1176,48 @@ export default function AuthPage({ mode = "login" }) {
                       </p>
                     ) : null}
                   </div>
+
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: 10,
+                      marginBottom: 8,
+                      cursor: "pointer",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={agreedToTerms}
+                      onChange={(e) => {
+                        setAgreedToTerms(e.target.checked);
+                        if (e.target.checked) setTermsError("");
+                      }}
+                      style={{
+                        width: 16,
+                        height: 16,
+                        marginTop: 2,
+                        flexShrink: 0,
+                        accentColor: COLORS.blue,
+                        cursor: "pointer",
+                      }}
+                    />
+                    <span style={{ fontSize: 13, color: COLORS.grey, lineHeight: 1.5 }}>
+                      I agree to VenCome's{" "}
+                      <Link to="/terms-and-conditions" target="_blank" style={{ color: COLORS.blue, textDecoration: "none" }}>
+                        Terms & Conditions
+                      </Link>{" "}
+                      and{" "}
+                      <Link to="/privacy" target="_blank" style={{ color: COLORS.blue, textDecoration: "none" }}>
+                        Privacy Policy
+                      </Link>
+                    </span>
+                  </label>
+                  {termsError ? (
+                    <p style={{ fontSize: 12, color: COLORS.error, marginTop: 0, marginBottom: 12 }}>
+                      {termsError}
+                    </p>
+                  ) : null}
 
                   <button
                     type="button"
