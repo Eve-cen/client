@@ -1206,6 +1206,7 @@ export default function CreateSpace() {
 
       if (selectedSubcategoryNames.length > 0) {
         formData.append("subcategories", JSON.stringify(selectedSubcategoryNames));
+        formData.append("subcategory", form.subcategoryName || selectedSubcategoryNames[0]);
       }
 
       if (form.images && form.images.length > 0) {
